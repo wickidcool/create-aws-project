@@ -12,6 +12,18 @@ export interface TokenValues {
   AUTH_AUTH0: string;
   AUTH_SOCIAL_LOGIN: string;
   AUTH_MFA: string;
+  /** Organization enabled flag ('true' or 'false') */
+  ORG_ENABLED?: string;
+  /** Organization name */
+  ORG_NAME?: string;
+  /** JSON array of {environment, accountId} objects for templates needing full list */
+  ORG_ACCOUNTS_JSON?: string;
+  /** Development environment AWS Account ID (empty if not selected) */
+  DEV_ACCOUNT_ID?: string;
+  /** Staging environment AWS Account ID (empty if not selected) */
+  STAGE_ACCOUNT_ID?: string;
+  /** Production environment AWS Account ID (empty if not selected) */
+  PROD_ACCOUNT_ID?: string;
 }
 
 /** Platform identifiers for conditional templates */

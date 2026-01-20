@@ -24,9 +24,28 @@ function toTitleCase(str: string): string {
 }
 
 /**
+ * Find account ID for a specific environment name
+ */
+function findAccountIdByEnvironment(
+  accounts: Array<{ environment: string; accountId?: string }> | undefined,
+  environment: string
+): string {
+  const account = accounts?.find(
+    (a) => a.environment.toLowerCase() === environment.toLowerCase()
+  );
+  return account?.accountId ?? '';
+}
+
+/**
  * Derive all token values from user's ProjectConfig
  */
 export function deriveTokenValues(config: ProjectConfig): TokenValues {
+  // Build organization accounts JSON for flexible environment handling
+  const orgAccounts = config.org?.accounts?.map((a) => ({
+    environment: a.environment,
+    accountId: a.accountId ?? '',
+  })) ?? [];
+
   return {
     PROJECT_NAME: config.projectName,
     PROJECT_NAME_PASCAL: toPascalCase(config.projectName),
@@ -38,6 +57,14 @@ export function deriveTokenValues(config: ProjectConfig): TokenValues {
     AUTH_AUTH0: config.auth.provider === 'auth0' ? 'true' : 'false',
     AUTH_SOCIAL_LOGIN: config.auth.features.includes('social-login') ? 'true' : 'false',
     AUTH_MFA: config.auth.features.includes('mfa') ? 'true' : 'false',
+    // Organization tokens
+    ORG_ENABLED: config.org?.enabled ? 'true' : 'false',
+    ORG_NAME: config.org?.organizationName ?? '',
+    ORG_ACCOUNTS_JSON: JSON.stringify(orgAccounts),
+    // Common environment account IDs for backward compatibility
+    DEV_ACCOUNT_ID: findAccountIdByEnvironment(config.org?.accounts, 'dev'),
+    STAGE_ACCOUNT_ID: findAccountIdByEnvironment(config.org?.accounts, 'stage'),
+    PROD_ACCOUNT_ID: findAccountIdByEnvironment(config.org?.accounts, 'prod'),
   };
 }
 
