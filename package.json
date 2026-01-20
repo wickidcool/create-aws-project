@@ -43,6 +43,7 @@
     "url": "https://github.com/wickidcool/create-aws-starter-kit/issues"
   },
   "dependencies": {
+    "@aws-sdk/client-iam": "^3.971.0",
     "@aws-sdk/client-organizations": "^3.700.0",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2",
