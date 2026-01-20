@@ -28,8 +28,8 @@ None
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Add org structure wizard prompts and types
-- [ ] 01-02: AWS Organizations SDK integration and account creation
+- [x] 01-01: Add org structure wizard prompts and types
+- [x] 01-02: AWS Organizations SDK integration and account creation
 - [ ] 01-03: Cross-account IAM role setup
 
 ### Phase 2: GitHub Deployment Command
@@ -62,6 +62,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. AWS Organizations Foundation | 0/3 | Not started | - |
+| 1. AWS Organizations Foundation | 2/3 | In progress | - |
 | 2. GitHub Deployment Command | 0/3 | Not started | - |
 | 3. Template Updates & Integration | 0/3 | Not started | - |
