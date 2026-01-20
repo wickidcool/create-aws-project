@@ -1,8 +1,8 @@
-# create-aws-starter-kit
+# create-aws-project
+
+Create a new AWS project from scratch including CloudFront, API Gateway, Lambdas, Cognito or Auth0, DynamoDB. GitHub pipeline for testing and deploying.
 
 [![npm version](https://img.shields.io/npm/v/create-aws-starter-kit.svg)](https://www.npmjs.com/package/create-aws-starter-kit)
-
-Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructure.
 
 ## Quick Start
 
