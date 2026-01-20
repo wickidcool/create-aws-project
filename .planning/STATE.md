@@ -62,6 +62,8 @@ Recent decisions affecting current work:
 - IAM deployment users use /deployment/ path for easy identification
 - Least-privilege CDK deployment policy design
 - Idempotent IAM resource creation (check before create)
+- Use tweetnacl over libsodium-wrappers for GitHub secrets encryption (lighter weight)
+- Environment names uppercased in secret names (AWS_ACCESS_KEY_ID_DEV)
 
 ### Deferred Issues
 
@@ -74,6 +76,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 02-01-PLAN.md (IAM SDK module)
+Stopped at: Completed 02-02-PLAN.md (GitHub API module)
 Resume file: None
-Next: Complete Wave 1 (02-02) then execute Wave 2 (02-03)
+Next: Execute Wave 2 (02-03 CLI Command + Integration)
