@@ -4,6 +4,12 @@ import { dirname, join, resolve } from 'node:path';
 import pc from 'picocolors';
 import { runWizard } from './wizard.js';
 import { generateProject } from './generator/index.js';
+import {
+  createOrganizationsClient,
+  checkExistingOrganization,
+  createOrganization,
+  createEnvironmentAccounts,
+} from './aws/organizations.js';
 
 /**
  * Get the version from package.json
@@ -109,6 +115,96 @@ export async function run(): Promise<void> {
   if (!config) {
     console.log('\nProject creation cancelled.');
     process.exit(1);
+  }
+
+  // Set up AWS Organizations if enabled
+  if (config.org?.enabled) {
+    console.log('');
+    console.log(pc.cyan('Setting up AWS Organizations...'));
+
+    try {
+      const orgClient = createOrganizationsClient(config.awsRegion);
+
+      // Check if already in an organization
+      const existingOrgId = await checkExistingOrganization(orgClient);
+
+      if (existingOrgId) {
+        console.log(pc.yellow(`Already in organization: ${existingOrgId}`));
+        console.log(pc.dim('Proceeding with existing organization...'));
+      } else {
+        // Create new organization
+        console.log(pc.dim('Creating new AWS Organization...'));
+        const orgId = await createOrganization(orgClient);
+        console.log(pc.green('✔') + ` Organization created: ${orgId}`);
+      }
+
+      // Create environment accounts
+      const accountResults = await createEnvironmentAccounts(
+        orgClient,
+        config.org.organizationName,
+        config.org.accounts
+      );
+
+      // Update config.org.accounts with returned accountIds
+      for (const result of accountResults) {
+        const account = config.org.accounts.find(
+          (a) => a.environment === result.environment
+        );
+        if (account) {
+          account.accountId = result.accountId;
+        }
+      }
+
+      console.log('');
+      console.log(pc.green('✔') + ' AWS Organizations setup complete');
+      console.log(pc.dim('Account IDs:'));
+      for (const account of config.org.accounts) {
+        console.log(pc.dim(`  ${account.environment}: ${account.accountId}`));
+      }
+    } catch (error) {
+      console.log('');
+
+      // Handle specific AWS errors
+      if (error instanceof Error) {
+        if (
+          error.name === 'CredentialsProviderError' ||
+          error.message.includes('Could not load credentials')
+        ) {
+          console.log(pc.red('Error:') + ' AWS credentials not configured.');
+          console.log('');
+          console.log('Please configure AWS credentials using one of these methods:');
+          console.log('  1. Run: ' + pc.cyan('aws configure'));
+          console.log('  2. Set environment variables: ' + pc.cyan('AWS_ACCESS_KEY_ID') + ' and ' + pc.cyan('AWS_SECRET_ACCESS_KEY'));
+          console.log('  3. Use an AWS profile: ' + pc.cyan('export AWS_PROFILE=your-profile'));
+          process.exit(1);
+        }
+
+        if (
+          error.name === 'AccessDeniedException' ||
+          error.message.includes('not authorized')
+        ) {
+          console.log(pc.red('Error:') + ' Insufficient AWS permissions.');
+          console.log('');
+          console.log('Required IAM permissions for AWS Organizations:');
+          console.log('  - ' + pc.cyan('organizations:CreateOrganization'));
+          console.log('  - ' + pc.cyan('organizations:DescribeOrganization'));
+          console.log('  - ' + pc.cyan('organizations:CreateAccount'));
+          console.log('  - ' + pc.cyan('organizations:DescribeCreateAccountStatus'));
+          process.exit(1);
+        }
+
+        // Log which account failed if it's an account creation error
+        if (error.message.includes('Failed to create')) {
+          console.log(pc.red('Error:') + ` ${error.message}`);
+          process.exit(1);
+        }
+      }
+
+      // Generic error
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.log(pc.red('Error:') + ` AWS Organizations setup failed: ${message}`);
+      process.exit(1);
+    }
   }
 
   // Determine output directory
