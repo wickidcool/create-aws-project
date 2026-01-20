@@ -1,0 +1,62 @@
+{
+  "name": "create-aws-starter-kit",
+  "version": "1.1.0",
+  "description": "CLI tool to scaffold AWS Starter Kit projects",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "create-aws-starter-kit": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "keywords": [
+    "aws",
+    "starter-kit",
+    "cli",
+    "scaffold",
+    "nx",
+    "monorepo"
+  ],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wickidcool/create-aws-starter-kit.git"
+  },
+  "author": "wickidcool",
+  "homepage": "https://github.com/wickidcool/create-aws-starter-kit#readme",
+  "bugs": {
+    "url": "https://github.com/wickidcool/create-aws-starter-kit/issues"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@types/prompts": "^2.4.9",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3"
+  }
+}

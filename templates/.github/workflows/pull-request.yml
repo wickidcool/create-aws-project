@@ -1,0 +1,72 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Run lint
+        shell: bash
+        run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          use-lfs: "true"
+
+      - name: Build and test
+        uses: ./.github/actions/build-and-test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_OPTIONS: "--localstorage-file=/tmp/jest-localstorage"
+
+      - name: Coverage Report
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          coverage-summary-path: ./coverage/apps/web/coverage-summary.json
+          title: "Test Coverage Report"
+          summary-title: "Coverage Summary"
+          multiple-files: |
+            Web App, ./coverage/apps/web/coverage-summary.json
+            API, ./coverage/apps/api/coverage-summary.json
+            API Client, ./coverage/packages/api-client/coverage-summary.json
+            Mobile, ./coverage/apps/mobile/coverage-summary.json
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Build project
+        uses: ./.github/actions/build-and-test
+        with:
+          skip-tests: "true"

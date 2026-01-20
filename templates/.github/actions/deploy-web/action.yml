@@ -1,0 +1,68 @@
+name: "Deploy Web App"
+description: "Build and deploy web app to S3/CloudFront"
+
+inputs:
+  aws-access-key-id:
+    description: "AWS Access Key ID"
+    required: true
+  aws-secret-access-key:
+    description: "AWS Secret Access Key"
+    required: true
+  aws-region:
+    description: "AWS Region"
+    required: false
+    default: "us-east-2"
+  environment:
+    description: "Deployment environment (dev, stage, prod)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Get deployed CloudFront ID and S3 bucket
+      id: get-aws-resources
+      shell: bash
+      run: |
+        # Find the web bucket by looking for "-web-" in the bucket name
+        S3_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[?contains(Name, '-web-')].Name" --output text | head -1)
+
+        if [ -z "$S3_BUCKET_NAME" ]; then
+          echo "Error: Could not find web bucket (bucket name containing '-web-')"
+          exit 1
+        fi
+
+        echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> $GITHUB_OUTPUT
+        echo "S3 Bucket: $S3_BUCKET_NAME"
+
+        # Get CloudFront distribution ID by finding the distribution with this S3 bucket as origin
+        CLOUDFRONT_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?contains(DomainName, '${S3_BUCKET_NAME}')]].Id | [0]" --output text)
+
+        if [ -z "$CLOUDFRONT_ID" ] || [ "$CLOUDFRONT_ID" == "None" ]; then
+          echo "Error: Could not find CloudFront distribution for bucket: $S3_BUCKET_NAME"
+          exit 1
+        fi
+
+        echo "CLOUDFRONT_ID=$CLOUDFRONT_ID" >> $GITHUB_OUTPUT
+        echo "CloudFront ID: $CLOUDFRONT_ID"
+
+    - name: Build web app
+      shell: bash
+      run: npm run build:web
+
+    - name: Deploy to S3
+      shell: bash
+      run: aws s3 sync ./dist/apps/web/ s3://${{ steps.get-aws-resources.outputs.S3_BUCKET_NAME }}/ --delete
+
+    - name: Invalidate CloudFront Cache
+      shell: bash
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ steps.get-aws-resources.outputs.CLOUDFRONT_ID }} \
+          --paths "/*"

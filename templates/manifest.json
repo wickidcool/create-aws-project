@@ -1,0 +1,28 @@
+{
+  "shared": [
+    { "src": "root/package.json", "dest": "package.json" },
+    { "src": "root/tsconfig.base.json", "dest": "tsconfig.base.json" },
+    { "src": "root/nx.json", "dest": "nx.json" },
+    { "src": "root/jest.preset.js", "dest": "jest.preset.js" },
+    { "src": "root/eslint.config.js", "dest": "eslint.config.js" },
+    { "src": "root/.npmrc", "dest": ".npmrc" },
+    { "src": "root/.nvmrc", "dest": ".nvmrc" },
+    { "src": "root/.editorconfig", "dest": ".editorconfig" },
+    { "src": "root/.gitignore", "dest": ".gitignore" },
+    { "src": "packages/common-types", "dest": "packages/common-types" },
+    { "src": "packages/api-client", "dest": "packages/api-client" },
+    { "src": ".vscode", "dest": ".vscode" },
+    { "src": ".github", "dest": ".github" }
+  ],
+  "byPlatform": {
+    "web": [
+      { "src": "apps/web", "dest": "apps/web" }
+    ],
+    "mobile": [
+      { "src": "apps/mobile", "dest": "apps/mobile" }
+    ],
+    "api": [
+      { "src": "apps/api", "dest": "apps/api" }
+    ]
+  }
+}

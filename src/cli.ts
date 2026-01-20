@@ -1,0 +1,139 @@
+import { readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join, resolve } from 'node:path';
+import pc from 'picocolors';
+import { runWizard } from './wizard.js';
+import { generateProject } from './generator/index.js';
+
+/**
+ * Get the version from package.json
+ */
+function getVersion(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const packageJsonPath = join(__dirname, '..', 'package.json');
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+  return packageJson.version;
+}
+
+/**
+ * Print help message
+ */
+function printHelp(): void {
+  console.log(`
+create-aws-starter-kit [options] [project-name]
+
+Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructure.
+
+Options:
+  --help, -h      Show this help message
+  --version, -v   Show version number
+
+Examples:
+  create-aws-starter-kit my-app
+  create-aws-starter-kit --help
+  create-aws-starter-kit --version
+`.trim());
+}
+
+/**
+ * Print welcome banner
+ */
+function printWelcome(): void {
+  console.log(`
+╔═══════════════════════════════════════════════════════╗
+║                                                       ║
+║            create-aws-starter-kit                     ║
+║       AWS Starter Kit Project Generator               ║
+║                                                       ║
+╚═══════════════════════════════════════════════════════╝
+`.trim());
+}
+
+/**
+ * Print post-generation instructions
+ */
+function printNextSteps(projectName: string, platforms: string[]): void {
+  console.log('');
+  console.log(pc.bold('Next steps:'));
+  console.log('');
+  console.log(`  ${pc.cyan('cd')} ${projectName}`);
+  console.log(`  ${pc.cyan('npm install')}`);
+  console.log('');
+
+  if (platforms.includes('web')) {
+    console.log(`  ${pc.gray('# Start web app')}`);
+    console.log(`  ${pc.cyan('npm run web')}`);
+    console.log('');
+  }
+
+  if (platforms.includes('mobile')) {
+    console.log(`  ${pc.gray('# Start mobile app')}`);
+    console.log(`  ${pc.cyan('npm run mobile')}`);
+    console.log('');
+  }
+
+  if (platforms.includes('api')) {
+    console.log(`  ${pc.gray('# Deploy API')}`);
+    console.log(`  ${pc.cyan('npm run cdk:deploy')}`);
+    console.log('');
+  }
+
+  console.log(pc.gray('Happy coding!'));
+}
+
+/**
+ * Parse command line arguments and run the CLI
+ */
+export async function run(): Promise<void> {
+  const args = process.argv.slice(2);
+
+  // Check for --help or -h
+  if (args.includes('--help') || args.includes('-h')) {
+    printHelp();
+    process.exit(0);
+  }
+
+  // Check for --version or -v
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log(getVersion());
+    process.exit(0);
+  }
+
+  // Default: run interactive wizard
+  printWelcome();
+  console.log('');  // blank line after banner
+
+  const config = await runWizard();
+
+  if (!config) {
+    console.log('\nProject creation cancelled.');
+    process.exit(1);
+  }
+
+  // Determine output directory
+  const outputDir = resolve(process.cwd(), config.projectName);
+
+  // Check if directory already exists
+  if (existsSync(outputDir)) {
+    console.log('');
+    console.log(pc.red('Error:') + ` Directory ${pc.cyan(config.projectName)} already exists.`);
+    console.log('Please choose a different project name or remove the existing directory.');
+    process.exit(1);
+  }
+
+  // Create project directory
+  mkdirSync(outputDir, { recursive: true });
+
+  // Generate project
+  console.log('');
+  await generateProject(config, outputDir);
+
+  // Success message and next steps
+  console.log('');
+  console.log(pc.green('✔') + ` Created ${pc.bold(config.projectName)} successfully!`);
+
+  printNextSteps(config.projectName, config.platforms);
+
+  process.exit(0);
+}

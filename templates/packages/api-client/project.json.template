@@ -1,0 +1,34 @@
+{
+  "name": "api-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/api-client/src",
+  "projectType": "library",
+  "tags": ["type:library"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/api-client/**/*.ts"]
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/api-client",
+        "main": "packages/api-client/src/index.ts",
+        "tsConfig": "packages/api-client/tsconfig.lib.json",
+        "assets": ["packages/api-client/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/api-client"],
+      "options": {
+        "jestConfig": "packages/api-client/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

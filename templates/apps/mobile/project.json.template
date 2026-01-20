@@ -1,0 +1,64 @@
+{
+  "name": "mobile",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/mobile/src",
+  "projectType": "application",
+  "tags": [
+    "type:app",
+    "platform:mobile"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/mobile/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo start",
+        "cwd": "apps/mobile"
+      }
+    },
+    "start:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo start --ios",
+        "cwd": "apps/mobile"
+      }
+    },
+    "start:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo start --android",
+        "cwd": "apps/mobile"
+      }
+    },
+    "build:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo build:ios",
+        "cwd": "apps/mobile"
+      }
+    },
+    "build:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo build:android",
+        "cwd": "apps/mobile"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/mobile"
+      ],
+      "options": {
+        "jestConfig": "apps/mobile/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

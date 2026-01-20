@@ -1,0 +1,24 @@
+name: "Build and Test"
+description: "Build the project and run unit tests"
+
+inputs:
+  build-command:
+    description: "Build command to run"
+    required: false
+    default: "npm run build:all"
+  skip-tests:
+    description: "Skip running tests"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build project
+      shell: bash
+      run: ${{ inputs.build-command }}
+
+    - name: Run unit tests
+      if: inputs.skip-tests != 'true'
+      shell: bash
+      run: npm run test

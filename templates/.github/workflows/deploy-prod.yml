@@ -1,0 +1,67 @@
+name: Release to Prod
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "The release branch to run the script against"
+        required: true
+        default: "main"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          lfs: true
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          use-lfs: "true"
+
+      - name: Build and test
+        uses: ./.github/actions/build-and-test
+
+  deploy-prod:
+    needs: [test]
+    runs-on: ubuntu-latest
+    name: Deploy to PROD
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          lfs: true
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          use-lfs: "true"
+
+      - name: Build project
+        uses: ./.github/actions/build-and-test
+        with:
+          skip-tests: "true"
+
+      - name: Deploy to AWS
+        uses: ./.github/actions/deploy-cdk
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          environment: prod
+
+      - name: Deploy Web to AWS
+        uses: ./.github/actions/deploy-web
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          environment: prod

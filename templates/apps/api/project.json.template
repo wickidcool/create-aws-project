@@ -1,0 +1,58 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "tags": ["type:api"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api/**/*.ts"]
+      }
+    },
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api",
+        "main": "apps/api/src/handlers/users/get-users.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "assets": [],
+        "bundle": true,
+        "platform": "node",
+        "target": "node20",
+        "format": ["cjs"],
+        "external": ["aws-sdk", "@aws-sdk/*"],
+        "additionalEntryPoints": [
+          "apps/api/src/handlers/users/get-user.ts",
+          "apps/api/src/handlers/users/create-user.ts",
+          "apps/api/src/handlers/users/update-user.ts",
+          "apps/api/src/handlers/users/delete-user.ts"
+        ],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "minify": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Use SAM CLI or CDK to test Lambda functions locally'"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api"],
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

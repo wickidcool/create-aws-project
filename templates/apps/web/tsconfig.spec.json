@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["jest", "node", "@testing-library/jest-dom"],
+    "baseUrl": "../../",
+    "paths": {
+      "@/config/*": ["apps/web/src/config/*"],
+      "@/config/api": ["apps/web/src/__mocks__/config/api.ts"],
+      "{{PACKAGE_SCOPE}}/common-types": ["packages/common-types/src/index.ts"],
+      "{{PACKAGE_SCOPE}}/api-client": ["packages/api-client/src/index.ts"]
+    }
+  },
+  "include": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.test.tsx",
+    "**/*.spec.tsx",
+    "**/*.test.js",
+    "**/*.spec.js",
+    "**/*.test.jsx",
+    "**/*.spec.jsx",
+    "**/*.d.ts",
+    "src/test-setup.ts",
+    "src/__mocks__/**/*.ts"
+  ]
+}
