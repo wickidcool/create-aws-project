@@ -9,37 +9,38 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 
 ## Current Position
 
-Phase: 2 of 3 (GitHub Deployment Command) PLANNED
-Plan: 0 of 3 in current phase
-Status: Ready for execution
-Last activity: 2026-01-20 — Planned Phase 2
+Phase: 2 of 3 (GitHub Deployment Command)
+Plan: 2 of 3 in current phase
+Status: In progress (Wave 1 complete, ready for Wave 2)
+Last activity: 2026-01-20 — Completed 02-02-PLAN.md
 
-Progress: ███░░░░░░░ 33%
+Progress: █████░░░░░ 55%
 
 ### Phase 1 Wave Structure (COMPLETE)
 - **Wave 1 (parallel):** 01-01 (Types + Prompts) COMPLETE, 01-02 (AWS SDK) COMPLETE
 - **Wave 2:** 01-03 (Integration + Templates) COMPLETE
 
-### Phase 2 Wave Structure (PLANNED)
-- **Wave 1 (parallel):** 02-01 (IAM SDK), 02-02 (GitHub API)
+### Phase 2 Wave Structure (IN PROGRESS)
+- **Wave 1 (parallel):** 02-01 (IAM SDK) COMPLETE, 02-02 (GitHub API) COMPLETE
 - **Wave 2:** 02-03 (CLI Command + Integration) [has checkpoint]
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: ~1 min
-- Total execution time: ~2 min
+- Total plans completed: 5
+- Average duration: ~2 min
+- Total execution time: ~8 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 2 | ~2 min | ~1 min |
+| 01 | 3 | ~3 min | ~1 min |
+| 02 | 2 | ~5 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02, 01-01
-- Trend: Fast execution (both Wave 1 plans complete)
+- Last 5 plans: 02-02, 02-01, 01-03, 01-02, 01-01
+- Trend: Fast execution, Wave 1 complete
 
 ## Accumulated Context
 
@@ -58,6 +59,9 @@ Recent decisions affecting current work:
 - Org setup before project generation (account IDs needed for templates)
 - Dual token approach: named tokens + JSON array for flexibility
 - Case-insensitive environment matching for account lookup
+- IAM deployment users use /deployment/ path for easy identification
+- Least-privilege CDK deployment policy design
+- Idempotent IAM resource creation (check before create)
 
 ### Deferred Issues
 
@@ -70,6 +74,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Planned Phase 2 (3 plans created)
+Stopped at: Completed 02-01-PLAN.md (IAM SDK module)
 Resume file: None
-Next: Execute Phase 2 (`/gsd:execute-phase 2`)
+Next: Complete Wave 1 (02-02) then execute Wave 2 (02-03)
