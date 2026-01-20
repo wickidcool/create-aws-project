@@ -8,8 +8,11 @@ const { decodeUTF8, encodeBase64, decodeBase64 } = naclUtil;
 /**
  * GitHub secrets service module
  *
- * Provides functions to manage GitHub repository secrets
+ * Provides functions to manage GitHub environment secrets
  * for AWS deployment credentials via the GitHub REST API.
+ *
+ * Uses GitHub Environments to organize secrets by environment (dev, stage, prod),
+ * with the same secret names in each environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY).
  */
 
 /**
@@ -24,9 +27,9 @@ export function createGitHubClient(token: string): Octokit {
 }
 
 /**
- * Repository public key for encrypting secrets
+ * Public key for encrypting secrets
  */
-export interface RepositoryPublicKey {
+export interface PublicKey {
   keyId: string;
   key: string;
 }
@@ -42,7 +45,7 @@ export async function getRepositoryPublicKey(
   client: Octokit,
   owner: string,
   repo: string
-): Promise<RepositoryPublicKey> {
+): Promise<PublicKey> {
   try {
     const response = await client.actions.getRepoPublicKey({
       owner,
@@ -135,6 +138,128 @@ function naclHash(input: Uint8Array): Uint8Array {
 }
 
 /**
+ * Creates or ensures a GitHub environment exists
+ * @param client - Octokit instance
+ * @param owner - Repository owner
+ * @param repo - Repository name
+ * @param environmentName - Name of the environment (e.g., dev, stage, prod)
+ */
+export async function ensureEnvironmentExists(
+  client: Octokit,
+  owner: string,
+  repo: string,
+  environmentName: string
+): Promise<void> {
+  try {
+    // PUT request creates or updates the environment
+    await client.request(
+      'PUT /repos/{owner}/{repo}/environments/{environment_name}',
+      {
+        owner,
+        repo,
+        environment_name: environmentName,
+      }
+    );
+  } catch (error) {
+    if (error instanceof Error && 'status' in error && error.status === 401) {
+      throw new Error(
+        'GitHub authentication failed. Ensure your token has the "repo" scope for environment access.'
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Fetches the environment's public key for encrypting secrets
+ * @param client - Octokit instance
+ * @param owner - Repository owner
+ * @param repo - Repository name
+ * @param environmentName - Name of the environment
+ * @returns Public key ID and base64-encoded key
+ */
+export async function getEnvironmentPublicKey(
+  client: Octokit,
+  owner: string,
+  repo: string,
+  environmentName: string
+): Promise<PublicKey> {
+  try {
+    const response = await client.request(
+      'GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key',
+      {
+        owner,
+        repo,
+        environment_name: environmentName,
+      }
+    );
+
+    return {
+      keyId: response.data.key_id,
+      key: response.data.key,
+    };
+  } catch (error) {
+    if (error instanceof Error && 'status' in error && error.status === 401) {
+      throw new Error(
+        'GitHub authentication failed. Ensure your token has the "repo" scope for environment secrets access.'
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Sets (creates or updates) an environment secret
+ * @param client - Octokit instance
+ * @param owner - Repository owner
+ * @param repo - Repository name
+ * @param environmentName - Name of the environment
+ * @param secretName - Name of the secret (e.g., AWS_ACCESS_KEY_ID)
+ * @param secretValue - Plain text secret value
+ */
+export async function setEnvironmentSecret(
+  client: Octokit,
+  owner: string,
+  repo: string,
+  environmentName: string,
+  secretName: string,
+  secretValue: string
+): Promise<void> {
+  try {
+    // Get the environment's public key
+    const publicKey = await getEnvironmentPublicKey(
+      client,
+      owner,
+      repo,
+      environmentName
+    );
+
+    // Encrypt the secret value
+    const encryptedValue = await encryptSecret(publicKey.key, secretValue);
+
+    // Set the environment secret
+    await client.request(
+      'PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}',
+      {
+        owner,
+        repo,
+        environment_name: environmentName,
+        secret_name: secretName,
+        encrypted_value: encryptedValue,
+        key_id: publicKey.keyId,
+      }
+    );
+  } catch (error) {
+    if (error instanceof Error && 'status' in error && error.status === 401) {
+      throw new Error(
+        'GitHub authentication failed. Ensure your token has the "repo" scope for environment secrets access.'
+      );
+    }
+    throw error;
+  }
+}
+
+/**
  * Sets (creates or updates) a repository secret
  * @param client - Octokit instance
  * @param owner - Repository owner
@@ -175,7 +300,11 @@ export async function setRepositorySecret(
 }
 
 /**
- * Sets AWS credentials as repository secrets for a specific environment
+ * Sets AWS credentials as environment secrets for a specific GitHub environment
+ *
+ * Creates the GitHub environment if it doesn't exist, then sets AWS_ACCESS_KEY_ID
+ * and AWS_SECRET_ACCESS_KEY as secrets within that environment.
+ *
  * @param client - Octokit instance
  * @param owner - Repository owner
  * @param repo - Repository name
@@ -191,19 +320,32 @@ export async function setEnvironmentCredentials(
   accessKeyId: string,
   secretAccessKey: string
 ): Promise<void> {
-  // Uppercase the environment name for secret naming convention
-  const envUpper = environment.toUpperCase();
+  // Ensure the GitHub environment exists
+  console.log(pc.dim(`  Creating/verifying "${environment}" environment...`));
+  await ensureEnvironmentExists(client, owner, repo, environment);
 
-  const accessKeySecretName = `AWS_ACCESS_KEY_ID_${envUpper}`;
-  const secretKeySecretName = `AWS_SECRET_ACCESS_KEY_${envUpper}`;
+  // Set AWS credentials as environment secrets (same names in each environment)
+  console.log(pc.dim(`  Setting AWS_ACCESS_KEY_ID in "${environment}" environment...`));
+  await setEnvironmentSecret(
+    client,
+    owner,
+    repo,
+    environment,
+    'AWS_ACCESS_KEY_ID',
+    accessKeyId
+  );
 
-  console.log(pc.dim(`  Setting ${accessKeySecretName}...`));
-  await setRepositorySecret(client, owner, repo, accessKeySecretName, accessKeyId);
+  console.log(pc.dim(`  Setting AWS_SECRET_ACCESS_KEY in "${environment}" environment...`));
+  await setEnvironmentSecret(
+    client,
+    owner,
+    repo,
+    environment,
+    'AWS_SECRET_ACCESS_KEY',
+    secretAccessKey
+  );
 
-  console.log(pc.dim(`  Setting ${secretKeySecretName}...`));
-  await setRepositorySecret(client, owner, repo, secretKeySecretName, secretAccessKey);
-
-  console.log(pc.green(`  Credentials set for ${environment} environment`));
+  console.log(pc.green(`  Credentials set for "${environment}" environment`));
 }
 
 /**

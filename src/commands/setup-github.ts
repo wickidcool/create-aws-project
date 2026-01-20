@@ -101,13 +101,12 @@ async function setupEnvironment(
       credentials.secretAccessKey
     );
 
-    const envUpper = environment.toUpperCase();
     return {
       environment,
       success: true,
       secretsCreated: [
-        `AWS_ACCESS_KEY_ID_${envUpper}`,
-        `AWS_SECRET_ACCESS_KEY_${envUpper}`,
+        'AWS_ACCESS_KEY_ID',
+        'AWS_SECRET_ACCESS_KEY',
       ],
     };
   } catch (error) {
@@ -192,10 +191,10 @@ function printSummary(
   if (failed.length === 0) {
     console.log(pc.green(pc.bold('All environments configured successfully!')));
     console.log('');
-    console.log(pc.dim('Your GitHub Actions workflows can now deploy to AWS using these secrets:'));
+    console.log(pc.dim('Your GitHub Actions workflows can now deploy to AWS using environment secrets.'));
+    console.log(pc.dim('Each environment has AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY configured:'));
     for (const result of successful) {
-      const envUpper = result.environment.toUpperCase();
-      console.log(pc.dim(`  ${result.environment}: AWS_ACCESS_KEY_ID_${envUpper}, AWS_SECRET_ACCESS_KEY_${envUpper}`));
+      console.log(pc.dim(`  - ${result.environment}`));
     }
   } else if (successful.length === 0) {
     console.log(pc.red(pc.bold('Setup failed for all environments.')));
