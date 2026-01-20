@@ -210,9 +210,10 @@ describe('runWizard', () => {
       expect(mockPrompts).toHaveBeenCalledTimes(1);
       const [promptsArg] = mockPrompts.mock.calls[0];
 
-      // Verify 7 prompts are passed (projectName, platforms, authProvider, authFeatures, features, awsRegion, brandColor)
+      // Verify 15 prompts are passed (projectName, platforms, authProvider, authFeatures, features, awsRegion,
+      // enableOrg, orgName, orgEnvironments, devEmail, stageEmail, prodEmail, qaEmail, sandboxEmail, brandColor)
       expect(Array.isArray(promptsArg)).toBe(true);
-      expect((promptsArg as PromptObject[]).length).toBe(7);
+      expect((promptsArg as PromptObject[]).length).toBe(15);
     });
   });
 
