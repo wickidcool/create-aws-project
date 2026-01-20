@@ -37,12 +37,12 @@ Plans:
 **Depends on**: Phase 1
 **Research**: Likely (GitHub API for secrets, IAM policy patterns)
 **Research topics**: GitHub REST API for secrets, minimal IAM permissions for CDK deploy, secure credential handling
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 02-01: New CLI command structure and GitHub API integration
-- [ ] 02-02: IAM deployment user creation with least-privilege policies
-- [ ] 02-03: GitHub secrets configuration per environment
+- [ ] 02-01: IAM SDK module for deployment user creation (Wave 1)
+- [ ] 02-02: GitHub API module for repository secrets (Wave 1)
+- [ ] 02-03: CLI command integration with human verification (Wave 2)
 
 ### Phase 3: Template Updates & Integration
 **Goal**: CDK templates support multi-account deployment, GitHub workflows use environment-specific credentials
@@ -63,5 +63,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. AWS Organizations Foundation | 3/3 | Complete | 2026-01-20 |
-| 2. GitHub Deployment Command | 0/3 | Not started | - |
+| 2. GitHub Deployment Command | 0/3 | Planned | - |
 | 3. Template Updates & Integration | 0/3 | Not started | - |
