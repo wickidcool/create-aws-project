@@ -11,6 +11,18 @@ export interface AuthConfig {
   features: AuthFeature[];
 }
 
+export interface OrgAccountConfig {
+  environment: string;
+  email: string;
+  accountId?: string;
+}
+
+export interface OrgConfig {
+  enabled: boolean;
+  organizationName: string;
+  accounts: OrgAccountConfig[];
+}
+
 export interface ProjectConfig {
   projectName: string;
   platforms: ('web' | 'mobile' | 'api')[];
@@ -18,4 +30,5 @@ export interface ProjectConfig {
   features: Feature[];
   brandColor: BrandColor;
   auth: AuthConfig;
+  org?: OrgConfig;
 }
