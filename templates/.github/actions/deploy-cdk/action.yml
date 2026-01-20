@@ -39,7 +39,7 @@ runs:
 
     - name: Deploy Main Stack
       shell: bash
-      run: npm run cdk:deploy -- --require-approval never
+      run: npm run cdk:deploy -- --require-approval never -c environment=${{ inputs.environment }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id  }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key  }}
