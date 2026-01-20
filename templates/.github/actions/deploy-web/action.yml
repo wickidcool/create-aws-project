@@ -30,22 +30,26 @@ runs:
       id: get-aws-resources
       shell: bash
       run: |
-        # Find the web bucket by looking for "-web-" in the bucket name
-        S3_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[?contains(Name, '-web-')].Name" --output text | head -1)
+        ENVIRONMENT="${{ inputs.environment }}"
 
-        if [ -z "$S3_BUCKET_NAME" ]; then
-          echo "Error: Could not find web bucket (bucket name containing '-web-')"
+        # Get S3 bucket name from CloudFormation export
+        S3_BUCKET_NAME=$(aws cloudformation list-exports --query "Exports[?Name=='${ENVIRONMENT}-web-bucket-name'].Value" --output text)
+
+        if [ -z "$S3_BUCKET_NAME" ] || [ "$S3_BUCKET_NAME" == "None" ]; then
+          echo "Error: Could not find web bucket export for environment: ${ENVIRONMENT}"
+          echo "Expected export name: ${ENVIRONMENT}-web-bucket-name"
           exit 1
         fi
 
         echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> $GITHUB_OUTPUT
         echo "S3 Bucket: $S3_BUCKET_NAME"
 
-        # Get CloudFront distribution ID by finding the distribution with this S3 bucket as origin
-        CLOUDFRONT_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?contains(DomainName, '${S3_BUCKET_NAME}')]].Id | [0]" --output text)
+        # Get CloudFront distribution ID from CloudFormation export
+        CLOUDFRONT_ID=$(aws cloudformation list-exports --query "Exports[?Name=='${ENVIRONMENT}-distribution-id'].Value" --output text)
 
         if [ -z "$CLOUDFRONT_ID" ] || [ "$CLOUDFRONT_ID" == "None" ]; then
-          echo "Error: Could not find CloudFront distribution for bucket: $S3_BUCKET_NAME"
+          echo "Error: Could not find CloudFront distribution export for environment: ${ENVIRONMENT}"
+          echo "Expected export name: ${ENVIRONMENT}-distribution-id"
           exit 1
         fi
 
