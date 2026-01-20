@@ -19,15 +19,16 @@ Generated projects have production-ready multi-environment AWS infrastructure wi
 - ✓ AWS CDK infrastructure templates — v1.0
 - ✓ Token-based template generation — v1.0
 - ✓ Nx monorepo structure — v1.1.0
+- ✓ AWS Organizations structure creation (dev, stage, prod accounts) — v1.2.0
+- ✓ Direct AWS API calls to create Organization and accounts during generation — v1.2.0
+- ✓ New CLI command for GitHub deployment setup (`setup-github`) — v1.2.0
+- ✓ IAM deployment user creation per environment — v1.2.0
+- ✓ Automatic GitHub secrets configuration for each environment — v1.2.0
+- ✓ Backward compatibility with v1.1.0 generated projects — v1.2.0
 
 ### Active
 
-- [ ] AWS Organizations structure creation (dev, stage, prod accounts)
-- [ ] Direct AWS API calls to create Organization and accounts during generation
-- [ ] New CLI command for GitHub deployment setup (`setup-github` or similar)
-- [ ] IAM deployment user creation per environment
-- [ ] Automatic GitHub secrets configuration for each environment
-- [ ] Backward compatibility with v1.1.0 generated projects
+(None — next milestone TBD)
 
 ### Out of Scope
 
@@ -37,25 +38,22 @@ Generated projects have production-ready multi-environment AWS infrastructure wi
 
 ## Context
 
-This is a brownfield project with existing v1.1.0 codebase. The CLI tool uses:
+Shipped v1.2.0 with ~9,500 LOC TypeScript/YAML/JSON.
+
+Tech stack:
 - TypeScript with ES modules
 - `prompts` library for interactive wizard
+- AWS SDK v3 (Organizations, IAM, STS)
+- GitHub REST API with tweetnacl encryption
 - Template-based generation with `{{TOKEN}}` substitution
-- Conditional blocks for platform/feature-specific code
+- Conditional Handlebars blocks for platform/feature-specific code
 
-Current template structure in `templates/` includes:
+Current template structure in `templates/`:
 - `root/` - Shared monorepo config (package.json, nx.json, tsconfig)
 - `apps/web/` - React + Vite + Chakra UI
 - `apps/mobile/` - React Native + Expo
 - `apps/api/` - Lambda handlers + CDK stacks
-- `.github/` - CI/CD workflows
-
-The CDK infrastructure already includes:
-- DynamoDB tables
-- Lambda functions
-- API Gateway
-- CloudFront + S3 static hosting
-- Cognito/Auth0 authentication stacks
+- `.github/` - CI/CD workflows with environment-specific deployment
 
 ## Constraints
 
@@ -67,9 +65,13 @@ The CDK infrastructure already includes:
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Direct AWS API for org creation | Users want immediate org setup, not separate deploy step | — Pending |
-| Separate CLI command for GitHub setup | Decouples concerns, can be run independently | — Pending |
-| Three environments (dev/stage/prod) | Industry standard, matches existing workflow templates | — Pending |
+| Direct AWS API for org creation | Users want immediate org setup, not separate deploy step | ✓ Good |
+| Separate CLI command for GitHub setup | Decouples concerns, can be run independently | ✓ Good |
+| Three environments (dev/stage/prod) | Industry standard, matches existing workflow templates | ✓ Good |
+| Sequential account creation | AWS rate limits prevent parallel creation | ✓ Good |
+| GitHub Environments for credentials | Cleaner than suffixed repo secrets, native GitHub feature | ✓ Good |
+| tweetnacl for encryption | Lighter weight than libsodium-wrappers | ✓ Good |
+| Handlebars conditionals for ORG_ENABLED | Preserves backward compatibility cleanly | ✓ Good |
 
 ---
-*Last updated: 2026-01-20 after initialization*
+*Last updated: 2026-01-20 after v1.2 milestone*
