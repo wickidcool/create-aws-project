@@ -10,6 +10,15 @@ import { CognitoStack } from './auth/cognito-stack';
 
 const appName = '{{PROJECT_NAME_PASCAL}}';
 
+// {{#if ORG_ENABLED}}
+// Multi-account configuration from AWS Organizations
+const accountIds: Record<string, string> = {
+  dev: '{{DEV_ACCOUNT_ID}}',
+  stage: '{{STAGE_ACCOUNT_ID}}',
+  prod: '{{PROD_ACCOUNT_ID}}',
+};
+// {{/if ORG_ENABLED}}
+
 /**
  * AWS CDK App for {{PROJECT_NAME_TITLE}}
  *
@@ -31,8 +40,13 @@ const environmentName = app.node.tryGetContext('environment') || 'dev';
 
 // Get AWS account and region from environment or use defaults
 const env = {
+  // {{#if ORG_ENABLED}}
+  account: accountIds[environmentName] || process.env.CDK_DEFAULT_ACCOUNT,
+  // {{/if ORG_ENABLED}}
+  // {{#unless ORG_ENABLED}}
   account: process.env.CDK_DEFAULT_ACCOUNT || process.env.AWS_ACCOUNT_ID,
-  region: process.env.CDK_DEFAULT_REGION || process.env.AWS_REGION || 'us-east-2',
+  // {{/unless ORG_ENABLED}}
+  region: process.env.CDK_DEFAULT_REGION || process.env.AWS_REGION || '{{AWS_REGION}}',
 };
 
 // Common tags for all resources
