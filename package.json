@@ -1,11 +1,11 @@
 {
-  "name": "create-aws-starter-kit",
-  "version": "1.1.0",
-  "description": "CLI tool to scaffold AWS Starter Kit projects",
+  "name": "create-aws-project",
+  "version": "1.2.1",
+  "description": "CLI tool to scaffold AWS projects",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "create-aws-starter-kit": "./dist/index.js"
+    "create-aws-project": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -35,12 +35,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wickidcool/create-aws-starter-kit.git"
+    "url": "https://github.com/wickidcool/create-aws-project.git"
   },
   "author": "wickidcool",
-  "homepage": "https://github.com/wickidcool/create-aws-starter-kit#readme",
+  "homepage": "https://github.com/wickidcool/create-aws-project#readme",
   "bugs": {
-    "url": "https://github.com/wickidcool/create-aws-starter-kit/issues"
+    "url": "https://github.com/wickidcool/create-aws-project/issues"
   },
   "dependencies": {
     "@aws-sdk/client-iam": "^3.971.0",

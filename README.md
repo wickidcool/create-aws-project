@@ -7,7 +7,7 @@ Create a new AWS project from scratch including CloudFront, API Gateway, Lambdas
 ## Quick Start
 
 ```bash
-npx create-aws-starter-kit my-project
+npx create-aws-project my-project
 ```
 
 **Requirements:** Node.js 22.16.0+ (npm included)
@@ -45,17 +45,43 @@ Examples:
   npx create-aws-starter-kit --version
 ```
 
+### Setup GitHub Command
+
+After generating a project with AWS Organizations enabled, configure GitHub Actions deployment:
+
+```bash
+npx create-aws-starter-kit setup-github
+```
+
+This command:
+- Creates IAM deployment users per environment (dev, stage, prod)
+- Configures GitHub Environments with AWS credentials
+- Sets up least-privilege CDK deployment permissions
+
+**Requirements:**
+- GitHub Personal Access Token with `repo` and `admin:org` scopes
+- AWS credentials with IAM permissions
+
 ## Wizard Prompts
 
 The interactive wizard will ask you about:
 
 1. **Project name** - Must be npm-compatible (lowercase, no spaces)
 2. **Platforms** - Which platforms to include (web, mobile, api)
-3. **Features** - Optional extras:
+3. **Authentication** - Choose your auth provider:
+   - None (add later)
+   - AWS Cognito
+   - Auth0
+   - Optional: Social login, MFA
+4. **AWS Organizations** - Multi-account setup (optional):
+   - Creates separate AWS accounts for each environment
+   - Environments: dev, stage, prod (plus optional qa, sandbox)
+   - Requires root email per account
+5. **Features** - Optional extras:
    - GitHub Actions workflows for CI/CD
    - VS Code workspace configuration
-4. **AWS region** - Where to deploy your infrastructure
-5. **Brand color** - Theme color for your UI (blue, purple, teal, green, orange)
+6. **AWS region** - Where to deploy your infrastructure
+7. **Brand color** - Theme color for your UI (blue, purple, teal, green, orange)
 
 ## Requirements
 
