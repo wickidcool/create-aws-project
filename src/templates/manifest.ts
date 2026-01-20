@@ -1,4 +1,4 @@
-import type { ProjectConfig, AuthProvider } from '../types.js';
+import type { ProjectConfig } from '../types.js';
 import type { TokenValues, TemplateManifest } from './types.js';
 
 /**
