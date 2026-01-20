@@ -51,7 +51,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: CDK stack updates for cross-account deployment
+- [x] 03-01: CDK stack updates for cross-account deployment
 - [ ] 03-02: GitHub workflow updates for multi-environment secrets
 - [ ] 03-03: Documentation and backward compatibility testing
 
@@ -64,4 +64,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. AWS Organizations Foundation | 3/3 | Complete | 2026-01-20 |
 | 2. GitHub Deployment Command | 3/3 | Complete | 2026-01-20 |
-| 3. Template Updates & Integration | 0/3 | Not started | - |
+| 3. Template Updates & Integration | 1/3 | In progress | - |

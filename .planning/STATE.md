@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Phase 3 — Template Enhancement (ready to start)
+**Current focus:** Phase 3 — Template Enhancement (in progress)
 
 ## Current Position
 
-Phase: 2 of 3 (GitHub Deployment Command) COMPLETE
-Plan: 3 of 3 in current phase (COMPLETE)
-Status: Phase 2 complete, ready for Phase 3
-Last activity: 2026-01-20 — Completed 02-03-PLAN.md
+Phase: 3 of 3 (Template Updates & Integration)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-20 — Completed 03-01-PLAN.md
 
-Progress: ███████░░░ 70%
+Progress: ████████░░ 80%
 
 ### Phase 1 Wave Structure (COMPLETE)
 - **Wave 1 (parallel):** 01-01 (Types + Prompts) COMPLETE, 01-02 (AWS SDK) COMPLETE
@@ -27,9 +27,9 @@ Progress: ███████░░░ 70%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: ~2 min
-- Total execution time: ~16 min
+- Total execution time: ~18 min
 
 **By Phase:**
 
@@ -37,10 +37,11 @@ Progress: ███████░░░ 70%
 |-------|-------|-------|----------|
 | 01 | 3 | ~3 min | ~1 min |
 | 02 | 3 | ~13 min | ~4 min |
+| 03 | 1 | ~2 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03, 02-02, 02-01, 01-03, 01-02
-- Trend: Phase 2 complete with checkpoint
+- Last 5 plans: 03-01, 02-03, 02-02, 02-01, 01-03
+- Trend: Phase 3 in progress
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ Recent decisions affecting current work:
 - Idempotent IAM resource creation (check before create)
 - Use tweetnacl over libsodium-wrappers for GitHub secrets encryption (lighter weight)
 - **GitHub Environments for AWS credentials** (updated from suffixed repo secrets)
+- Handlebars conditionals for ORG_ENABLED backward compatibility in CDK templates
+- Account ID lookup via accountIds map with CDK_DEFAULT_ACCOUNT fallback
 
 ### Deferred Issues
 
@@ -76,6 +79,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 02-03-PLAN.md (setup-github CLI command with GitHub Environments)
+Stopped at: Completed 03-01-PLAN.md (CDK templates and deploy action for multi-account)
 Resume file: None
-Next: Plan Phase 3 (Template Enhancement)
+Next: Execute 03-02-PLAN.md (GitHub workflow updates)
