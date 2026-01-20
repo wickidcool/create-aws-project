@@ -1,7 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import nacl from 'tweetnacl';
-import { decodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
+import naclUtil from 'tweetnacl-util';
 import pc from 'picocolors';
+
+const { decodeUTF8, encodeBase64, decodeBase64 } = naclUtil;
 
 /**
  * GitHub secrets service module

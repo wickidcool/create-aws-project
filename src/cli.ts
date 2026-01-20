@@ -10,6 +10,7 @@ import {
   createOrganization,
   createEnvironmentAccounts,
 } from './aws/organizations.js';
+import { runSetupGitHub } from './commands/setup-github.js';
 
 /**
  * Get the version from package.json
@@ -27,18 +28,26 @@ function getVersion(): string {
  */
 function printHelp(): void {
   console.log(`
-create-aws-starter-kit [options] [project-name]
+create-aws-starter-kit [command] [options]
 
 Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructure.
+
+Commands:
+  (default)       Create a new project (interactive wizard)
+  setup-github    Configure GitHub Actions deployment credentials
 
 Options:
   --help, -h      Show this help message
   --version, -v   Show version number
 
+Usage:
+  create-aws-starter-kit [project-name]    Create a new project
+  create-aws-starter-kit setup-github      Configure GitHub deployment
+
 Examples:
   create-aws-starter-kit my-app
+  create-aws-starter-kit setup-github
   create-aws-starter-kit --help
-  create-aws-starter-kit --version
 `.trim());
 }
 
@@ -103,6 +112,15 @@ export async function run(): Promise<void> {
   // Check for --version or -v
   if (args.includes('--version') || args.includes('-v')) {
     console.log(getVersion());
+    process.exit(0);
+  }
+
+  // Check for subcommands (first non-flag argument)
+  const command = args.find((arg) => !arg.startsWith('-'));
+
+  // Handle setup-github command
+  if (command === 'setup-github') {
+    await runSetupGitHub();
     process.exit(0);
   }
 
