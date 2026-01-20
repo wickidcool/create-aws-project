@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Phase 3 — Template Enhancement (in progress)
+**Current focus:** Milestone 1.2 complete — Ready for release
 
 ## Current Position
 
 Phase: 3 of 3 (Template Updates & Integration)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-20 — Completed 03-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-01-20 — Completed 03-02-PLAN.md (Phase 3 complete)
 
-Progress: ████████░░ 80%
+Progress: ██████████ 100%
 
 ### Phase 1 Wave Structure (COMPLETE)
 - **Wave 1 (parallel):** 01-01 (Types + Prompts) COMPLETE, 01-02 (AWS SDK) COMPLETE
@@ -27,9 +27,9 @@ Progress: ████████░░ 80%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~2 min
-- Total execution time: ~18 min
+- Total plans completed: 8
+- Average duration: ~2.5 min
+- Total execution time: ~21 min
 
 **By Phase:**
 
@@ -37,11 +37,11 @@ Progress: ████████░░ 80%
 |-------|-------|-------|----------|
 | 01 | 3 | ~3 min | ~1 min |
 | 02 | 3 | ~13 min | ~4 min |
-| 03 | 1 | ~2 min | ~2 min |
+| 03 | 2 | ~5 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01, 02-03, 02-02, 02-01, 01-03
-- Trend: Phase 3 in progress
+- Last 5 plans: 03-02, 03-01, 02-03, 02-02, 02-01
+- Trend: Milestone complete
 
 ## Accumulated Context
 
@@ -76,9 +76,13 @@ None yet.
 
 None yet.
 
+### Phase 3 Wave Structure (COMPLETE)
+- **Wave 1:** 03-01 (CDK Templates + Deploy Action) COMPLETE
+- **Wave 2:** 03-02 (Deploy-Web + Verification) COMPLETE
+
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-01-PLAN.md (CDK templates and deploy action for multi-account)
+Stopped at: Completed 03-02-PLAN.md (Deploy-web action and backward compatibility verification)
 Resume file: None
-Next: Execute 03-02-PLAN.md (GitHub workflow updates)
+Next: Milestone 1.2 complete - ready for release or new milestone
