@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: AWS Organizations Foundation** - Wizard prompts and AWS SDK integration for org/account creation
+- [x] **Phase 1: AWS Organizations Foundation** - Wizard prompts and AWS SDK integration for org/account creation
 - [ ] **Phase 2: GitHub Deployment Command** - New CLI command for IAM user and GitHub secrets setup
 - [ ] **Phase 3: Template Updates & Integration** - Multi-account CDK templates and workflow updates
 
@@ -30,7 +30,7 @@ None
 Plans:
 - [x] 01-01: Add org structure wizard prompts and types
 - [x] 01-02: AWS Organizations SDK integration and account creation
-- [ ] 01-03: Cross-account IAM role setup
+- [x] 01-03: CLI integration and template tokens
 
 ### Phase 2: GitHub Deployment Command
 **Goal**: New CLI command (`setup-github` or similar) that creates IAM deployment users per environment and configures GitHub repository secrets
@@ -62,6 +62,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. AWS Organizations Foundation | 2/3 | In progress | - |
+| 1. AWS Organizations Foundation | 3/3 | Complete | 2026-01-20 |
 | 2. GitHub Deployment Command | 0/3 | Not started | - |
 | 3. Template Updates & Integration | 0/3 | Not started | - |
