@@ -2,25 +2,30 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-20)
+See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Planning next milestone
+**Current focus:** v1.3.0 CLI Architecture Refactor
 
 ## Current Position
 
-Phase: None active
-Plan: None active
-Status: v1.2 milestone complete, ready for next milestone
-Last activity: 2026-01-20 — v1.2 milestone shipped
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-21 — Milestone v1.3.0 started
 
-Progress: ██████████ 100% (v1.2)
+Progress: ░░░░░░░░░░ 0% (v1.3)
 
 ## Accumulated Context
 
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table.
+
+New for v1.3:
+- Extract AWS/GitHub setup from wizard (simpler wizard, flexibility, error handling)
+- Per-environment GitHub init (granular control, error isolation)
+- Commands run from project directory (reads config, simpler UX)
 
 ### Deferred Issues
 
@@ -32,7 +37,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-20
-Stopped at: v1.2 milestone complete
+Last session: 2026-01-21
+Stopped at: Defining v1.3.0 requirements
 Resume file: None
-Next: `/gsd:discuss-milestone` or `/gsd:new-milestone` for next version
+Next: Complete requirements → roadmap creation

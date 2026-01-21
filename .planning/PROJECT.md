@@ -1,12 +1,23 @@
-# create-aws-starter-kit v1.2.0
+# create-aws-starter-kit v1.3.0
 
 ## What This Is
 
-An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Version 1.2.0 adds AWS Organizations support with separate accounts per environment (dev, stage, prod) and automated GitHub Actions deployment credentials.
+An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Version 1.3.0 refactors the CLI architecture to separate project generation from AWS/GitHub setup, providing a lean wizard and flexible post-install commands.
 
 ## Core Value
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
+
+## Current Milestone: v1.3.0 CLI Architecture Refactor
+
+**Goal:** Simplify the main wizard by extracting AWS and GitHub setup into separate post-install commands.
+
+**Target features:**
+- Lean main wizard (`create-aws-project`) — only project scaffolding
+- `setup-aws-envs` command — AWS Organization and environment accounts
+- `initialize-github <env>` command — GitHub Environment setup per environment
+- Remove AWS Organizations prompts from main wizard
+- Rename `setup-github` to `initialize-github <env>`
 
 ## Requirements
 
@@ -28,13 +39,18 @@ Generated projects have production-ready multi-environment AWS infrastructure wi
 
 ### Active
 
-(None — next milestone TBD)
+- [ ] Lean main wizard without AWS Organizations prompts
+- [ ] `setup-aws-envs` command for AWS Organization setup
+- [ ] `initialize-github <env>` command for per-environment GitHub setup
+- [ ] Commands run from inside generated project directory
+- [ ] Remove/refactor existing AWS setup from wizard flow
 
 ### Out of Scope
 
 - Multi-region deployment support — deferred to future version
-- SSO/IAM Identity Center integration — complexity for v1.2
+- SSO/IAM Identity Center integration — complexity
 - Cost budgets/alerts per environment — nice-to-have, not core
+- `initialize-github all` option — users run per-environment for granular control
 
 ## Context
 
@@ -57,9 +73,10 @@ Current template structure in `templates/`:
 
 ## Constraints
 
-- **Backward compatibility**: Existing v1.1.0 generated projects must continue to work
+- **Backward compatibility**: Existing generated projects must continue to work
 - **AWS permissions**: Users need sufficient AWS permissions to create Organizations
 - **GitHub token**: GitHub secrets setup requires a PAT with appropriate scopes
+- **Project context**: Post-install commands must run from inside generated project
 
 ## Key Decisions
 
@@ -72,6 +89,9 @@ Current template structure in `templates/`:
 | GitHub Environments for credentials | Cleaner than suffixed repo secrets, native GitHub feature | ✓ Good |
 | tweetnacl for encryption | Lighter weight than libsodium-wrappers | ✓ Good |
 | Handlebars conditionals for ORG_ENABLED | Preserves backward compatibility cleanly | ✓ Good |
+| Extract AWS/GitHub setup from wizard | Simpler wizard, flexibility, better error handling | — Pending |
+| Per-environment GitHub init | Granular control, better error isolation | — Pending |
+| Commands run from project directory | Reads project config, simpler UX | — Pending |
 
 ---
-*Last updated: 2026-01-20 after v1.2 milestone*
+*Last updated: 2026-01-21 after v1.3 milestone start*
