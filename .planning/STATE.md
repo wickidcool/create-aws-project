@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 
 ## Current Position
 
-Phase: 4 - CLI Infrastructure & Command Routing
-Plan: 02 of 02 (Project context detection)
-Status: Phase 4 complete
-Last activity: 2026-01-22 - Completed 04-02-PLAN.md
+Phase: 5 - Wizard Simplification
+Plan: 01 of 02 (Remove org prompts)
+Status: In progress
+Last activity: 2026-01-22 - Completed 05-01-PLAN.md
 
-Progress: █████░░░░░ 50% (v1.3)
+Progress: ██████░░░░ 60% (v1.3)
 
 ## Performance Metrics
 
@@ -53,6 +53,10 @@ Phase 4 decisions:
 - find-up for upward config file search (ESM-native)
 - requireProjectContext() as guard for project-scoped commands
 
+Phase 5 decisions:
+- Wizard reduced to 7 prompts (from 15)
+- AWS Organizations setup moved to setup-aws-envs command
+
 ### Deferred Issues
 
 None.
@@ -71,6 +75,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 04-02-PLAN.md (Project context detection)
+Stopped at: Completed 05-01-PLAN.md (Remove org prompts)
 Resume file: None
-Next: Phase 5 (Wizard Simplification)
+Next: 05-02-PLAN.md (Config file generation)
