@@ -98,6 +98,76 @@ npm run cdk:deploy
 
 See the generated project's README for detailed documentation.
 
+## Post-Install Setup
+
+After creating your project, you'll set up AWS environments and GitHub deployment. This is a one-time setup.
+
+### Prerequisites
+
+Before you begin:
+- AWS CLI configured with credentials from your AWS management account
+- GitHub repository created for your project
+- GitHub Personal Access Token with "repo" scope ([create one here](https://github.com/settings/tokens/new))
+
+### Step 1: Set Up AWS Environments
+
+From your project directory, run:
+
+```bash
+npx create-aws-project setup-aws-envs
+```
+
+This command:
+- Creates an AWS Organization (if you don't have one)
+- Creates three environment accounts: dev, stage, prod
+- Prompts for a unique root email for each account (tip: use aliases like you+dev@email.com)
+
+**What's happening:** AWS Organizations lets you isolate each environment in its own AWS account. This is a security best practice - your production data is completely separate from development.
+
+Expected output:
+```
+✔ Created AWS Organization: o-xxxxxxxxxx
+✔ Created dev account: 123456789012
+✔ Created stage account: 234567890123
+✔ Created prod account: 345678901234
+
+AWS environment setup complete!
+```
+
+Account IDs are saved to `.aws-starter-config.json` for the next step.
+
+### Step 2: Configure GitHub Environments
+
+For each environment, run:
+
+```bash
+npx create-aws-project initialize-github dev
+```
+
+This command:
+- Creates an IAM deployment user in the target AWS account
+- Configures GitHub Environment secrets with AWS credentials
+- Sets up least-privilege permissions for CDK deployments
+
+**What's happening:** Each GitHub Environment (Development, Staging, Production) gets its own AWS credentials. When GitHub Actions runs, it uses the right credentials for the target environment.
+
+Repeat for each environment:
+```bash
+npx create-aws-project initialize-github stage
+npx create-aws-project initialize-github prod
+```
+
+You'll be prompted for your GitHub PAT each time (it's not stored).
+
+### You're Done!
+
+Push to main to trigger your first deployment:
+```bash
+git push origin main
+```
+
+GitHub Actions will deploy to your dev environment automatically.
+
 ## License
 
 ISC
