@@ -10,7 +10,7 @@ import {
   createOrganization,
   createEnvironmentAccounts,
 } from './aws/organizations.js';
-import { runSetupGitHub } from './commands/setup-github.js';
+import { showDeprecationNotice } from './commands/setup-github.js';
 
 /**
  * Get the version from package.json
@@ -33,20 +33,24 @@ create-aws-starter-kit [command] [options]
 Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructure.
 
 Commands:
-  (default)       Create a new project (interactive wizard)
-  setup-github    Configure GitHub Actions deployment credentials
+  (default)           Create a new project (interactive wizard)
+  setup-aws-envs      Set up AWS Organizations and environment accounts
+  initialize-github   Configure GitHub Environment for deployment
+  setup-github        ${pc.dim('[DEPRECATED]')} Use initialize-github instead
 
 Options:
-  --help, -h      Show this help message
-  --version, -v   Show version number
+  --help, -h          Show this help message
+  --version, -v       Show version number
 
 Usage:
-  create-aws-starter-kit [project-name]    Create a new project
-  create-aws-starter-kit setup-github      Configure GitHub deployment
+  create-aws-starter-kit                         Run interactive wizard
+  create-aws-starter-kit setup-aws-envs          Create AWS accounts
+  create-aws-starter-kit initialize-github dev   Configure dev environment
 
 Examples:
   create-aws-starter-kit my-app
-  create-aws-starter-kit setup-github
+  create-aws-starter-kit setup-aws-envs
+  create-aws-starter-kit initialize-github dev
   create-aws-starter-kit --help
 `.trim());
 }
@@ -98,33 +102,10 @@ function printNextSteps(projectName: string, platforms: string[]): void {
 }
 
 /**
- * Parse command line arguments and run the CLI
+ * Run the create project wizard flow
+ * This is the default command when no subcommand is specified
  */
-export async function run(): Promise<void> {
-  const args = process.argv.slice(2);
-
-  // Check for --help or -h
-  if (args.includes('--help') || args.includes('-h')) {
-    printHelp();
-    process.exit(0);
-  }
-
-  // Check for --version or -v
-  if (args.includes('--version') || args.includes('-v')) {
-    console.log(getVersion());
-    process.exit(0);
-  }
-
-  // Check for subcommands (first non-flag argument)
-  const command = args.find((arg) => !arg.startsWith('-'));
-
-  // Handle setup-github command
-  if (command === 'setup-github') {
-    await runSetupGitHub();
-    process.exit(0);
-  }
-
-  // Default: run interactive wizard
+async function runCreate(_args: string[]): Promise<void> {
   printWelcome();
   console.log('');  // blank line after banner
 
@@ -250,4 +231,59 @@ export async function run(): Promise<void> {
   printNextSteps(config.projectName, config.platforms);
 
   process.exit(0);
+}
+
+/**
+ * Parse command line arguments and run the CLI
+ */
+export async function run(): Promise<void> {
+  const args = process.argv.slice(2);
+
+  // Check for --help or -h
+  if (args.includes('--help') || args.includes('-h')) {
+    printHelp();
+    process.exit(0);
+  }
+
+  // Check for --version or -v
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log(getVersion());
+    process.exit(0);
+  }
+
+  // Find the command (first non-flag argument)
+  const commandIndex = args.findIndex((arg) => !arg.startsWith('-'));
+  const command = commandIndex !== -1 ? args[commandIndex] : undefined;
+  const commandArgs = commandIndex !== -1 ? args.slice(commandIndex + 1) : [];
+
+  // Route to appropriate command handler
+  switch (command) {
+    case 'setup-aws-envs':
+      // Placeholder for Phase 6
+      console.log(pc.cyan('setup-aws-envs') + ' command (coming in Phase 6)');
+      console.log(pc.dim('This will set up AWS Organizations and environment accounts.'));
+      process.exit(0);
+      break;
+
+    case 'initialize-github':
+      // Placeholder for Phase 7
+      console.log(pc.cyan('initialize-github') + ' command (coming in Phase 7)');
+      if (commandArgs[0]) {
+        console.log(pc.dim(`Environment: ${commandArgs[0]}`));
+      }
+      console.log(pc.dim('This will configure GitHub Environment for deployment.'));
+      process.exit(0);
+      break;
+
+    case 'setup-github':
+      // Deprecated command - show notice and exit
+      showDeprecationNotice();
+      break;
+
+    default:
+      // Default: run interactive create wizard
+      // This handles both no command and unknown commands
+      await runCreate(args);
+      break;
+  }
 }
