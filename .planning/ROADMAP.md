@@ -16,7 +16,7 @@
 | 2. GitHub Deployment Command | v1.2 | 3/3 | Complete | 2026-01-20 |
 | 3. Template Updates & Integration | v1.2 | 2/2 | Complete | 2026-01-20 |
 | 4. CLI Infrastructure & Command Routing | v1.3 | 2/2 | Complete | 2026-01-22 |
-| 5. Wizard Simplification | v1.3 | 0/2 | Pending | -- |
+| 5. Wizard Simplification | v1.3 | 2/2 | Complete | 2026-01-21 |
 | 6. setup-aws-envs Command | v1.3 | 0/? | Pending | -- |
 | 7. initialize-github Command | v1.3 | 0/? | Pending | -- |
 | 8. Documentation Updates | v1.3 | 0/? | Pending | -- |
@@ -36,5 +36,5 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Remove org prompts from wizard, update test
-- [ ] 05-02-PLAN.md -- Remove org setup from CLI, add config file write, update next steps
+- [x] 05-01-PLAN.md -- Remove org prompts from wizard, update test
+- [x] 05-02-PLAN.md -- Remove org setup from CLI, add config file write, update next steps

@@ -71,7 +71,9 @@ None.
 ### Outstanding Todos
 
 - [x] Plan Phase 4: CLI Infrastructure & Command Routing
+- [x] Execute Phase 4: CLI Infrastructure & Command Routing
 - [x] Plan Phase 5: Wizard Simplification
+- [x] Execute Phase 5: Wizard Simplification
 - [ ] Plan Phase 6: setup-aws-envs Command
 - [ ] Plan Phase 7: initialize-github Command
 
@@ -80,4 +82,4 @@ None.
 Last session: 2026-01-22
 Stopped at: Completed 05-02-PLAN.md (Config file generation)
 Resume file: None
-Next: Phase 6 (setup-aws-envs Command)
+Next: Phase 6 (setup-aws-envs Command) - needs /gsd:plan-phase 6
