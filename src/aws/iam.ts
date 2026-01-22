@@ -8,6 +8,7 @@ import {
   CreateAccessKeyCommand,
   NoSuchEntityException,
 } from '@aws-sdk/client-iam';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import pc from 'picocolors';
 
 /**
@@ -24,6 +25,29 @@ import pc from 'picocolors';
  */
 export function createIAMClient(region: string = 'us-east-1'): IAMClient {
   return new IAMClient({ region });
+}
+
+/**
+ * Creates an IAMClient configured to access a target account via cross-account role assumption
+ * @param region - AWS region
+ * @param targetAccountId - Target AWS account ID to access
+ * @returns IAMClient configured with cross-account credentials
+ */
+export function createCrossAccountIAMClient(
+  region: string,
+  targetAccountId: string
+): IAMClient {
+  const roleArn = `arn:aws:iam::${targetAccountId}:role/OrganizationAccountAccessRole`;
+  return new IAMClient({
+    region,
+    credentials: fromTemporaryCredentials({
+      params: {
+        RoleArn: roleArn,
+        RoleSessionName: `create-aws-project-${Date.now()}`,
+        DurationSeconds: 900,
+      },
+    }),
+  });
 }
 
 /**
@@ -68,7 +92,7 @@ async function policyExists(client: IAMClient, policyArn: string): Promise<boole
  * Creates an IAM deployment user with path /deployment/
  * @param client - IAMClient instance
  * @param userName - User name (format: {project}-{environment}-deploy)
- * @throws Error if user creation fails (unless user already exists)
+ * @throws Error if user already exists or creation fails
  */
 export async function createDeploymentUser(
   client: IAMClient,
@@ -76,8 +100,9 @@ export async function createDeploymentUser(
 ): Promise<void> {
   // Check if user already exists
   if (await userExists(client, userName)) {
-    console.log(pc.yellow(`  User ${userName} already exists, reusing`));
-    return;
+    throw new Error(
+      `IAM user "${userName}" already exists. Delete manually before retrying.`
+    );
   }
 
   const command = new CreateUserCommand({
