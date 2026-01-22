@@ -168,6 +168,53 @@ git push origin main
 
 GitHub Actions will deploy to your dev environment automatically.
 
+## Troubleshooting
+
+### setup-aws-envs errors
+
+**"Insufficient AWS permissions"**
+
+Your AWS credentials need Organizations permissions. Ensure you're using credentials from the management account (not a member account).
+
+Required permissions:
+- organizations:DescribeOrganization
+- organizations:CreateOrganization
+- organizations:CreateAccount
+- organizations:DescribeCreateAccountStatus
+
+**"AWS Organizations limit reached"**
+
+AWS limits how many accounts you can create. Contact AWS Support to request a limit increase.
+
+**"AWS Organization is still initializing"**
+
+New organizations take up to an hour to fully initialize. Wait and try again.
+
+### initialize-github errors
+
+**"Cannot assume role in target account"**
+
+The command needs to access the target AWS account via `OrganizationAccountAccessRole`. This role is created automatically when you create accounts via `setup-aws-envs`. Ensure:
+1. You ran `setup-aws-envs` first
+2. Your credentials are from the management account
+3. The account ID in `.aws-starter-config.json` is correct
+
+**"IAM user already exists"**
+
+The deployment user already exists in the target account. To retry:
+1. Go to AWS Console > IAM > Users
+2. Delete the existing `<project>-<env>-deploy` user
+3. Run the command again
+
+**"GitHub authentication failed"**
+
+Your Personal Access Token may be invalid or missing permissions. Ensure:
+1. Token has "repo" scope enabled
+2. Token belongs to the repository owner (or has collaborator access)
+3. Token is not expired
+
+Create a new token at: https://github.com/settings/tokens/new
+
 ## License
 
 ISC
