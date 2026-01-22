@@ -13,6 +13,30 @@ import { createGitHubClient, setEnvironmentCredentials } from '../github/secrets
  */
 
 /**
+ * Shows deprecation notice for the old setup-github command
+ * Exits with code 1 to indicate user should use new command
+ */
+export function showDeprecationNotice(): never {
+  console.log('');
+  console.log(pc.yellow('DEPRECATED:') + ' The setup-github command has been replaced.');
+  console.log('');
+  console.log('Use the new per-environment command instead:');
+  console.log('');
+  console.log(`  ${pc.cyan('npx create-aws-project initialize-github <env>')}`);
+  console.log('');
+  console.log('Where <env> is one of: dev, stage, prod');
+  console.log('');
+  console.log('Example workflow:');
+  console.log(`  1. ${pc.cyan('npx create-aws-project setup-aws-envs')}     # Create AWS accounts`);
+  console.log(`  2. ${pc.cyan('npx create-aws-project initialize-github dev')}  # Configure dev`);
+  console.log(`  3. ${pc.cyan('npx create-aws-project initialize-github prod')} # Configure prod`);
+  console.log('');
+  console.log(pc.dim('The new approach provides better error isolation per environment.'));
+
+  process.exit(1);
+}
+
+/**
  * Prints the setup-github command banner
  */
 function printBanner(): void {
