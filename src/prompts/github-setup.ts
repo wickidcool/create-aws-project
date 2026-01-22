@@ -1,6 +1,5 @@
 import prompts from 'prompts';
 import type { PromptObject } from 'prompts';
-import pc from 'picocolors';
 
 /**
  * GitHub setup prompts module
