@@ -6,7 +6,7 @@
 
 ## Current Milestone
 
-- [v1.3.0 CLI Architecture Refactor](milestones/v1.3-ROADMAP.md) (Phases 4-8) -- IN PROGRESS
+- [v1.3.0 CLI Architecture Refactor](milestones/v1.3-ROADMAP.md) (Phases 4-8) -- COMPLETE
 
 ## Progress
 
@@ -19,7 +19,7 @@
 | 5. Wizard Simplification | v1.3 | 2/2 | Complete | 2026-01-21 |
 | 6. setup-aws-envs Command | v1.3 | 1/1 | Complete | 2026-01-21 |
 | 7. initialize-github Command | v1.3 | 1/1 | Complete | 2026-01-22 |
-| 8. Documentation Updates | v1.3 | 0/1 | Pending | -- |
+| 8. Documentation Updates | v1.3 | 1/1 | Complete | 2026-01-22 |
 
 ## Phase 4: CLI Infrastructure & Command Routing
 
@@ -64,4 +64,4 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md -- Update wizard prompts, add Post-Install Setup section, add troubleshooting
+- [x] 08-01-PLAN.md -- Update wizard prompts, add Post-Install Setup section, add troubleshooting

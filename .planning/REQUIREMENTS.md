@@ -37,9 +37,9 @@ Requirements for v1.3.0 CLI Architecture Refactor. Each maps to roadmap phases.
 
 ### Documentation
 
-- [ ] **DOC-01**: README.md updated with new CLI commands and usage
-- [ ] **DOC-02**: Wizard prompts section reflects simplified flow (no AWS Organizations)
-- [ ] **DOC-03**: Post-install setup workflow documented (setup-aws-envs → initialize-github)
+- [x] **DOC-01**: README.md updated with new CLI commands and usage
+- [x] **DOC-02**: Wizard prompts section reflects simplified flow (no AWS Organizations)
+- [x] **DOC-03**: Post-install setup workflow documented (setup-aws-envs → initialize-github)
 
 ## v2 Requirements
 
@@ -84,9 +84,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GH-03 | Phase 7 | Complete |
 | GH-04 | Phase 7 | Complete |
 | GH-05 | Phase 7 | Complete |
-| DOC-01 | Phase 8 | Pending |
-| DOC-02 | Phase 8 | Pending |
-| DOC-03 | Phase 8 | Pending |
+| DOC-01 | Phase 8 | Complete |
+| DOC-02 | Phase 8 | Complete |
+| DOC-03 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 19 total
@@ -95,4 +95,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-21*
-*Last updated: 2026-01-22 after Phase 7 completion*
+*Last updated: 2026-01-22 after Phase 8 completion*
