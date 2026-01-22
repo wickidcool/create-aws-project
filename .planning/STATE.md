@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 4 - CLI Infrastructure & Command Routing
-Plan: 01 of 01 (Command routing and deprecation)
+Plan: 02 of 02 (Project context detection)
 Status: Phase 4 complete
-Last activity: 2026-01-22 - Completed 04-01-PLAN.md
+Last activity: 2026-01-22 - Completed 04-02-PLAN.md
 
-Progress: ██░░░░░░░░ 25% (v1.3)
+Progress: █████░░░░░ 50% (v1.3)
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: ██░░░░░░░░ 25% (v1.3)
 | Metric | Value |
 |--------|-------|
 | Phases completed | 1/4 |
-| Plans executed | 1 |
-| Duration | 2 min |
+| Plans executed | 2 |
+| Duration | 4 min |
 
 ## Accumulated Context
 
@@ -50,6 +50,8 @@ Phase 4 decisions:
 - Switch-based command routing for simplicity and readability
 - Default case runs wizard for both no-command and unknown commands
 - Deprecation exits with code 1 to indicate error state
+- find-up for upward config file search (ESM-native)
+- requireProjectContext() as guard for project-scoped commands
 
 ### Deferred Issues
 
@@ -69,6 +71,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 04-01-PLAN.md (Command routing infrastructure)
+Stopped at: Completed 04-02-PLAN.md (Project context detection)
 Resume file: None
 Next: Phase 5 (Wizard Simplification)
