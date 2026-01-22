@@ -17,7 +17,7 @@
 | 3. Template Updates & Integration | v1.2 | 2/2 | Complete | 2026-01-20 |
 | 4. CLI Infrastructure & Command Routing | v1.3 | 2/2 | Complete | 2026-01-22 |
 | 5. Wizard Simplification | v1.3 | 2/2 | Complete | 2026-01-21 |
-| 6. setup-aws-envs Command | v1.3 | 0/? | Pending | -- |
+| 6. setup-aws-envs Command | v1.3 | 0/1 | Pending | -- |
 | 7. initialize-github Command | v1.3 | 0/? | Pending | -- |
 | 8. Documentation Updates | v1.3 | 0/? | Pending | -- |
 
@@ -38,3 +38,12 @@ Plans:
 Plans:
 - [x] 05-01-PLAN.md -- Remove org prompts from wizard, update test
 - [x] 05-02-PLAN.md -- Remove org setup from CLI, add config file write, update next steps
+
+## Phase 6: setup-aws-envs Command
+
+**Goal:** Users can set up AWS Organizations and environment accounts from generated project
+
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md -- Add ora dependency, implement email collection, command orchestration with progress and error handling
