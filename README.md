@@ -33,34 +33,23 @@ The generated project is a full-stack Nx monorepo with:
 ## CLI Options
 
 ```
-create-aws-starter-kit [options] [project-name]
+create-aws-starter-kit [command] [options]
+
+Commands:
+  (default)           Create a new project (interactive wizard)
+  setup-aws-envs      Set up AWS Organizations and environment accounts
+  initialize-github   Configure GitHub Environment for deployment
 
 Options:
-  --help, -h      Show help message
-  --version, -v   Show version number
+  --help, -h          Show help message
+  --version, -v       Show version number
 
 Examples:
   npx create-aws-starter-kit my-app
+  npx create-aws-starter-kit setup-aws-envs
+  npx create-aws-starter-kit initialize-github dev
   npx create-aws-starter-kit --help
-  npx create-aws-starter-kit --version
 ```
-
-### Setup GitHub Command
-
-After generating a project with AWS Organizations enabled, configure GitHub Actions deployment:
-
-```bash
-npx create-aws-starter-kit setup-github
-```
-
-This command:
-- Creates IAM deployment users per environment (dev, stage, prod)
-- Configures GitHub Environments with AWS credentials
-- Sets up least-privilege CDK deployment permissions
-
-**Requirements:**
-- GitHub Personal Access Token with `repo` and `admin:org` scopes
-- AWS credentials with IAM permissions
 
 ## Wizard Prompts
 
@@ -72,11 +61,7 @@ The interactive wizard will ask you about:
    - None (add later)
    - AWS Cognito
    - Auth0
-   - Optional: Social login, MFA
-4. **AWS Organizations** - Multi-account setup (optional):
-   - Creates separate AWS accounts for each environment
-   - Environments: dev, stage, prod (plus optional qa, sandbox)
-   - Requires root email per account
+4. **Auth features** - Social login, MFA (conditional on auth provider)
 5. **Features** - Optional extras:
    - GitHub Actions workflows for CI/CD
    - VS Code workspace configuration
