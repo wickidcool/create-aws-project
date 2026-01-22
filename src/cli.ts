@@ -11,6 +11,8 @@ import {
   createEnvironmentAccounts,
 } from './aws/organizations.js';
 import { showDeprecationNotice } from './commands/setup-github.js';
+import { runSetupAwsEnvs } from './commands/setup-aws-envs.js';
+import { runInitializeGitHub } from './commands/initialize-github.js';
 
 /**
  * Get the version from package.json
@@ -259,20 +261,11 @@ export async function run(): Promise<void> {
   // Route to appropriate command handler
   switch (command) {
     case 'setup-aws-envs':
-      // Placeholder for Phase 6
-      console.log(pc.cyan('setup-aws-envs') + ' command (coming in Phase 6)');
-      console.log(pc.dim('This will set up AWS Organizations and environment accounts.'));
-      process.exit(0);
+      await runSetupAwsEnvs(commandArgs);
       break;
 
     case 'initialize-github':
-      // Placeholder for Phase 7
-      console.log(pc.cyan('initialize-github') + ' command (coming in Phase 7)');
-      if (commandArgs[0]) {
-        console.log(pc.dim(`Environment: ${commandArgs[0]}`));
-      }
-      console.log(pc.dim('This will configure GitHub Environment for deployment.'));
-      process.exit(0);
+      await runInitializeGitHub(commandArgs);
       break;
 
     case 'setup-github':
