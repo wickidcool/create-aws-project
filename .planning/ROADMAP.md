@@ -18,7 +18,7 @@
 | 4. CLI Infrastructure & Command Routing | v1.3 | 2/2 | Complete | 2026-01-22 |
 | 5. Wizard Simplification | v1.3 | 2/2 | Complete | 2026-01-21 |
 | 6. setup-aws-envs Command | v1.3 | 1/1 | Complete | 2026-01-21 |
-| 7. initialize-github Command | v1.3 | 0/? | Pending | -- |
+| 7. initialize-github Command | v1.3 | 0/1 | Planned | -- |
 | 8. Documentation Updates | v1.3 | 0/? | Pending | -- |
 
 ## Phase 4: CLI Infrastructure & Command Routing
@@ -47,3 +47,12 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md -- Add ora dependency, implement email collection, command orchestration with progress and error handling
+
+## Phase 7: initialize-github Command
+
+**Goal:** Users can initialize GitHub environments per-environment
+
+**Plans:** 1 plan
+
+Plans:
+- [ ] 07-01-PLAN.md -- STS dependency, cross-account IAM, full command implementation with GitHub integration
