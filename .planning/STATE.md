@@ -9,12 +9,31 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-01-21 — Milestone v1.3.0 started
+Phase: 4 - CLI Infrastructure & Command Routing
+Plan: 01 of 01 (Command routing and deprecation)
+Status: Phase 4 complete
+Last activity: 2026-01-22 - Completed 04-01-PLAN.md
 
-Progress: ░░░░░░░░░░ 0% (v1.3)
+Progress: ██░░░░░░░░ 25% (v1.3)
+
+## Performance Metrics
+
+### v1.2 Metrics (Baseline)
+
+| Metric | Value |
+|--------|-------|
+| Phases completed | 3 |
+| Plans executed | 8 |
+| Duration | 2 days |
+| LOC added/modified | ~2,500 |
+
+### v1.3 Metrics (In Progress)
+
+| Metric | Value |
+|--------|-------|
+| Phases completed | 1/4 |
+| Plans executed | 1 |
+| Duration | 2 min |
 
 ## Accumulated Context
 
@@ -27,6 +46,11 @@ New for v1.3:
 - Per-environment GitHub init (granular control, error isolation)
 - Commands run from project directory (reads config, simpler UX)
 
+Phase 4 decisions:
+- Switch-based command routing for simplicity and readability
+- Default case runs wizard for both no-command and unknown commands
+- Deprecation exits with code 1 to indicate error state
+
 ### Deferred Issues
 
 None.
@@ -35,9 +59,16 @@ None.
 
 None.
 
+### Outstanding Todos
+
+- [x] Plan Phase 4: CLI Infrastructure & Command Routing
+- [ ] Plan Phase 5: Wizard Simplification
+- [ ] Plan Phase 6: setup-aws-envs Command
+- [ ] Plan Phase 7: initialize-github Command
+
 ## Session Continuity
 
-Last session: 2026-01-21
-Stopped at: Defining v1.3.0 requirements
+Last session: 2026-01-22
+Stopped at: Completed 04-01-PLAN.md (Command routing infrastructure)
 Resume file: None
-Next: Complete requirements → roadmap creation
+Next: Phase 5 (Wizard Simplification)
