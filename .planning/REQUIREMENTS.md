@@ -9,9 +9,9 @@ Requirements for v1.3.0 CLI Architecture Refactor. Each maps to roadmap phases.
 
 ### CLI Infrastructure
 
-- [ ] **CLI-01**: CLI entry point routes to correct command based on arguments
-- [ ] **CLI-02**: Commands detect when not run from inside valid project directory
-- [ ] **CLI-03**: Existing `setup-github` command removed/deprecated
+- [x] **CLI-01**: CLI entry point routes to correct command based on arguments
+- [x] **CLI-02**: Commands detect when not run from inside valid project directory
+- [x] **CLI-03**: Existing `setup-github` command removed/deprecated
 
 ### Wizard Simplification
 
@@ -68,9 +68,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLI-01 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| CLI-03 | Phase 4 | Pending |
+| CLI-01 | Phase 4 | Complete |
+| CLI-02 | Phase 4 | Complete |
+| CLI-03 | Phase 4 | Complete |
 | WIZ-01 | Phase 5 | Pending |
 | WIZ-02 | Phase 5 | Pending |
 | WIZ-03 | Phase 5 | Pending |
@@ -95,4 +95,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-21*
-*Last updated: 2026-01-21 after roadmap creation*
+*Last updated: 2026-01-22 after Phase 4 completion*
