@@ -7,6 +7,12 @@
 
 Requirements for v1.3.0 CLI Architecture Refactor. Each maps to roadmap phases.
 
+### CLI Infrastructure
+
+- [ ] **CLI-01**: CLI entry point routes to correct command based on arguments
+- [ ] **CLI-02**: Commands detect when not run from inside valid project directory
+- [ ] **CLI-03**: Existing `setup-github` command removed/deprecated
+
 ### Wizard Simplification
 
 - [ ] **WIZ-01**: Main wizard only prompts for project name, platforms, auth, features, region, theme
@@ -29,11 +35,11 @@ Requirements for v1.3.0 CLI Architecture Refactor. Each maps to roadmap phases.
 - [ ] **GH-04**: Command configures GitHub Environment with AWS credentials
 - [ ] **GH-05**: Command validates environment exists in project config before proceeding
 
-### CLI Infrastructure
+### Documentation
 
-- [ ] **CLI-01**: CLI entry point routes to correct command based on arguments
-- [ ] **CLI-02**: Commands detect when not run from inside valid project directory
-- [ ] **CLI-03**: Existing `setup-github` command removed/deprecated
+- [ ] **DOC-01**: README.md updated with new CLI commands and usage
+- [ ] **DOC-02**: Wizard prompts section reflects simplified flow (no AWS Organizations)
+- [ ] **DOC-03**: Post-install setup workflow documented (setup-aws-envs → initialize-github)
 
 ## v2 Requirements
 
@@ -62,28 +68,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WIZ-01 | TBD | Pending |
-| WIZ-02 | TBD | Pending |
-| WIZ-03 | TBD | Pending |
-| AWS-01 | TBD | Pending |
-| AWS-02 | TBD | Pending |
-| AWS-03 | TBD | Pending |
-| AWS-04 | TBD | Pending |
-| AWS-05 | TBD | Pending |
-| GH-01 | TBD | Pending |
-| GH-02 | TBD | Pending |
-| GH-03 | TBD | Pending |
-| GH-04 | TBD | Pending |
-| GH-05 | TBD | Pending |
-| CLI-01 | TBD | Pending |
-| CLI-02 | TBD | Pending |
-| CLI-03 | TBD | Pending |
+| CLI-01 | Phase 4 | Pending |
+| CLI-02 | Phase 4 | Pending |
+| CLI-03 | Phase 4 | Pending |
+| WIZ-01 | Phase 5 | Pending |
+| WIZ-02 | Phase 5 | Pending |
+| WIZ-03 | Phase 5 | Pending |
+| AWS-01 | Phase 6 | Pending |
+| AWS-02 | Phase 6 | Pending |
+| AWS-03 | Phase 6 | Pending |
+| AWS-04 | Phase 6 | Pending |
+| AWS-05 | Phase 6 | Pending |
+| GH-01 | Phase 7 | Pending |
+| GH-02 | Phase 7 | Pending |
+| GH-03 | Phase 7 | Pending |
+| GH-04 | Phase 7 | Pending |
+| GH-05 | Phase 7 | Pending |
+| DOC-01 | Phase 8 | Pending |
+| DOC-02 | Phase 8 | Pending |
+| DOC-03 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16 ⚠️
+- v1 requirements: 19 total
+- Mapped to phases: 19
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-01-21*
-*Last updated: 2026-01-21 after initial definition*
+*Last updated: 2026-01-21 after roadmap creation*
