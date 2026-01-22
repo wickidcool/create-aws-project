@@ -1,12 +1,48 @@
-import { readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import pc from 'picocolors';
 import { runWizard } from './wizard.js';
 import { generateProject } from './generator/index.js';
+import type { ProjectConfig } from './types.js';
 import { showDeprecationNotice } from './commands/setup-github.js';
 import { runSetupAwsEnvs } from './commands/setup-aws-envs.js';
 import { runInitializeGitHub } from './commands/initialize-github.js';
+
+/**
+ * Config file structure for .aws-starter-config.json
+ */
+interface AwsStarterConfig {
+  configVersion: string;
+  projectName: string;
+  platforms: string[];
+  authProvider: string;
+  features: string[];
+  awsRegion: string;
+  theme: string;
+  createdAt: string;
+  accounts: Record<string, string>;
+}
+
+/**
+ * Write project configuration file for downstream commands
+ */
+function writeConfigFile(outputDir: string, config: ProjectConfig): void {
+  const configContent: AwsStarterConfig = {
+    configVersion: '1.0',
+    projectName: config.projectName,
+    platforms: config.platforms,
+    authProvider: config.auth.provider,
+    features: config.features,
+    awsRegion: config.awsRegion,
+    theme: config.brandColor,
+    createdAt: new Date().toISOString(),
+    accounts: {},
+  };
+
+  const configPath = join(outputDir, '.aws-starter-config.json');
+  writeFileSync(configPath, JSON.stringify(configContent, null, 2), 'utf-8');
+}
 
 /**
  * Get the version from package.json
@@ -129,6 +165,9 @@ async function runCreate(_args: string[]): Promise<void> {
   // Generate project
   console.log('');
   await generateProject(config, outputDir);
+
+  // Write config file for downstream commands
+  writeConfigFile(outputDir, config);
 
   // Success message and next steps
   console.log('');
