@@ -25,6 +25,7 @@ export interface ProjectConfigMinimal {
   platforms: string[];
   awsRegion: string;
   configVersion?: string;
+  accounts?: Record<string, string>;
 }
 
 /**
