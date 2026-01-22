@@ -15,8 +15,16 @@
 | 1. AWS Organizations Foundation | v1.2 | 3/3 | Complete | 2026-01-20 |
 | 2. GitHub Deployment Command | v1.2 | 3/3 | Complete | 2026-01-20 |
 | 3. Template Updates & Integration | v1.2 | 2/2 | Complete | 2026-01-20 |
-| 4. CLI Infrastructure & Command Routing | v1.3 | 0/? | Pending | — |
+| 4. CLI Infrastructure & Command Routing | v1.3 | 0/2 | Pending | — |
 | 5. Wizard Simplification | v1.3 | 0/? | Pending | — |
 | 6. setup-aws-envs Command | v1.3 | 0/? | Pending | — |
 | 7. initialize-github Command | v1.3 | 0/? | Pending | — |
 | 8. Documentation Updates | v1.3 | 0/? | Pending | — |
+
+## Phase 4: CLI Infrastructure & Command Routing
+
+**Goal:** CLI routes commands correctly and validates project context
+
+Plans:
+- [ ] 04-01-PLAN.md — CLI routing, find-up dependency, deprecation notice
+- [ ] 04-02-PLAN.md — Project context detection, command stubs
