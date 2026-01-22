@@ -15,17 +15,17 @@ Requirements for v1.3.0 CLI Architecture Refactor. Each maps to roadmap phases.
 
 ### Wizard Simplification
 
-- [ ] **WIZ-01**: Main wizard only prompts for project name, platforms, auth, features, region, theme
-- [ ] **WIZ-02**: AWS Organizations prompts removed from main wizard flow
-- [ ] **WIZ-03**: Generated project includes config file for post-install commands to read
+- [x] **WIZ-01**: Main wizard only prompts for project name, platforms, auth, features, region, theme
+- [x] **WIZ-02**: AWS Organizations prompts removed from main wizard flow
+- [x] **WIZ-03**: Generated project includes config file for post-install commands to read
 
 ### setup-aws-envs Command
 
-- [ ] **AWS-01**: User can run `setup-aws-envs` from inside generated project
-- [ ] **AWS-02**: Command creates AWS Organization if not exists
-- [ ] **AWS-03**: Command creates environment accounts (dev, stage, prod)
-- [ ] **AWS-04**: Command stores account IDs in project config for other commands
-- [ ] **AWS-05**: Command shows progress and handles errors gracefully
+- [x] **AWS-01**: User can run `setup-aws-envs` from inside generated project
+- [x] **AWS-02**: Command creates AWS Organization if not exists
+- [x] **AWS-03**: Command creates environment accounts (dev, stage, prod)
+- [x] **AWS-04**: Command stores account IDs in project config for other commands
+- [x] **AWS-05**: Command shows progress and handles errors gracefully
 
 ### initialize-github Command
 
@@ -71,14 +71,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLI-01 | Phase 4 | Complete |
 | CLI-02 | Phase 4 | Complete |
 | CLI-03 | Phase 4 | Complete |
-| WIZ-01 | Phase 5 | Pending |
-| WIZ-02 | Phase 5 | Pending |
-| WIZ-03 | Phase 5 | Pending |
-| AWS-01 | Phase 6 | Pending |
-| AWS-02 | Phase 6 | Pending |
-| AWS-03 | Phase 6 | Pending |
-| AWS-04 | Phase 6 | Pending |
-| AWS-05 | Phase 6 | Pending |
+| WIZ-01 | Phase 5 | Complete |
+| WIZ-02 | Phase 5 | Complete |
+| WIZ-03 | Phase 5 | Complete |
+| AWS-01 | Phase 6 | Complete |
+| AWS-02 | Phase 6 | Complete |
+| AWS-03 | Phase 6 | Complete |
+| AWS-04 | Phase 6 | Complete |
+| AWS-05 | Phase 6 | Complete |
 | GH-01 | Phase 7 | Pending |
 | GH-02 | Phase 7 | Pending |
 | GH-03 | Phase 7 | Pending |
@@ -95,4 +95,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-21*
-*Last updated: 2026-01-22 after Phase 4 completion*
+*Last updated: 2026-01-21 after Phase 6 completion*
