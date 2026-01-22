@@ -130,6 +130,10 @@ function printNextSteps(projectName: string, platforms: string[]): void {
     console.log('');
   }
 
+  console.log(`  ${pc.gray('# Configure AWS environments')}`);
+  console.log(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
+  console.log('');
+
   console.log(pc.gray('Happy coding!'));
 }
 
