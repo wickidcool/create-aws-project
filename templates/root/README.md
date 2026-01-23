@@ -76,6 +76,7 @@ Before deploying to AWS, you need to set up your AWS environments and GitHub dep
 
 ### Prerequisites
 
+- AWS Root account created
 - AWS CLI configured with management account credentials
 - GitHub repository created for this project
 - GitHub Personal Access Token with "repo" scope
