@@ -6,7 +6,7 @@
 
 ## Current Milestone
 
-- [v1.3.0 CLI Architecture Refactor](milestones/v1.3-ROADMAP.md) (Phases 4-8) -- COMPLETE
+- [v1.3.0 CLI Architecture Refactor](milestones/v1.3-ROADMAP.md) (Phases 4-9) -- In Progress
 
 ## Progress
 
@@ -20,6 +20,7 @@
 | 6. setup-aws-envs Command | v1.3 | 1/1 | Complete | 2026-01-21 |
 | 7. initialize-github Command | v1.3 | 1/1 | Complete | 2026-01-22 |
 | 8. Documentation Updates | v1.3 | 1/1 | Complete | 2026-01-22 |
+| 9. Generated Project Documentation | v1.3 | 0/1 | Planned | - |
 
 ## Phase 4: CLI Infrastructure & Command Routing
 
@@ -65,3 +66,12 @@ Plans:
 
 Plans:
 - [x] 08-01-PLAN.md -- Update wizard prompts, add Post-Install Setup section, add troubleshooting
+
+## Phase 9: Generated Project Documentation
+
+**Goal:** Generated projects include personalized README.md with project structure, commands, and AWS setup workflow
+**Depends on:** Phase 8
+**Plans:** 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md -- Add platform tokens, create README template with conditionals, register in manifest
