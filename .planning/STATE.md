@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 
 ## Current Position
 
-Phase: 8 - Documentation Updates
-Plan: 1 of 1 (Documentation Updates)
-Status: Phase complete
-Last activity: 2026-01-22 - Completed 08-01-PLAN.md
+Phase: 9 - Add Docs
+Plan: 1 of 1
+Status: Complete
+Last activity: 2026-01-23 - Completed 09-01-PLAN.md
 
 Progress: ██████████ 100% (v1.3)
 
@@ -31,9 +31,9 @@ Progress: ██████████ 100% (v1.3)
 
 | Metric | Value |
 |--------|-------|
-| Phases completed | 5/5 |
-| Plans executed | 7 |
-| Duration | 15 min |
+| Phases completed | 6/6 |
+| Plans executed | 8 |
+| Duration | 18 min |
 
 ## Accumulated Context
 
@@ -81,6 +81,15 @@ Phase 8 decisions:
 - Included expected terminal output for key setup steps
 - Based troubleshooting section on actual error handling in commands
 
+Phase 9 decisions:
+- Platform tokens as string 'true'/'false' consistent with existing auth tokens
+- README template under 200 lines with conditional sections for concise output
+- Reference CLI docs for troubleshooting rather than duplicating content
+
+### Roadmap Evolution
+
+- Phase 9 added: Add Docs
+
 ### Deferred Issues
 
 None.
@@ -101,10 +110,12 @@ None.
 - [x] Execute Phase 7: initialize-github Command
 - [x] Plan Phase 8: Documentation Updates
 - [x] Execute Phase 8: Documentation Updates
+- [x] Plan Phase 9: Add Docs
+- [x] Execute Phase 9: Add Docs
 
 ## Session Continuity
 
-Last session: 2026-01-22
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-01-23
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
 Next: v1.3.0 complete - ready for release
