@@ -46,7 +46,7 @@
 
 **CLI Command Execution:**
 
-1. User runs: `npx create-aws-starter-kit my-project`
+1. User runs: `npx create-aws-project my-project`
 2. `src/index.ts` → `src/cli.ts:run()` - Parse args (--help, --version, or continue)
 3. `src/wizard.ts:runWizard()` - Execute interactive prompts:
    - `projectNamePrompt` → validates via `validation/project-name.ts`

@@ -1,5 +1,33 @@
 # Project Milestones: create-aws-starter-kit
 
+## v1.3 CLI Architecture Refactor (Shipped: 2026-01-23)
+
+**Delivered:** Simplified wizard with AWS/GitHub setup extracted into separate post-install commands for better flexibility and error handling.
+
+**Phases completed:** 4-9 (8 plans total)
+
+**Key accomplishments:**
+
+- CLI command routing infrastructure with project context detection
+- Simplified wizard from 15 to 7 prompts (AWS Organizations removed)
+- `setup-aws-envs` command for AWS Organization and environment account creation
+- `initialize-github <env>` command for per-environment GitHub deployment setup
+- Comprehensive CLI documentation with post-install workflow
+- README template with platform-conditional sections for generated projects
+
+**Stats:**
+
+- 49 files created/modified
+- ~9,600 lines of TypeScript total
+- 6 phases, 8 plans
+- 3 days (2026-01-21 → 2026-01-23)
+
+**Git range:** `chore(04-01)` → `docs(v1.3)`
+
+**What's next:** TBD (run `/gsd:new-milestone` to define next milestone)
+
+---
+
 ## v1.2 AWS Organizations Support (Shipped: 2026-01-20)
 
 **Delivered:** Multi-environment AWS infrastructure with automatic Organizations setup and GitHub Actions deployment credentials.
