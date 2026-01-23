@@ -17,6 +17,9 @@ describe('replaceTokens', () => {
     AUTH_AUTH0: 'false',
     AUTH_SOCIAL_LOGIN: 'false',
     AUTH_MFA: 'false',
+    WEB: 'false',
+    MOBILE: 'false',
+    API: 'false',
   };
 
   describe('single token replacement', () => {
@@ -126,6 +129,9 @@ describe('processConditionalBlocks', () => {
     AUTH_AUTH0: 'false',
     AUTH_SOCIAL_LOGIN: 'false',
     AUTH_MFA: 'false',
+    WEB: 'false',
+    MOBILE: 'false',
+    API: 'false',
   };
 
   describe('comment-wrapped conditionals', () => {
@@ -258,6 +264,9 @@ describe('replaceTokens integration with conditionals', () => {
     AUTH_AUTH0: 'false',
     AUTH_SOCIAL_LOGIN: 'false',
     AUTH_MFA: 'false',
+    WEB: 'false',
+    MOBILE: 'false',
+    API: 'false',
   };
 
   it('should process conditionals before token replacement', () => {

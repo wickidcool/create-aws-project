@@ -57,6 +57,10 @@ export function deriveTokenValues(config: ProjectConfig): TokenValues {
     AUTH_AUTH0: config.auth.provider === 'auth0' ? 'true' : 'false',
     AUTH_SOCIAL_LOGIN: config.auth.features.includes('social-login') ? 'true' : 'false',
     AUTH_MFA: config.auth.features.includes('mfa') ? 'true' : 'false',
+    // Platform tokens for conditional documentation
+    WEB: config.platforms.includes('web') ? 'true' : 'false',
+    MOBILE: config.platforms.includes('mobile') ? 'true' : 'false',
+    API: config.platforms.includes('api') ? 'true' : 'false',
     // Organization tokens
     ORG_ENABLED: config.org?.enabled ? 'true' : 'false',
     ORG_NAME: config.org?.organizationName ?? '',

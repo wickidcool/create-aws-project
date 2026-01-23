@@ -12,6 +12,10 @@ export interface TokenValues {
   AUTH_AUTH0: string;
   AUTH_SOCIAL_LOGIN: string;
   AUTH_MFA: string;
+  /** Platform selection flags ('true' or 'false') */
+  WEB: string;
+  MOBILE: string;
+  API: string;
   /** Organization enabled flag ('true' or 'false') */
   ORG_ENABLED?: string;
   /** Organization name */
