@@ -78,6 +78,7 @@ export function deriveTokenValues(config: ProjectConfig): TokenValues {
  */
 export const templateManifest: TemplateManifest = {
   shared: [
+    { src: 'root/README.md', dest: 'README.md' },
     { src: 'root/package.json', dest: 'package.json' },
     { src: 'root/tsconfig.base.json', dest: 'tsconfig.base.json' },
     { src: 'root/nx.json', dest: 'nx.json' },
