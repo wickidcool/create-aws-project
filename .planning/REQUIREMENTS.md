@@ -1,0 +1,89 @@
+# Requirements: create-aws-starter-kit v1.4
+
+**Defined:** 2026-01-23
+**Core Value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
+
+## v1.4 Requirements
+
+Requirements for generated project validation. Each maps to roadmap phases.
+
+### Test Harness Infrastructure
+
+- [ ] **HARN-01**: Test harness can generate projects programmatically with any platform/auth configuration
+- [ ] **HARN-02**: Each test run uses isolated temporary directory that doesn't pollute file system
+- [ ] **HARN-03**: Validation pipeline runs npm install, npm run build, and npm test sequentially
+- [ ] **HARN-04**: Validation captures exit codes and fails if any step returns non-zero
+- [ ] **HARN-05**: Temporary directories are cleaned up after successful test runs
+
+### Reporting
+
+- [ ] **REPT-01**: Failed validations display captured stdout/stderr for debugging
+- [ ] **REPT-02**: Developer can run validation locally via npm script (`npm run test:e2e` or similar)
+- [ ] **REPT-03**: Each validation step has timeout (10 minutes) to prevent hanging
+- [ ] **REPT-04**: Progress output shows which configuration is being tested (e.g., "Testing 1/14: web-api-cognito")
+- [ ] **REPT-05**: Summary table at end shows pass/fail status for all tested configurations
+
+### CI Integration
+
+- [ ] **CICD-01**: PR workflow runs validation on core configuration subset (3-4 representative configs)
+- [ ] **CICD-02**: Release workflow runs validation on full 14-configuration matrix
+- [ ] **CICD-03**: Configuration matrix supports tiered execution (core tier vs full tier)
+
+## Future Requirements
+
+Deferred to later milestones. Tracked but not in current roadmap.
+
+### Performance Optimizations
+
+- **PERF-01**: Cached npm install to speed up repeated runs
+- **PERF-02**: Parallel test execution across configurations
+- **PERF-03**: Incremental validation (only test changed templates)
+
+### Developer Experience
+
+- **DEVX-01**: Configuration subset selection for local debugging (`--config web-api-cognito`)
+- **DEVX-02**: Structured JSON output for CI integration
+- **DEVX-03**: Watch mode for template development
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| Testing generated project runtime behavior | Out of scope - testing CLI, not user's app |
+| Mocking npm install | Defeats purpose of validation |
+| Testing every auth feature combination | Exponential explosion (14 -> 56+ configs) |
+| Snapshot testing of generated files | Brittle, hard to maintain |
+| Real AWS/GitHub API calls in tests | Requires credentials, slow, flaky |
+| Testing node_modules contents | Not our responsibility |
+| Mobile native builds (Expo/RN) | Requires macOS runners, defer to future |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| HARN-01 | — | Pending |
+| HARN-02 | — | Pending |
+| HARN-03 | — | Pending |
+| HARN-04 | — | Pending |
+| HARN-05 | — | Pending |
+| REPT-01 | — | Pending |
+| REPT-02 | — | Pending |
+| REPT-03 | — | Pending |
+| REPT-04 | — | Pending |
+| REPT-05 | — | Pending |
+| CICD-01 | — | Pending |
+| CICD-02 | — | Pending |
+| CICD-03 | — | Pending |
+
+**Coverage:**
+- v1.4 requirements: 13 total
+- Mapped to phases: 0
+- Unmapped: 13 (pending roadmap)
+
+---
+*Requirements defined: 2026-01-23*
+*Last updated: 2026-01-23 after initial definition*
