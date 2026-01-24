@@ -47,10 +47,10 @@ See `.planning/milestones/v1.3/ROADMAP-ARCHIVE.md` for details.
   2. Temp directories are automatically cleaned up after test completion
   3. npm commands can be executed with stdout/stderr captured
   4. execa dependency is installed and typed
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 10-01-PLAN.md — Test harness utilities (withTempDir, runCommand)
 
 ### Phase 11: Validation Pipeline
 **Goal**: Single function validates a generated project through the full npm lifecycle
@@ -115,7 +115,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Test Harness Foundation | v1.4 | 0/TBD | Not started | - |
+| 10. Test Harness Foundation | v1.4 | 0/1 | Planned | - |
 | 11. Validation Pipeline | v1.4 | 0/TBD | Not started | - |
 | 12. Test Fixtures and Matrix | v1.4 | 0/TBD | Not started | - |
 | 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
