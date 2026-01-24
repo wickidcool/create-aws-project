@@ -216,10 +216,10 @@ describe('validateGeneratedProject', () => {
     await validateGeneratedProject(config, customTimeout);
 
     // Verify runCommand was called with the custom timeout
-    expect(mockRunCommand).toHaveBeenCalledWith('npm', ['ci'], '/tmp/fake-dir', customTimeout);
+    expect(mockRunCommand).toHaveBeenCalledWith('npm', ['install'], '/tmp/fake-dir', customTimeout);
     expect(mockRunCommand).toHaveBeenCalledWith(
       'npm',
-      ['run', 'build'],
+      ['run', 'build:all'],
       '/tmp/fake-dir',
       customTimeout
     );
