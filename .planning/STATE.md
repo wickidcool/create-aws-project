@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** v1.4 Generated Project Validation - Phase 12
+**Current focus:** v1.4 Generated Project Validation - Phase 13
 
 ## Current Position
 
-Phase: 12 of 14 (Test Fixtures and Matrix)
+Phase: 13 of 14 (Reporting and Local Runner)
 Plan: 01 of 01 complete
 Status: Phase complete
-Last activity: 2026-01-24 — Completed 12-01-PLAN.md
+Last activity: 2026-01-24 — Completed 13-01-PLAN.md
 
-Progress: ██████████░░░░░░░░░░ 50% (v1.4: 3/5 phases)
+Progress: ████████████░░░░░░░░ 60% (v1.4: 4/5 phases)
 
 ## Milestones
 
@@ -51,7 +51,7 @@ Progress: ██████████░░░░░░░░░░ 50% (v1.4
 
 All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
 
-**Recent Decisions (Phase 10-12):**
+**Recent Decisions (Phase 10-13):**
 - Try-finally cleanup pattern: Guarantee temp directory cleanup even when test throws
 - Warn-don't-throw on cleanup failure: Cleanup errors log warnings to avoid masking test failures
 - Interleaved output capture: Use execa's all:true for stdout/stderr in order
@@ -61,6 +61,9 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - Tier distribution: smoke (1), core (4), full (9) configs for balanced coverage vs speed
 - Core tier coverage: Must include all 3 platforms AND both auth providers
 - Exclude 'none' auth: Simplest path implicitly tested when cognito/auth0 work
+- CI detection for progress: TTY spinners for local dev, plain logging for CI (prevents ANSI pollution)
+- Use npm install not npm ci: Generated projects lack package-lock.json files
+- Use build:all script: Matches Nx monorepo structure in generated projects
 
 ### Deferred Issues
 
@@ -68,7 +71,12 @@ None.
 
 ### Blockers/Concerns
 
-None.
+**Template TypeScript Errors (discovered in Phase 13):**
+- Validation smoke tier revealed TS4111 errors in generated templates
+- Missing aws-amplify dependency in web app
+- Missing amplifyConfig export
+- Impact: All E2E validations will fail until templates are fixed
+- Recommendation: Fix before Phase 14 (CI integration) to enable passing builds
 
 ### Outstanding Todos
 
@@ -77,9 +85,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Phase 12 complete
+Stopped at: Phase 13 complete
 Resume file: None
-Next: `/gsd:discuss-phase 13` or `/gsd:plan-phase 13`
+Next: Fix template TypeScript errors, then `/gsd:discuss-phase 14` or `/gsd:plan-phase 14`
 
 ---
-*Updated: 2026-01-24 after Phase 12 complete*
+*Updated: 2026-01-24 after Phase 13 complete*
