@@ -30,9 +30,9 @@ export async function validateGeneratedProject(
     // Generate project into temp directory
     await generateProject(config, dir, { onProgress: () => {} });
 
-    // Step 1: npm ci
+    // Step 1: npm install (generated projects don't have package-lock.json)
     const installStart = Date.now();
-    const installResult = await runCommand('npm', ['ci'], dir, timeout);
+    const installResult = await runCommand('npm', ['install'], dir, timeout);
     const installDuration = Date.now() - installStart;
 
     steps.push({
@@ -53,9 +53,9 @@ export async function validateGeneratedProject(
       };
     }
 
-    // Step 2: npm run build
+    // Step 2: npm run build:all (generated projects use Nx run-many)
     const buildStart = Date.now();
-    const buildResult = await runCommand('npm', ['run', 'build'], dir, timeout);
+    const buildResult = await runCommand('npm', ['run', 'build:all'], dir, timeout);
     const buildDuration = Date.now() - buildStart;
 
     steps.push({
