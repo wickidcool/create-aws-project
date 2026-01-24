@@ -65,14 +65,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARN-01 | Phase 11 | Pending |
+| HARN-01 | Phase 11 | Complete |
 | HARN-02 | Phase 10 | Complete |
-| HARN-03 | Phase 11 | Pending |
-| HARN-04 | Phase 11 | Pending |
+| HARN-03 | Phase 11 | Complete |
+| HARN-04 | Phase 11 | Complete |
 | HARN-05 | Phase 10 | Complete |
 | REPT-01 | Phase 13 | Pending |
 | REPT-02 | Phase 13 | Pending |
-| REPT-03 | Phase 11 | Pending |
+| REPT-03 | Phase 11 | Complete |
 | REPT-04 | Phase 13 | Pending |
 | REPT-05 | Phase 13 | Pending |
 | CICD-01 | Phase 14 | Pending |
@@ -86,4 +86,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-23 after roadmap creation*
+*Last updated: 2026-01-24 after Phase 11 complete*

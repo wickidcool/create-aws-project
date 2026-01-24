@@ -31,7 +31,7 @@ See `.planning/milestones/v1.3/ROADMAP-ARCHIVE.md` for details.
 **Milestone Goal:** Ensure all generated project configurations build and pass tests through automated validation.
 
 - [x] **Phase 10: Test Harness Foundation** - Temp directory management and npm execution utilities
-- [ ] **Phase 11: Validation Pipeline** - Core runner that generates, installs, builds, tests
+- [x] **Phase 11: Validation Pipeline** - Core runner that generates, installs, builds, tests
 - [ ] **Phase 12: Test Fixtures and Matrix** - Configuration factories and tiered scenario definitions
 - [ ] **Phase 13: Reporting and Local Runner** - Progress output, summary table, npm scripts
 - [ ] **Phase 14: CI Integration** - PR workflow core configs, release workflow full matrix
@@ -64,7 +64,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 11-01-PLAN.md — Validation pipeline with timeout support and step tracking
+- [x] 11-01-PLAN.md — Validation pipeline with timeout support and step tracking
 
 ### Phase 12: Test Fixtures and Matrix
 **Goal**: Test configurations are defined as typed factories with tiered execution support
@@ -116,7 +116,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Test Harness Foundation | v1.4 | 1/1 | Complete | 2026-01-23 |
-| 11. Validation Pipeline | v1.4 | 0/1 | Not started | - |
+| 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 12. Test Fixtures and Matrix | v1.4 | 0/TBD | Not started | - |
 | 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
 | 14. CI Integration | v1.4 | 0/TBD | Not started | - |
