@@ -32,7 +32,7 @@ See `.planning/milestones/v1.3/ROADMAP-ARCHIVE.md` for details.
 
 - [x] **Phase 10: Test Harness Foundation** - Temp directory management and npm execution utilities
 - [x] **Phase 11: Validation Pipeline** - Core runner that generates, installs, builds, tests
-- [ ] **Phase 12: Test Fixtures and Matrix** - Configuration factories and tiered scenario definitions
+- [x] **Phase 12: Test Fixtures and Matrix** - Configuration factories and tiered scenario definitions
 - [ ] **Phase 13: Reporting and Local Runner** - Progress output, summary table, npm scripts
 - [ ] **Phase 14: CI Integration** - PR workflow core configs, release workflow full matrix
 
@@ -78,7 +78,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 12-01-PLAN.md — Config factories and tiered test matrix
+- [x] 12-01-PLAN.md — Config factories and tiered test matrix
 
 ### Phase 13: Reporting and Local Runner
 **Goal**: Developers can run validation locally with clear progress and summary output
@@ -117,7 +117,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 |-------|-----------|----------------|--------|-----------|
 | 10. Test Harness Foundation | v1.4 | 1/1 | Complete | 2026-01-23 |
 | 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
-| 12. Test Fixtures and Matrix | v1.4 | 0/1 | Planned | - |
+| 12. Test Fixtures and Matrix | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
 | 14. CI Integration | v1.4 | 0/TBD | Not started | - |
 
