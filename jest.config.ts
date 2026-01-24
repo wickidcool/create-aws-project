@@ -27,6 +27,8 @@ export default {
     '/templates/',
     '/dist/',
   ],
+  // Only run .spec.ts files as tests (not utility modules in __tests__)
+  testMatch: ['**/__tests__/**/*.spec.ts'],
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
