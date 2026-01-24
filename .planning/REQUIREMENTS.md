@@ -17,11 +17,11 @@ Requirements for generated project validation. Each maps to roadmap phases.
 
 ### Reporting
 
-- [ ] **REPT-01**: Failed validations display captured stdout/stderr for debugging
-- [ ] **REPT-02**: Developer can run validation locally via npm script (`npm run test:e2e` or similar)
-- [ ] **REPT-03**: Each validation step has timeout (10 minutes) to prevent hanging
-- [ ] **REPT-04**: Progress output shows which configuration is being tested (e.g., "Testing 1/14: web-api-cognito")
-- [ ] **REPT-05**: Summary table at end shows pass/fail status for all tested configurations
+- [x] **REPT-01**: Failed validations display captured stdout/stderr for debugging
+- [x] **REPT-02**: Developer can run validation locally via npm script (`npm run test:e2e` or similar)
+- [x] **REPT-03**: Each validation step has timeout (10 minutes) to prevent hanging
+- [x] **REPT-04**: Progress output shows which configuration is being tested (e.g., "Testing 1/14: web-api-cognito")
+- [x] **REPT-05**: Summary table at end shows pass/fail status for all tested configurations
 
 ### CI Integration
 
@@ -70,11 +70,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HARN-03 | Phase 11 | Complete |
 | HARN-04 | Phase 11 | Complete |
 | HARN-05 | Phase 10 | Complete |
-| REPT-01 | Phase 13 | Pending |
-| REPT-02 | Phase 13 | Pending |
+| REPT-01 | Phase 13 | Complete |
+| REPT-02 | Phase 13 | Complete |
 | REPT-03 | Phase 11 | Complete |
-| REPT-04 | Phase 13 | Pending |
-| REPT-05 | Phase 13 | Pending |
+| REPT-04 | Phase 13 | Complete |
+| REPT-05 | Phase 13 | Complete |
 | CICD-01 | Phase 14 | Pending |
 | CICD-02 | Phase 14 | Pending |
 | CICD-03 | Phase 12 | Complete |
@@ -86,4 +86,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 12 complete*
+*Last updated: 2026-01-24 after Phase 13 complete*
