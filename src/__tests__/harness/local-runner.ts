@@ -6,7 +6,7 @@ import { validateGeneratedProject, type ValidationResult } from './validate-proj
 // CI detection: disable spinner animations in CI environments
 const isCI = process.env.CI === 'true' || !process.stdout.isTTY;
 
-async function runValidationSuite(tier: TestTier = 'core'): Promise<void> {
+export async function runValidationSuite(tier: TestTier = 'core'): Promise<void> {
   const configs = getConfigsByTier(tier);
   const results: ValidationResult[] = [];
   const spinner = isCI ? null : ora();
