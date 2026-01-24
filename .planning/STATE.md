@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Planning next milestone
+**Current focus:** v1.4 Generated Project Validation
 
 ## Current Position
 
-Phase: Milestone complete
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-01-23 — v1.3 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-23 — Milestone v1.4 started
 
-Progress: ████████████████████ 100% (v1.3 shipped)
+Progress: ░░░░░░░░░░░░░░░░░░░░ 0%
 
 ## Milestones
 
@@ -22,6 +22,7 @@ Progress: ████████████████████ 100% (v1.
 |---------|------|--------|--------|---------|
 | v1.2 | AWS Organizations Support | 1-3 | Complete | 2026-01-20 |
 | v1.3 | CLI Architecture Refactor | 4-9 | Complete | 2026-01-23 |
+| v1.4 | Generated Project Validation | 10+ | In Progress | — |
 
 ## Performance Metrics
 
@@ -65,9 +66,9 @@ None — milestone complete.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: v1.3 milestone archived and tagged
+Stopped at: v1.4 milestone started, defining requirements
 Resume file: None
-Next: `/gsd:new-milestone` to define next milestone
+Next: Complete requirements and roadmap
 
 ---
-*Updated: 2026-01-23 after v1.3 milestone completion*
+*Updated: 2026-01-23 after v1.4 milestone started*

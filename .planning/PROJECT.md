@@ -8,6 +8,16 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.4 Generated Project Validation
+
+**Goal:** Ensure all generated project configurations build and pass tests.
+
+**Target features:**
+- Test harness for generating projects with different platform/auth configs
+- Validation pipeline: npm install → build → tests pass
+- Local test runner for developers
+- Tiered CI: core configs on PRs, full 14-config matrix on releases
+
 ## Current State (v1.3.0)
 
 Shipped v1.3.0 on 2026-01-23. CLI now separates concerns:
@@ -50,7 +60,12 @@ Tech stack:
 
 ### Active
 
-(None — define in next milestone with `/gsd:new-milestone`)
+- [ ] Test harness for programmatic project generation
+- [ ] Validation of platform combinations (web, mobile, api)
+- [ ] Validation of auth providers (Cognito, Auth0)
+- [ ] Local test runner (npm test)
+- [ ] CI workflow for PR validation (core configs)
+- [ ] CI workflow for release validation (full matrix)
 
 ### Out of Scope
 
@@ -88,4 +103,4 @@ Tech stack:
 | Platform tokens for README | Conditional documentation per platform selection | ✓ Good |
 
 ---
-*Last updated: 2026-01-23 after v1.3 milestone complete*
+*Last updated: 2026-01-23 after v1.4 milestone started*
