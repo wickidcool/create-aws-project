@@ -65,25 +65,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARN-01 | — | Pending |
-| HARN-02 | — | Pending |
-| HARN-03 | — | Pending |
-| HARN-04 | — | Pending |
-| HARN-05 | — | Pending |
-| REPT-01 | — | Pending |
-| REPT-02 | — | Pending |
-| REPT-03 | — | Pending |
-| REPT-04 | — | Pending |
-| REPT-05 | — | Pending |
-| CICD-01 | — | Pending |
-| CICD-02 | — | Pending |
-| CICD-03 | — | Pending |
+| HARN-01 | Phase 11 | Pending |
+| HARN-02 | Phase 10 | Pending |
+| HARN-03 | Phase 11 | Pending |
+| HARN-04 | Phase 11 | Pending |
+| HARN-05 | Phase 10 | Pending |
+| REPT-01 | Phase 13 | Pending |
+| REPT-02 | Phase 13 | Pending |
+| REPT-03 | Phase 11 | Pending |
+| REPT-04 | Phase 13 | Pending |
+| REPT-05 | Phase 13 | Pending |
+| CICD-01 | Phase 14 | Pending |
+| CICD-02 | Phase 14 | Pending |
+| CICD-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.4 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 (pending roadmap)
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-23 after initial definition*
+*Last updated: 2026-01-23 after roadmap creation*
