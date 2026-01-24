@@ -75,10 +75,10 @@ Plans:
   2. Matrix defines all 14 configurations with descriptive names
   3. Configurations are tagged with tier (smoke, core, full)
   4. Core tier includes at least one config per platform and per auth provider
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 12-01-PLAN.md — Config factories and tiered test matrix
 
 ### Phase 13: Reporting and Local Runner
 **Goal**: Developers can run validation locally with clear progress and summary output
@@ -117,7 +117,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 |-------|-----------|----------------|--------|-----------|
 | 10. Test Harness Foundation | v1.4 | 1/1 | Complete | 2026-01-23 |
 | 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
-| 12. Test Fixtures and Matrix | v1.4 | 0/TBD | Not started | - |
+| 12. Test Fixtures and Matrix | v1.4 | 0/1 | Planned | - |
 | 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
 | 14. CI Integration | v1.4 | 0/TBD | Not started | - |
 
