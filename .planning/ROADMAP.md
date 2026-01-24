@@ -89,10 +89,10 @@ Plans:
   2. Progress shows which configuration is testing (e.g., "Testing 1/14: web-api-cognito")
   3. Failed validations display stdout/stderr for debugging
   4. Summary table at end shows pass/fail for all tested configs
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — Local runner with spinner progress and npm scripts
 
 ### Phase 14: CI Integration
 **Goal**: CI automatically validates core configs on PRs and full matrix on releases
@@ -118,7 +118,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 | 10. Test Harness Foundation | v1.4 | 1/1 | Complete | 2026-01-23 |
 | 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 12. Test Fixtures and Matrix | v1.4 | 1/1 | Complete | 2026-01-24 |
-| 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
+| 13. Reporting and Local Runner | v1.4 | 0/1 | Not started | - |
 | 14. CI Integration | v1.4 | 0/TBD | Not started | - |
 
 ---
