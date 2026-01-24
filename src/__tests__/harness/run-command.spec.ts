@@ -60,4 +60,33 @@ describe('runCommand', () => {
       expect(result.output).toContain('test content');
     });
   });
+
+  it('returns timedOut when command exceeds timeout', async () => {
+    await withTempDir('test-harness-', async (dir) => {
+      const result = await runCommand(
+        'node',
+        ['-e', "setTimeout(() => {}, 5000)"],
+        dir,
+        100 // 100ms timeout
+      );
+      expect(result.success).toBe(false);
+      expect(result.timedOut).toBe(true);
+    });
+  });
+
+  it('returns timedOut false on normal success', async () => {
+    await withTempDir('test-harness-', async (dir) => {
+      const result = await runCommand('node', ['--version'], dir);
+      expect(result.success).toBe(true);
+      expect(result.timedOut).toBe(false);
+    });
+  });
+
+  it('returns timedOut false on normal failure', async () => {
+    await withTempDir('test-harness-', async (dir) => {
+      const result = await runCommand('node', ['-e', 'process.exit(1)'], dir);
+      expect(result.success).toBe(false);
+      expect(result.timedOut).toBe(false);
+    });
+  });
 });
