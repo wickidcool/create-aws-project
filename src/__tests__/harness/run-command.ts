@@ -21,11 +21,12 @@ export async function runCommand(
       exitCode: result.exitCode ?? 0,
       output: result.all ?? '',
     };
-  } catch (error: any) {
+  } catch (error) {
+    const execaError = error as { exitCode?: number; all?: string; message?: string };
     return {
       success: false,
-      exitCode: error.exitCode ?? 1,
-      output: error.all ?? error.message,
+      exitCode: execaError.exitCode ?? 1,
+      output: execaError.all ?? execaError.message ?? '',
     };
   }
 }
