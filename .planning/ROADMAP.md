@@ -61,10 +61,10 @@ Plans:
   2. Pipeline runs npm install, npm run build, npm test sequentially
   3. Non-zero exit code from any step fails the validation with captured output
   4. Each step has configurable timeout (default 10 minutes)
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 11-01: TBD
+- [ ] 11-01-PLAN.md — Validation pipeline with timeout support and step tracking
 
 ### Phase 12: Test Fixtures and Matrix
 **Goal**: Test configurations are defined as typed factories with tiered execution support
@@ -116,11 +116,11 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Test Harness Foundation | v1.4 | 1/1 | Complete | 2026-01-23 |
-| 11. Validation Pipeline | v1.4 | 0/TBD | Not started | - |
+| 11. Validation Pipeline | v1.4 | 0/1 | Not started | - |
 | 12. Test Fixtures and Matrix | v1.4 | 0/TBD | Not started | - |
 | 13. Reporting and Local Runner | v1.4 | 0/TBD | Not started | - |
 | 14. CI Integration | v1.4 | 0/TBD | Not started | - |
 
 ---
 *Created: 2026-01-23*
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-24*
