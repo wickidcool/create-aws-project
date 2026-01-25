@@ -99,14 +99,14 @@ Plans:
 **Depends on**: Phase 13
 **Requirements**: CICD-01, CICD-02
 **Success Criteria** (what must be TRUE):
-  1. PR workflow runs validation on core tier (3-4 configs)
+  1. PR workflow runs validation on core tier (5 configs)
   2. Release workflow runs validation on full 14-config matrix
   3. CI failure blocks PR merge or release with clear error output
   4. Workflow uses matrix strategy for parallel config execution
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 14-01: TBD
+- [ ] 14-01-PLAN.md — CI workflows with matrix strategy for PR and release validation
 
 ## Progress
 
@@ -119,7 +119,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 | 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 12. Test Fixtures and Matrix | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 13. Reporting and Local Runner | v1.4 | 1/1 | Complete | 2026-01-24 |
-| 14. CI Integration | v1.4 | 0/TBD | Not started | - |
+| 14. CI Integration | v1.4 | 0/1 | Not started | - |
 
 ---
 *Created: 2026-01-23*
