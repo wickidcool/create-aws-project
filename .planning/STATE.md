@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** v1.4 Generated Project Validation - Phase 13
+**Current focus:** v1.4 Generated Project Validation - Phase 14 Complete
 
 ## Current Position
 
-Phase: 13 of 14 (Reporting and Local Runner)
-Plan: 01 of 01 complete
+Phase: 14 of 14 (CI Integration)
+Plan: 01 of 01
 Status: Phase complete
-Last activity: 2026-01-24 — Completed 13-01-PLAN.md
+Last activity: 2026-01-24 — Completed 14-01-PLAN.md
 
-Progress: ████████████████░░░░ 80% (v1.4: 4/5 phases)
+Progress: ████████████████████ 100% (v1.4: 5/5 phases complete)
 
 ## Milestones
 
@@ -22,7 +22,7 @@ Progress: ████████████████░░░░ 80% (v1.4
 |---------|------|--------|--------|---------|
 | v1.2 | AWS Organizations Support | 1-3 | Complete | 2026-01-20 |
 | v1.3 | CLI Architecture Refactor | 4-9 | Complete | 2026-01-23 |
-| v1.4 | Generated Project Validation | 10-14 | In Progress | — |
+| v1.4 | Generated Project Validation | 10-14 | Complete | 2026-01-24 |
 
 ## Performance Metrics
 
@@ -51,7 +51,7 @@ Progress: ████████████████░░░░ 80% (v1.4
 
 All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
 
-**Recent Decisions (Phase 10-13):**
+**Recent Decisions (Phase 10-14):**
 - Try-finally cleanup pattern: Guarantee temp directory cleanup even when test throws
 - Warn-don't-throw on cleanup failure: Cleanup errors log warnings to avoid masking test failures
 - Interleaved output capture: Use execa's all:true for stdout/stderr in order
@@ -64,6 +64,11 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - CI detection for progress: TTY spinners for local dev, plain logging for CI (prevents ANSI pollution)
 - Use npm install not npm ci: Generated projects lack package-lock.json files
 - Use build:all script: Matches Nx monorepo structure in generated projects
+- PR validation runs core tier (5 configs): Balance speed vs coverage (2-3 min)
+- Release validation runs full matrix (14 configs): Comprehensive pre-release validation (3-5 min)
+- fail-fast: false in CI workflows: Report all config failures, not just first
+- ci-complete/release-complete jobs: Stable job names for branch protection integration
+- Single config execution for CI matrix: npm run test:e2e -- config-name
 
 ### Deferred Issues
 
@@ -80,9 +85,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Phase 13 complete, template errors fixed
+Stopped at: Phase 14 complete - v1.4 milestone complete
 Resume file: None
-Next: `/gsd:discuss-phase 14` or `/gsd:plan-phase 14`
+Next: Define v1.5 milestone or ship v1.4 release
 
 ---
-*Updated: 2026-01-24 after Phase 13 complete*
+*Updated: 2026-01-24 after Phase 14 complete - v1.4 Generated Project Validation milestone shipped*
