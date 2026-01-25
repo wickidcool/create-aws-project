@@ -1,0 +1,53 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # Core tier: smoke + core = 5 configs
+        config:
+          - web-api-cognito    # smoke tier
+          - web-cognito        # core tier
+          - mobile-auth0       # core tier
+          - api-cognito        # core tier
+          - full-auth0         # core tier
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate configuration
+        run: npm run test:e2e -- ${{ matrix.config }}
+        env:
+          CI: true
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-logs-${{ matrix.config }}
+          path: /tmp/test-*/validation.log
+          retention-days: 7
+
+  ci-complete:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All core validations passed"
