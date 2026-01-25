@@ -10,8 +10,8 @@ export interface Auth0Config {
 }
 
 export const auth0Config: Auth0Config = {
-  domain: import.meta.env.VITE_AUTH0_DOMAIN || '',
-  clientId: import.meta.env.VITE_AUTH0_CLIENT_ID || '',
-  audience: import.meta.env.VITE_AUTH0_AUDIENCE || undefined,
+  domain: import.meta.env['VITE_AUTH0_DOMAIN'] ?? '',
+  clientId: import.meta.env['VITE_AUTH0_CLIENT_ID'] ?? '',
+  audience: import.meta.env['VITE_AUTH0_AUDIENCE'] ?? undefined,
   redirectUri: typeof window !== 'undefined' ? window.location.origin : '',
 };

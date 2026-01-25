@@ -40,7 +40,7 @@ async function getMeHandler(
   return successResponse({
     id: user.sub,
     email: user.email,
-    emailVerified: user.tokenPayload.email_verified,
+    emailVerified: user.tokenPayload['email_verified'],
     groups: user.groups || [],
   }, HTTP_STATUS.OK);
   // {{/if AUTH_COGNITO}}
@@ -51,7 +51,7 @@ async function getMeHandler(
   return successResponse({
     id: user.sub,
     email: user.email,
-    emailVerified: user.tokenPayload.email_verified,
+    emailVerified: user.tokenPayload['email_verified'],
     permissions: user.permissions || [],
   }, HTTP_STATUS.OK);
   // {{/if AUTH_AUTH0}}

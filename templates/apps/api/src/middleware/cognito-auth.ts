@@ -41,7 +41,7 @@ export async function verifyToken(authHeader: string | undefined): Promise<AuthU
     const payload = await verifier.verify(token);
     return {
       sub: payload.sub,
-      email: payload.email as string | undefined,
+      email: payload['email'] as string | undefined,
       groups: payload['cognito:groups'] as string[] | undefined,
       tokenPayload: payload,
     };
@@ -72,8 +72,8 @@ export function requireAuth<T>(
   handler: (event: T, user: AuthUser) => Promise<unknown>
 ): (event: T) => Promise<unknown> {
   return async (event: T) => {
-    const authHeader = (event as Record<string, Record<string, string>>).headers?.authorization ||
-                       (event as Record<string, Record<string, string>>).headers?.Authorization;
+    const authHeader = (event as Record<string, Record<string, string>>)['headers']?.['authorization'] ||
+                       (event as Record<string, Record<string, string>>)['headers']?.['Authorization'];
 
     const user = await verifyToken(authHeader);
 

@@ -9,7 +9,7 @@ import type { AuthUser } from '../middleware/cognito-auth';
  * @returns AuthUser if claims present in context, null otherwise
  */
 export function getAuthUserFromContext(event: APIGatewayProxyEvent): AuthUser | null {
-  const claims = event.requestContext?.authorizer?.claims;
+  const claims = event.requestContext?.authorizer?.['claims'];
 
   if (!claims) {
     return null;

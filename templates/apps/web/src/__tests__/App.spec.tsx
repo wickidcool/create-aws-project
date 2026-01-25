@@ -14,6 +14,18 @@ jest.mock('../config/api', () => ({
   },
 }));
 
+// Mock useAuth hook to provide auth context for tests
+jest.mock('../auth/use-auth', () => ({
+  useAuth: () => ({
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    login: jest.fn(),
+    logout: jest.fn(),
+    getAccessToken: jest.fn().mockResolvedValue(null),
+  }),
+}));
+
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const renderWithChakra = async (component: React.ReactElement) => {
