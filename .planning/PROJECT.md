@@ -2,36 +2,29 @@
 
 ## What This Is
 
-An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with separate post-install commands for AWS and GitHub setup.
+An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with separate post-install commands for AWS and GitHub setup. Includes automated validation of all 14 generated project configurations.
 
 ## Core Value
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
-## Current Milestone: v1.4 Generated Project Validation
+## Current State (v1.4.0)
 
-**Goal:** Ensure all generated project configurations build and pass tests.
+Shipped v1.4.0 on 2026-01-24. Full validation pipeline for generated projects:
 
-**Target features:**
-- Test harness for generating projects with different platform/auth configs
-- Validation pipeline: npm install → build → tests pass
-- Local test runner for developers
-- Tiered CI: core configs on PRs, full 14-config matrix on releases
-
-## Current State (v1.3.0)
-
-Shipped v1.3.0 on 2026-01-23. CLI now separates concerns:
 - **Wizard:** 7 prompts for project scaffolding (name, platforms, auth, features, region, theme)
 - **setup-aws-envs:** Creates AWS Organization and dev/stage/prod accounts
 - **initialize-github <env>:** Configures GitHub Environment with AWS credentials
+- **Validation:** 14-config test matrix validates all platform/auth combinations build and pass tests
 
 Tech stack:
-- TypeScript with ES modules (~9,600 LOC)
+- TypeScript with ES modules (~10,700 LOC)
 - `prompts` library for interactive wizard
 - AWS SDK v3 (Organizations, IAM, STS)
 - GitHub REST API with tweetnacl encryption
 - Template-based generation with `{{TOKEN}}` substitution
 - Conditional Handlebars blocks for platform/feature-specific code
+- Test harness with execa for E2E validation
 
 ## Requirements
 
@@ -57,15 +50,16 @@ Tech stack:
 - ✓ CLI command routing with project context detection — v1.3.0
 - ✓ Post-install workflow documentation — v1.3.0
 - ✓ README template for generated projects — v1.3.0
+- ✓ Test harness for programmatic project generation — v1.4.0
+- ✓ Validation of platform combinations (web, mobile, api) — v1.4.0
+- ✓ Validation of auth providers (Cognito, Auth0) — v1.4.0
+- ✓ Local test runner (`npm run test:e2e`) — v1.4.0
+- ✓ CI workflow for PR validation (core configs) — v1.4.0
+- ✓ CI workflow for release validation (full matrix) — v1.4.0
 
 ### Active
 
-- [ ] Test harness for programmatic project generation
-- [ ] Validation of platform combinations (web, mobile, api)
-- [ ] Validation of auth providers (Cognito, Auth0)
-- [ ] Local test runner (npm test)
-- [ ] CI workflow for PR validation (core configs)
-- [ ] CI workflow for release validation (full matrix)
+(None — run `/gsd:new-milestone` to define v1.5 requirements)
 
 ### Out of Scope
 
@@ -73,6 +67,8 @@ Tech stack:
 - SSO/IAM Identity Center integration — complexity
 - Cost budgets/alerts per environment — nice-to-have, not core
 - `initialize-github all` option — users run per-environment for granular control
+- Performance optimizations (cached npm install, parallel validation) — future enhancement
+- Watch mode for template development — future enhancement
 
 ## Constraints
 
@@ -101,6 +97,11 @@ Tech stack:
 | Ora spinner for AWS operations | Clear progress feedback for long operations | ✓ Good |
 | Sequential email prompts | Avoids TypeScript self-reference in validation | ✓ Good |
 | Platform tokens for README | Conditional documentation per platform selection | ✓ Good |
+| Try-finally temp dir cleanup | Guarantee cleanup even when test throws | ✓ Good |
+| 10-minute timeout per validation step | Balance between catching hangs and allowing slow builds | ✓ Good |
+| Tiered test matrix (smoke/core/full) | Balance speed vs coverage for different contexts | ✓ Good |
+| CI detection for progress display | TTY spinners for local, plain logging for CI | ✓ Good |
+| fail-fast: false in CI | Report all config failures, not just first | ✓ Good |
 
 ---
-*Last updated: 2026-01-23 after v1.4 milestone started*
+*Last updated: 2026-01-24 after v1.4 milestone complete*
