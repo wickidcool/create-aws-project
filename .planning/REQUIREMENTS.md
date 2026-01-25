@@ -9,11 +9,11 @@ Requirements for generated project validation. Each maps to roadmap phases.
 
 ### Test Harness Infrastructure
 
-- [ ] **HARN-01**: Test harness can generate projects programmatically with any platform/auth configuration
-- [ ] **HARN-02**: Each test run uses isolated temporary directory that doesn't pollute file system
-- [ ] **HARN-03**: Validation pipeline runs npm install, npm run build, and npm test sequentially
-- [ ] **HARN-04**: Validation captures exit codes and fails if any step returns non-zero
-- [ ] **HARN-05**: Temporary directories are cleaned up after successful test runs
+- [x] **HARN-01**: Test harness can generate projects programmatically with any platform/auth configuration
+- [x] **HARN-02**: Each test run uses isolated temporary directory that doesn't pollute file system
+- [x] **HARN-03**: Validation pipeline runs npm install, npm run build, and npm test sequentially
+- [x] **HARN-04**: Validation captures exit codes and fails if any step returns non-zero
+- [x] **HARN-05**: Temporary directories are cleaned up after successful test runs
 
 ### Reporting
 
@@ -25,9 +25,9 @@ Requirements for generated project validation. Each maps to roadmap phases.
 
 ### CI Integration
 
-- [ ] **CICD-01**: PR workflow runs validation on core configuration subset (3-4 representative configs)
-- [ ] **CICD-02**: Release workflow runs validation on full 14-configuration matrix
-- [ ] **CICD-03**: Configuration matrix supports tiered execution (core tier vs full tier)
+- [x] **CICD-01**: PR workflow runs validation on core configuration subset (3-4 representative configs)
+- [x] **CICD-02**: Release workflow runs validation on full 14-configuration matrix
+- [x] **CICD-03**: Configuration matrix supports tiered execution (core tier vs full tier)
 
 ## Future Requirements
 
@@ -75,8 +75,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPT-03 | Phase 11 | Complete |
 | REPT-04 | Phase 13 | Complete |
 | REPT-05 | Phase 13 | Complete |
-| CICD-01 | Phase 14 | Pending |
-| CICD-02 | Phase 14 | Pending |
+| CICD-01 | Phase 14 | Complete |
+| CICD-02 | Phase 14 | Complete |
 | CICD-03 | Phase 12 | Complete |
 
 **Coverage:**
@@ -86,4 +86,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 13 complete*
+*Last updated: 2026-01-24 after Phase 14 complete - v1.4 milestone complete*

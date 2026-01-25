@@ -8,7 +8,7 @@ Milestone v1.4 builds a test harness that validates all 14 generated project con
 
 - ✅ **v1.2 AWS Organizations Support** - Phases 1-3 (shipped 2026-01-20)
 - ✅ **v1.3 CLI Architecture Refactor** - Phases 4-9 (shipped 2026-01-23)
-- 🚧 **v1.4 Generated Project Validation** - Phases 10-14 (in progress)
+- ✅ **v1.4 Generated Project Validation** - Phases 10-14 (shipped 2026-01-24)
 
 ## Phases
 
@@ -26,7 +26,7 @@ See `.planning/milestones/v1.3/ROADMAP-ARCHIVE.md` for details.
 
 </details>
 
-### v1.4 Generated Project Validation (In Progress)
+### v1.4 Generated Project Validation (Complete)
 
 **Milestone Goal:** Ensure all generated project configurations build and pass tests through automated validation.
 
@@ -34,7 +34,7 @@ See `.planning/milestones/v1.3/ROADMAP-ARCHIVE.md` for details.
 - [x] **Phase 11: Validation Pipeline** - Core runner that generates, installs, builds, tests
 - [x] **Phase 12: Test Fixtures and Matrix** - Configuration factories and tiered scenario definitions
 - [x] **Phase 13: Reporting and Local Runner** - Progress output, summary table, npm scripts
-- [ ] **Phase 14: CI Integration** - PR workflow core configs, release workflow full matrix
+- [x] **Phase 14: CI Integration** - PR workflow core configs, release workflow full matrix
 
 ## Phase Details
 
@@ -106,7 +106,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 14-01-PLAN.md — CI workflows with matrix strategy for PR and release validation
+- [x] 14-01-PLAN.md — CI workflows with matrix strategy for PR and release validation
 
 ## Progress
 
@@ -119,7 +119,7 @@ Phases execute in numeric order: 10 -> 11 -> 12 -> 13 -> 14
 | 11. Validation Pipeline | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 12. Test Fixtures and Matrix | v1.4 | 1/1 | Complete | 2026-01-24 |
 | 13. Reporting and Local Runner | v1.4 | 1/1 | Complete | 2026-01-24 |
-| 14. CI Integration | v1.4 | 0/1 | Not started | - |
+| 14. CI Integration | v1.4 | 1/1 | Complete | 2026-01-24 |
 
 ---
 *Created: 2026-01-23*
