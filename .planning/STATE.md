@@ -71,12 +71,7 @@ None.
 
 ### Blockers/Concerns
 
-**Template TypeScript Errors (discovered in Phase 13):**
-- Validation smoke tier revealed TS4111 errors in generated templates
-- Missing aws-amplify dependency in web app
-- Missing amplifyConfig export
-- Impact: All E2E validations will fail until templates are fixed
-- Recommendation: Fix before Phase 14 (CI integration) to enable passing builds
+None. (Template TypeScript errors fixed 2026-01-24)
 
 ### Outstanding Todos
 
@@ -85,9 +80,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Phase 13 complete
+Stopped at: Phase 13 complete, template errors fixed
 Resume file: None
-Next: Fix template TypeScript errors, then `/gsd:discuss-phase 14` or `/gsd:plan-phase 14`
+Next: `/gsd:discuss-phase 14` or `/gsd:plan-phase 14`
 
 ---
 *Updated: 2026-01-24 after Phase 13 complete*
