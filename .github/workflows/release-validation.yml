@@ -1,0 +1,61 @@
+name: Release Validation
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Full tier: all 14 configs
+        config:
+          - web-api-cognito
+          - web-cognito
+          - mobile-auth0
+          - api-cognito
+          - full-auth0
+          - web-auth0
+          - mobile-cognito
+          - api-auth0
+          - web-mobile-cognito
+          - web-mobile-auth0
+          - web-api-auth0
+          - mobile-api-cognito
+          - mobile-api-auth0
+          - full-cognito
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate configuration
+        run: npm run test:e2e -- ${{ matrix.config }}
+        env:
+          CI: true
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-logs-${{ matrix.config }}
+          path: /tmp/test-*/validation.log
+          retention-days: 7
+
+  release-complete:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All 14 configurations validated successfully"
