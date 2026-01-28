@@ -2,7 +2,7 @@
 
 Create a new AWS project from scratch including CloudFront, API Gateway, Lambdas, Cognito or Auth0, DynamoDB. GitHub pipeline for testing and deploying.
 
-[![npm version](https://img.shields.io/npm/v/create-aws-starter-kit.svg)](https://www.npmjs.com/package/create-aws-starter-kit)
+[![npm version](https://img.shields.io/npm/v/create-aws-project.svg)](https://www.npmjs.com/package/create-aws-project)
 
 ## Quick Start
 
@@ -33,7 +33,7 @@ The generated project is a full-stack Nx monorepo with:
 ## CLI Options
 
 ```
-create-aws-starter-kit [command] [options]
+create-aws-project [command] [options]
 
 Commands:
   (default)           Create a new project (interactive wizard)
@@ -45,10 +45,10 @@ Options:
   --version, -v       Show version number
 
 Examples:
-  npx create-aws-starter-kit my-app
-  npx create-aws-starter-kit setup-aws-envs
-  npx create-aws-starter-kit initialize-github dev
-  npx create-aws-starter-kit --help
+  npx create-aws-project my-app
+  npx create-aws-project setup-aws-envs
+  npx create-aws-project initialize-github dev
+  npx create-aws-project --help
 ```
 
 ## Wizard Prompts
