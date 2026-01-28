@@ -74,30 +74,6 @@ The interactive wizard will ask you about:
   - Note: Node 25+ has Jest compatibility issues - use 22.x or 24.x
 - **npm** - Included with Node.js
 
-## After Generation
-
-Once your project is created:
-
-```bash
-cd my-project
-npm install
-```
-
-Then start developing:
-
-```bash
-# Start web app
-npm run web
-
-# Start mobile app
-npm run mobile
-
-# Deploy API to AWS
-npm run cdk:deploy
-```
-
-See the generated project's README for detailed documentation.
-
 ## Post-Install Setup
 
 After creating your project, you'll set up AWS environments and GitHub deployment. This is a one-time setup.
@@ -109,7 +85,29 @@ Before you begin:
 - GitHub repository created for your project
 - GitHub Personal Access Token with "repo" scope ([create one here](https://github.com/settings/tokens/new))
 
-### Step 1: Set Up AWS Environments
+### Step 1: connect to your .git project
+
+* Initialize the repository
+```
+git init
+```
+
+* Add the remote repository using the git remote add <name> <url> command. A common practice is to name it origin.
+```bash
+git remote add origin <REMOTE_URL>
+```
+
+* Verify the connection by listing your remotes. The -v flag shows the URLs.
+```bash
+git remote -v
+```
+
+* Push your local commits to the remote repository for the first time.
+```bash
+git push -u origin main
+```
+
+### Step 2: Set Up AWS Environments
 
 From your project directory, run:
 
@@ -136,7 +134,7 @@ AWS environment setup complete!
 
 Account IDs are saved to `.aws-starter-config.json` for the next step.
 
-### Step 2: Configure GitHub Environments
+### Step 3: Configure GitHub Environments
 
 For each environment, run:
 
@@ -214,6 +212,30 @@ Your Personal Access Token may be invalid or missing permissions. Ensure:
 3. Token is not expired
 
 Create a new token at: https://github.com/settings/tokens/new
+
+## After Setup
+
+Once your project is set up:
+
+```bash
+cd my-project
+npm install
+```
+
+Then start developing:
+
+```bash
+# Start web app
+npm run web
+
+# Start mobile app
+npm run mobile
+
+# Deploy API to AWS
+npm run cdk:deploy
+```
+
+See the generated project's README for detailed documentation.
 
 ## License
 
