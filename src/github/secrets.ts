@@ -1,9 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import nacl from 'tweetnacl';
-import naclUtil from 'tweetnacl-util';
+import sodium from 'libsodium-wrappers';
 import pc from 'picocolors';
-
-const { decodeUTF8, encodeBase64, decodeBase64 } = naclUtil;
 
 /**
  * GitHub secrets service module
@@ -76,65 +73,16 @@ export async function encryptSecret(
   publicKey: string,
   secretValue: string
 ): Promise<string> {
-  // Decode the public key from base64
-  const publicKeyBytes = decodeBase64(publicKey);
+  await sodium.ready;
 
-  // Convert the secret value to UTF-8 bytes
-  const secretBytes = decodeUTF8(secretValue);
-
-  // Encrypt using libsodium sealed box (via tweetnacl)
-  const encryptedBytes = naclSealedBox(secretBytes, publicKeyBytes);
-
-  // Return base64-encoded encrypted value
-  return encodeBase64(encryptedBytes);
-}
-
-/**
- * Sealed box encryption compatible with GitHub's libsodium implementation
- */
-function naclSealedBox(message: Uint8Array, publicKey: Uint8Array): Uint8Array {
-  // Generate ephemeral key pair
-  const ephemeralKeyPair = nacl.box.keyPair();
-
-  // Compute nonce from ephemeral public key and recipient public key
-  const nonce = new Uint8Array(nacl.box.nonceLength);
-  const nonceInput = new Uint8Array(
-    ephemeralKeyPair.publicKey.length + publicKey.length
-  );
-  nonceInput.set(ephemeralKeyPair.publicKey);
-  nonceInput.set(publicKey, ephemeralKeyPair.publicKey.length);
-
-  // Use first 24 bytes of blake2b hash as nonce (simplified: use crypto hash)
-  const hashBytes = naclHash(nonceInput).slice(0, nacl.box.nonceLength);
-  nonce.set(hashBytes);
-
-  // Encrypt the message
-  const ciphertext = nacl.box(
-    message,
-    nonce,
+  const publicKeyBytes = sodium.from_base64(
     publicKey,
-    ephemeralKeyPair.secretKey
+    sodium.base64_variants.ORIGINAL
   );
+  const secretBytes = sodium.from_string(secretValue);
+  const encryptedBytes = sodium.crypto_box_seal(secretBytes, publicKeyBytes);
 
-  if (!ciphertext) {
-    throw new Error('Encryption failed');
-  }
-
-  // Concatenate ephemeral public key and ciphertext (sealed box format)
-  const sealedBox = new Uint8Array(
-    ephemeralKeyPair.publicKey.length + ciphertext.length
-  );
-  sealedBox.set(ephemeralKeyPair.publicKey);
-  sealedBox.set(ciphertext, ephemeralKeyPair.publicKey.length);
-
-  return sealedBox;
-}
-
-/**
- * Simple hash function for nonce generation
- */
-function naclHash(input: Uint8Array): Uint8Array {
-  return nacl.hash(input);
+  return sodium.to_base64(encryptedBytes, sodium.base64_variants.ORIGINAL);
 }
 
 /**
