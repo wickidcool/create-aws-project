@@ -14,6 +14,7 @@ import { requireProjectContext } from '../utils/project-context.js';
 import {
   createCrossAccountIAMClient,
   createDeploymentUserWithCredentials,
+  createAccessKey,
 } from '../aws/iam.js';
 import {
   createGitHubClient,
@@ -340,14 +341,29 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     spinner.text = `Assuming role in ${env} account (${accountId})...`;
     const iamClient = createCrossAccountIAMClient(awsRegion, accountId);
 
-    // Step 2: Create deployment user and credentials
-    spinner.text = `Creating IAM deployment user...`;
-    const credentials = await createDeploymentUserWithCredentials(
-      iamClient,
-      projectName,
-      env,
-      accountId
-    );
+    // Step 2: Get deployment user credentials
+    // If setup-aws-envs already created the user, just create an access key.
+    // Otherwise fall back to full user creation (backward compat with older projects).
+    const existingUserName = config.deploymentUsers?.[env];
+    let userName: string;
+    let credentials: { accessKeyId: string; secretAccessKey: string };
+
+    if (existingUserName) {
+      spinner.text = `Using existing deployment user: ${existingUserName}`;
+      userName = existingUserName;
+      credentials = await createAccessKey(iamClient, userName);
+      spinner.succeed(`Created access key for ${userName}`);
+    } else {
+      spinner.text = `Creating IAM deployment user...`;
+      const fullCredentials = await createDeploymentUserWithCredentials(
+        iamClient,
+        projectName,
+        env,
+        accountId
+      );
+      userName = fullCredentials.userName;
+      credentials = fullCredentials;
+    }
 
     // Step 3: Configure GitHub
     const githubEnvName = GITHUB_ENV_NAMES[env];
@@ -369,8 +385,15 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     console.log(pc.green(`${env} environment setup complete!`));
     console.log('');
     console.log('Resources created:');
-    console.log(`  IAM User: ${pc.cyan(`arn:aws:iam::${accountId}:user/deployment/${credentials.userName}`)}`);
+    console.log(`  Deployment User: ${pc.cyan(userName)}`);
     console.log(`  GitHub Environment: ${pc.cyan(githubEnvName)}`);
+
+    // Add note if using existing user from setup-aws-envs
+    if (existingUserName) {
+      console.log('');
+      console.log(pc.dim('Note: Deployment user was created by setup-aws-envs. Access key created for GitHub.'));
+    }
+
     console.log('');
     console.log('View secrets at:');
     console.log(`  ${pc.cyan(`https://github.com/${repoInfo.owner}/${repoInfo.repo}/settings/environments`)}`);

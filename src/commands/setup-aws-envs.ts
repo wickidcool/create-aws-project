@@ -17,6 +17,12 @@ import {
   createAccount,
   waitForAccountCreation,
 } from '../aws/organizations.js';
+import {
+  createCrossAccountIAMClient,
+  createOrAdoptDeploymentUser,
+  createCDKDeploymentPolicy,
+  attachPolicyToUser,
+} from '../aws/iam.js';
 
 /**
  * Email addresses for each environment account
@@ -141,15 +147,23 @@ async function collectEmails(projectName: string): Promise<EnvironmentEmails> {
 }
 
 /**
- * Updates the config file with account IDs
+ * Updates the config file with account IDs and optionally deployment user names
  * @param configPath Path to the config file
  * @param accounts Record of environment to account ID
+ * @param deploymentUsers Optional record of environment to deployment user name
  */
-function updateConfigAccounts(configPath: string, accounts: Record<string, string>): void {
+function updateConfig(
+  configPath: string,
+  accounts: Record<string, string>,
+  deploymentUsers?: Record<string, string>
+): void {
   const content = readFileSync(configPath, 'utf-8');
   const config = JSON.parse(content);
 
   config.accounts = { ...config.accounts, ...accounts };
+  if (deploymentUsers) {
+    config.deploymentUsers = { ...config.deploymentUsers, ...deploymentUsers };
+  }
 
   writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
 }
@@ -229,14 +243,16 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
 
   // 2. Check if already configured (warn but don't abort - allows retry after partial failure)
   const existingAccounts = config.accounts ?? {};
+  const existingUsers = config.deploymentUsers ?? {};
   if (Object.keys(existingAccounts).length > 0) {
     console.log('');
     console.log(pc.yellow('Warning:') + ' AWS accounts already configured in this project:');
     for (const [env, id] of Object.entries(existingAccounts)) {
-      console.log(`  ${env}: ${id}`);
+      const userInfo = existingUsers[env] ? ` (user: ${existingUsers[env]})` : '';
+      console.log(`  ${env}: ${id}${userInfo}`);
     }
     console.log('');
-    console.log(pc.dim('Continuing will create additional accounts...'));
+    console.log(pc.dim('Continuing will skip existing accounts and create any missing ones...'));
   }
 
   // 3. Collect emails (all input before any AWS calls - per research pitfall #6)
@@ -262,9 +278,15 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
     }
 
     // Create accounts sequentially (per research - AWS rate limits require sequential)
-    const accounts: Record<string, string> = {};
+    const accounts: Record<string, string> = { ...existingAccounts };
 
     for (const env of ENVIRONMENTS) {
+      // Skip if account already exists
+      if (existingAccounts[env]) {
+        spinner.succeed(`Using existing ${env} account: ${existingAccounts[env]}`);
+        continue;
+      }
+
       spinner.start(`Creating ${env} account (this may take several minutes)...`);
 
       const accountName = `${config.projectName}-${env}`;
@@ -276,21 +298,53 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
       accounts[env] = result.accountId;
 
       // Save after EACH successful account (per research pitfall #3 - handle partial success)
-      updateConfigAccounts(configPath, accounts);
+      updateConfig(configPath, accounts);
 
       spinner.succeed(`Created ${env} account: ${result.accountId}`);
     }
 
-    // Final success
+    // Create IAM deployment users in each account
+    const deploymentUsers: Record<string, string> = { ...existingUsers };
+
+    for (const env of ENVIRONMENTS) {
+      // Skip if user already exists in config
+      if (existingUsers[env]) {
+        spinner.succeed(`Using existing deployment user: ${existingUsers[env]}`);
+        continue;
+      }
+
+      const accountId = accounts[env];
+      const userName = `${config.projectName}-${env}-deploy`;
+      const policyName = `${config.projectName}-${env}-cdk-deploy`;
+
+      spinner.start(`Creating deployment user in ${env} account...`);
+
+      const iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      await createOrAdoptDeploymentUser(iamClient, userName);
+
+      spinner.text = `Creating deployment policy for ${env}...`;
+      const policyArn = await createCDKDeploymentPolicy(iamClient, policyName, accountId);
+      await attachPolicyToUser(iamClient, userName, policyArn);
+
+      deploymentUsers[env] = userName;
+
+      // Save after EACH successful user creation
+      updateConfig(configPath, accounts, deploymentUsers);
+
+      spinner.succeed(`Created deployment user: ${userName}`);
+    }
+
+    // Final success with summary table
     console.log('');
     console.log(pc.green('AWS environment setup complete!'));
     console.log('');
-    console.log('Account IDs saved to config:');
-    for (const [env, id] of Object.entries(accounts)) {
-      console.log(`  ${env}: ${id}`);
+    console.log('Summary:');
+    console.log(`  ${'Environment'.padEnd(14)}${'Account ID'.padEnd(16)}Deployment User`);
+    for (const env of ENVIRONMENTS) {
+      console.log(`  ${env.padEnd(14)}${accounts[env].padEnd(16)}${deploymentUsers[env]}`);
     }
     console.log('');
-    console.log(pc.bold('Next step:'));
+    console.log('Deployment users created. Next: initialize-github to create access keys and push to GitHub.');
     console.log(`  ${pc.cyan('npx create-aws-project initialize-github dev')}`);
   } catch (error) {
     spinner.fail('AWS setup failed');

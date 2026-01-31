@@ -26,6 +26,7 @@ export interface ProjectConfigMinimal {
   awsRegion: string;
   configVersion?: string;
   accounts?: Record<string, string>;
+  deploymentUsers?: Record<string, string>;
 }
 
 /**

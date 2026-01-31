@@ -6,6 +6,8 @@ import {
   GetPolicyCommand,
   AttachUserPolicyCommand,
   CreateAccessKeyCommand,
+  ListUserTagsCommand,
+  ListAccessKeysCommand,
   NoSuchEntityException,
 } from '@aws-sdk/client-iam';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
@@ -89,22 +91,64 @@ async function policyExists(client: IAMClient, policyArn: string): Promise<boole
 }
 
 /**
- * Creates an IAM deployment user with path /deployment/
+ * Checks if an IAM user has a specific tag
+ * @param client - IAMClient instance
+ * @param userName - User name to check
+ * @param tagKey - Tag key to check for
+ * @param tagValue - Expected tag value
+ * @returns true if user has the tag with the specified value
+ */
+async function userHasTag(
+  client: IAMClient,
+  userName: string,
+  tagKey: string,
+  tagValue: string
+): Promise<boolean> {
+  try {
+    const command = new ListUserTagsCommand({ UserName: userName });
+    const response = await client.send(command);
+
+    return response.Tags?.some(
+      (tag) => tag.Key === tagKey && tag.Value === tagValue
+    ) ?? false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Creates an IAM deployment user with path /deployment/, or adopts existing tagged user
  * @param client - IAMClient instance
  * @param userName - User name (format: {project}-{environment}-deploy)
- * @throws Error if user already exists or creation fails
+ * @throws Error if user exists but was not created by this tool
  */
-export async function createDeploymentUser(
+export async function createOrAdoptDeploymentUser(
   client: IAMClient,
   userName: string
 ): Promise<void> {
   // Check if user already exists
   if (await userExists(client, userName)) {
-    throw new Error(
-      `IAM user "${userName}" already exists. Delete manually before retrying.`
+    // Check if user was created by this tool (has ManagedBy tag)
+    const isManagedByUs = await userHasTag(
+      client,
+      userName,
+      'ManagedBy',
+      'create-aws-starter-kit'
     );
+
+    if (isManagedByUs) {
+      // Adopt existing user - this is idempotent re-run
+      console.log(pc.yellow(`  Adopting existing deployment user: ${userName}`));
+      return;
+    } else {
+      // User exists but not managed by us - error
+      throw new Error(
+        `IAM user "${userName}" exists but was not created by this tool. Delete it or use a different project name.`
+      );
+    }
   }
 
+  // User doesn't exist - create it
   const command = new CreateUserCommand({
     UserName: userName,
     Path: '/deployment/',
@@ -117,6 +161,12 @@ export async function createDeploymentUser(
   await client.send(command);
   console.log(pc.green(`  Created IAM user: ${userName}`));
 }
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use createOrAdoptDeploymentUser instead
+ */
+export const createDeploymentUser = createOrAdoptDeploymentUser;
 
 /**
  * CDK deployment policy document with minimal permissions
@@ -277,16 +327,44 @@ export interface AccessKeyCredentials {
 }
 
 /**
+ * Gets the count of access keys for an IAM user
+ * @param client - IAMClient instance
+ * @param userName - IAM user name
+ * @returns Number of access keys (active + inactive)
+ */
+export async function getAccessKeyCount(
+  client: IAMClient,
+  userName: string
+): Promise<number> {
+  try {
+    const command = new ListAccessKeysCommand({ UserName: userName });
+    const response = await client.send(command);
+    return response.AccessKeyMetadata?.length ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Creates access key credentials for an IAM user
  * @param client - IAMClient instance
  * @param userName - IAM user name
  * @returns Access key ID and secret access key
+ * @throws Error if user already has 2 access keys (AWS maximum)
  * @note The secret access key is ONLY available at creation time
  */
 export async function createAccessKey(
   client: IAMClient,
   userName: string
 ): Promise<AccessKeyCredentials> {
+  // Check access key limit before attempting creation
+  const keyCount = await getAccessKeyCount(client, userName);
+  if (keyCount >= 2) {
+    throw new Error(
+      `IAM user ${userName} already has 2 access keys (AWS maximum). Delete an existing key in AWS Console > IAM > Users > ${userName} > Security credentials before retrying.`
+    );
+  }
+
   const command = new CreateAccessKeyCommand({
     UserName: userName,
   });
