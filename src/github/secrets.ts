@@ -1,6 +1,11 @@
 import { Octokit } from '@octokit/rest';
-import sodium from 'libsodium-wrappers';
+import { createRequire } from 'node:module';
 import pc from 'picocolors';
+
+// Use createRequire to load the CJS build of libsodium-wrappers.
+// The ESM build has a broken relative import for its libsodium dependency.
+const require = createRequire(import.meta.url);
+const sodium = require('libsodium-wrappers') as typeof import('libsodium-wrappers');
 
 /**
  * GitHub secrets service module

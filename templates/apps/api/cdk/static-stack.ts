@@ -3,7 +3,6 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as opensearchserverless from 'aws-cdk-lib/aws-opensearchserverless';
 import { Construct } from 'constructs';
 
 export interface StaticStackProps extends cdk.StackProps {
@@ -24,7 +23,6 @@ export class StaticStack extends cdk.Stack {
   public readonly bucket: s3.Bucket;
   public readonly api: apigateway.RestApi;
   public readonly distribution: cloudfront.Distribution;
-  public readonly openSearchCollection: opensearchserverless.CfnCollection;
 
   constructor(scope: Construct, id: string, props: StaticStackProps) {
     super(scope, id, props);
@@ -205,94 +203,6 @@ export class StaticStack extends cdk.Stack {
       ],
     });
 
-    // OpenSearch Serverless Collection
-    const collectionName = `{{PROJECT_NAME}}-${environmentName}`;
-
-    // Encryption policy (required for all collections)
-    const encryptionPolicy = new opensearchserverless.CfnSecurityPolicy(this, 'OpenSearchEncryptionPolicy', {
-      name: `${collectionName}-encryption`,
-      type: 'encryption',
-      policy: JSON.stringify({
-        Rules: [
-          {
-            ResourceType: 'collection',
-            Resource: [`collection/${collectionName}`],
-          },
-        ],
-        AWSOwnedKey: true,
-      }),
-    });
-
-    // Network policy - allows public access (adjust for production)
-    const networkPolicy = new opensearchserverless.CfnSecurityPolicy(this, 'OpenSearchNetworkPolicy', {
-      name: `${collectionName}-network`,
-      type: 'network',
-      policy: JSON.stringify([
-        {
-          Rules: [
-            {
-              ResourceType: 'collection',
-              Resource: [`collection/${collectionName}`],
-            },
-            {
-              ResourceType: 'dashboard',
-              Resource: [`collection/${collectionName}`],
-            },
-          ],
-          AllowFromPublic: true,
-        },
-      ]),
-    });
-
-    // Data access policy - grants access to the collection
-    const dataAccessPolicy = new opensearchserverless.CfnAccessPolicy(this, 'OpenSearchDataAccessPolicy', {
-      name: `${collectionName}-access`,
-      type: 'data',
-      policy: JSON.stringify([
-        {
-          Rules: [
-            {
-              ResourceType: 'collection',
-              Resource: [`collection/${collectionName}`],
-              Permission: [
-                'aoss:CreateCollectionItems',
-                'aoss:DeleteCollectionItems',
-                'aoss:UpdateCollectionItems',
-                'aoss:DescribeCollectionItems',
-              ],
-            },
-            {
-              ResourceType: 'index',
-              Resource: [`index/${collectionName}/*`],
-              Permission: [
-                'aoss:CreateIndex',
-                'aoss:DeleteIndex',
-                'aoss:UpdateIndex',
-                'aoss:DescribeIndex',
-                'aoss:ReadDocument',
-                'aoss:WriteDocument',
-              ],
-            },
-          ],
-          Principal: [
-            `arn:aws:iam::${this.account}:root`,
-          ],
-        },
-      ]),
-    });
-
-    // Create the OpenSearch Serverless collection
-    this.openSearchCollection = new opensearchserverless.CfnCollection(this, 'OpenSearchCollection', {
-      name: collectionName,
-      type: 'SEARCH', // SEARCH, TIMESERIES, or VECTORSEARCH
-      description: `OpenSearch Serverless collection for {{PROJECT_NAME_TITLE}} - ${environmentName}`,
-    });
-
-    // Ensure policies are created before the collection
-    this.openSearchCollection.addDependency(encryptionPolicy);
-    this.openSearchCollection.addDependency(networkPolicy);
-    this.openSearchCollection.addDependency(dataAccessPolicy);
-
     // Output important values
     new cdk.CfnOutput(this, 'BucketName', {
       value: this.bucket.bucketName,
@@ -338,24 +248,6 @@ export class StaticStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ApiUrlViaCdn', {
       value: `https://${this.distribution.distributionDomainName}/api`,
       description: 'API URL via CloudFront',
-    });
-
-    new cdk.CfnOutput(this, 'OpenSearchCollectionEndpoint', {
-      value: this.openSearchCollection.attrCollectionEndpoint,
-      description: 'OpenSearch Serverless collection endpoint',
-      exportName: `${environmentName}-opensearch-endpoint`,
-    });
-
-    new cdk.CfnOutput(this, 'OpenSearchDashboardEndpoint', {
-      value: this.openSearchCollection.attrDashboardEndpoint,
-      description: 'OpenSearch Serverless dashboard endpoint',
-      exportName: `${environmentName}-opensearch-dashboard`,
-    });
-
-    new cdk.CfnOutput(this, 'OpenSearchCollectionArn', {
-      value: this.openSearchCollection.attrArn,
-      description: 'OpenSearch Serverless collection ARN',
-      exportName: `${environmentName}-opensearch-arn`,
     });
   }
 }

@@ -1,4 +1,4 @@
-import '@testing-library/jest-native/extend-expect';
+import '@testing-library/react-native/extend-expect';
 
 // Mock expo-status-bar
 jest.mock('expo-status-bar', () => ({
