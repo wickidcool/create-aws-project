@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-24)
+See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** v1.5 Bug Fixes & Stability
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 15 — Formalize Bug Fixes
-Plan: 1 of 1
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 15-01-PLAN.md
+Phase: Not started (next milestone not yet defined)
+Plan: N/A
+Status: Ready to plan
+Last activity: 2026-01-31 — v1.5 milestone complete
 
-Progress: ████████████████████ 100% (1/1 plan complete)
+Progress: ████████████████████ v1.5 shipped
 
 ## Milestones
 
@@ -64,9 +64,11 @@ Progress: ████████████████████ 100% (1/1
 |--------|-------|
 | Phases completed | 1 |
 | Plans executed | 1 |
-| Duration | 4 minutes |
-| Files modified | 5 |
-| Commits | 2 |
+| Duration | 7 days |
+| Files modified | 27 |
+| Commits | 20 |
+| Lines | +1,755 / -267 |
+| LOC total | ~11,900 |
 | Tests passing | 118/118 |
 
 ## Accumulated Context
@@ -74,12 +76,6 @@ Progress: ████████████████████ 100% (1/1
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
-
-**v1.5 Key Decisions:**
-- Tag-based adoption of existing IAM users (safety over convenience)
-- Access key limit detection with actionable error messages
-- Summary table format for multi-environment output
-- Deployment user name (not full ARN) in CLI output
 
 ### Deferred Issues
 
@@ -96,9 +92,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: Completed 15-01-PLAN.md (phase 15 complete)
+Stopped at: v1.5 milestone complete
 Resume file: None
-Next: Ready to ship v1.5.0
+Next: Run `/gsd:new-milestone` to define next milestone
 
 ---
-*Updated: 2026-01-31 after phase 15 completion*
+*Updated: 2026-01-31 after v1.5 milestone completion*

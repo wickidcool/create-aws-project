@@ -1,5 +1,32 @@
 # Project Milestones: create-aws-starter-kit
 
+## v1.5 Bug Fixes & Stability (Shipped: 2026-01-31)
+
+**Delivered:** Formalized bug fixes from v1.4 validation into stable release with corrected encryption, template dependencies, and hardened CLI commands for idempotent re-runs.
+
+**Phases completed:** 15 (1 plan total)
+
+**Key accomplishments:**
+
+- Replaced broken tweetnacl encryption with libsodium crypto_box_seal (fixes GitHub secrets 422 errors)
+- Hardened CLI commands for idempotent re-runs with tag-based IAM user adoption
+- Fixed generated project test dependencies (@testing-library/dom, extend-expect, jest-jasmine2)
+- Two-step deployment flow: setup-aws-envs creates users, initialize-github reads from config
+- Full verification: 118/118 unit tests, 7/7 UAT tests, 10/10 requirements satisfied
+
+**Stats:**
+
+- 27 files created/modified
+- +1,755 / -267 lines (11,918 total TypeScript LOC)
+- 1 phase, 1 plan, 20 commits
+- 7 days (2026-01-24 → 2026-01-31)
+
+**Git range:** `44d219b` → `c775bd9`
+
+**What's next:** TBD (run `/gsd:new-milestone` to define next milestone)
+
+---
+
 ## v1.4 Generated Project Validation (Shipped: 2026-01-24)
 
 **Delivered:** Test harness that validates all 14 generated project configurations build and pass tests, with local runner and CI integration.
