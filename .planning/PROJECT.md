@@ -8,6 +8,18 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.5 Bug Fixes & Stability
+
+**Goal:** Formalize bug fixes discovered during v1.4 validation and real-world usage into a stable release with corrected dependencies and templates.
+
+**Target features:**
+- Replace broken tweetnacl encryption with libsodium-wrappers (fixes GitHub secrets 422 errors)
+- Fix missing @testing-library/dom peer dependency in generated projects
+- Migrate deprecated @testing-library/jest-native to @testing-library/react-native/extend-expect
+- Fix Jest 30 + Expo SDK 53 compatibility in mobile template
+- Fix libsodium-wrappers ESM runtime error with createRequire pattern
+- Update project documentation and key decisions
+
 ## Current State (v1.4.0)
 
 Shipped v1.4.0 on 2026-01-24. Full validation pipeline for generated projects:
@@ -21,7 +33,7 @@ Tech stack:
 - TypeScript with ES modules (~10,700 LOC)
 - `prompts` library for interactive wizard
 - AWS SDK v3 (Organizations, IAM, STS)
-- GitHub REST API with tweetnacl encryption
+- GitHub REST API with libsodium-wrappers encryption
 - Template-based generation with `{{TOKEN}}` substitution
 - Conditional Handlebars blocks for platform/feature-specific code
 - Test harness with execa for E2E validation
@@ -59,7 +71,12 @@ Tech stack:
 
 ### Active
 
-(None — run `/gsd:new-milestone` to define v1.5 requirements)
+- Fix GitHub secrets encryption (replace tweetnacl with libsodium-wrappers) — v1.5.0
+- Fix missing @testing-library/dom peer dependency — v1.5.0
+- Migrate deprecated @testing-library/jest-native — v1.5.0
+- Fix Jest 30 + Expo SDK 53 compatibility — v1.5.0
+- Fix libsodium-wrappers ESM runtime error — v1.5.0
+- Update project documentation and decisions — v1.5.0
 
 ### Out of Scope
 
@@ -86,7 +103,7 @@ Tech stack:
 | Three environments (dev/stage/prod) | Industry standard, matches existing workflow templates | ✓ Good |
 | Sequential account creation | AWS rate limits prevent parallel creation | ✓ Good |
 | GitHub Environments for credentials | Cleaner than suffixed repo secrets, native GitHub feature | ✓ Good |
-| tweetnacl for encryption | Lighter weight than libsodium-wrappers | ✓ Good |
+| libsodium-wrappers for encryption | tweetnacl lacks Blake2b needed for GitHub sealed box; libsodium implements crypto_box_seal correctly | ✓ Good |
 | Handlebars conditionals for ORG_ENABLED | Preserves backward compatibility cleanly | ✓ Good |
 | Extract AWS/GitHub setup from wizard | Simpler wizard, flexibility, better error handling | ✓ Good |
 | Per-environment GitHub init | Granular control, better error isolation | ✓ Good |
@@ -103,5 +120,9 @@ Tech stack:
 | CI detection for progress display | TTY spinners for local, plain logging for CI | ✓ Good |
 | fail-fast: false in CI | Report all config failures, not just first | ✓ Good |
 
+| createRequire for CJS loading | libsodium-wrappers ESM build has broken relative import; CJS build works via createRequire | ✓ Good |
+| jest-jasmine2 for mobile tests | Jest 30 jest-circus runner conflicts with Expo SDK 53 runtime | ✓ Good |
+| @testing-library/react-native/extend-expect | @testing-library/jest-native deprecated; react-native v12.4+ includes extend-expect | ✓ Good |
+
 ---
-*Last updated: 2026-01-24 after v1.4 milestone complete*
+*Last updated: 2026-01-31 after v1.5 milestone started*
