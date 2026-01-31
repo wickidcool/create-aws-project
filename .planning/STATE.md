@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 15 — Formalize Bug Fixes
 Plan: —
-Status: Defining requirements
-Last activity: 2026-01-31 — Milestone v1.5 started
+Status: Ready to plan/execute
+Last activity: 2026-01-31 — Milestone v1.5 roadmap created
 
-Progress: Requirements definition in progress
+Progress: Phase 15 ready (all code changes already implemented, needs verification and commit)
 
 ## Milestones
 
@@ -78,9 +78,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: v1.5 milestone requirements definition
+Stopped at: v1.5 roadmap created
 Resume file: None
-Next: Define requirements and create roadmap
+Next: `/gsd:plan-phase 15` or `/gsd:execute-phase 15`
 
 ---
-*Updated: 2026-01-31 after v1.5 milestone started*
+*Updated: 2026-01-31 after v1.5 roadmap created*
