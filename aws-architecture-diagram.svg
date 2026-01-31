@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <defs>
+    <linearGradient id="awsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#232F3E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2332;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+    </filter>
+    <linearGradient id="cloudFrontGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8C4FFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6B3ACC;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="apiGatewayGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF4F8B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#CC3F6F;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="s3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3ECF8E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2EA66F;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="lambdaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9900;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#CC7A00;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="dynamoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D72D9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E4F99;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cognitoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DD344C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B02A3D;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="900" height="600" fill="#f8fafc"/>
+  
+  <!-- Title -->
+  <text x="450" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="#1e293b" text-anchor="middle">AWS Architecture — create-aws-project</text>
+  
+  <!-- AWS Cloud boundary -->
+  <rect x="200" y="70" width="680" height="500" rx="12" fill="none" stroke="#FF9900" stroke-width="2" stroke-dasharray="8,4"/>
+  <rect x="210" y="60" width="100" height="24" fill="#f8fafc"/>
+  <text x="260" y="75" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#FF9900" text-anchor="middle">AWS Cloud</text>
+
+  <!-- Users/Clients section -->
+  <!-- Web User -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="140" width="120" height="80" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="90" cy="165" r="16" fill="#64748b"/>
+    <circle cx="90" cy="158" r="8" fill="#f8fafc"/>
+    <path d="M74 180 Q90 195 106 180" fill="none" stroke="#f8fafc" stroke-width="3"/>
+    <text x="90" y="208" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569" text-anchor="middle">Web User</text>
+  </g>
+  
+  <!-- Mobile User -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="380" width="120" height="80" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="70" y="395" width="40" height="55" rx="4" fill="#64748b"/>
+    <rect x="74" y="400" width="32" height="40" rx="2" fill="#f8fafc"/>
+    <circle cx="90" cy="445" r="3" fill="#f8fafc"/>
+    <text x="90" y="448" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569" text-anchor="middle">Mobile User</text>
+  </g>
+
+  <!-- CloudFront -->
+  <g filter="url(#shadow)">
+    <rect x="240" y="260" width="120" height="80" rx="8" fill="url(#cloudFrontGrad)"/>
+    <circle cx="300" cy="290" r="20" fill="none" stroke="white" stroke-width="2"/>
+    <circle cx="300" cy="290" r="10" fill="white" opacity="0.3"/>
+    <path d="M285 290 L300 275 L315 290 L300 305 Z" fill="white" opacity="0.8"/>
+    <text x="300" y="328" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">CloudFront</text>
+  </g>
+
+  <!-- S3 Bucket -->
+  <g filter="url(#shadow)">
+    <rect x="420" y="120" width="120" height="80" rx="8" fill="url(#s3Grad)"/>
+    <ellipse cx="480" cy="145" rx="25" ry="10" fill="white" opacity="0.3"/>
+    <rect x="455" y="145" width="50" height="30" fill="white" opacity="0.3"/>
+    <ellipse cx="480" cy="175" rx="25" ry="10" fill="white" opacity="0.5"/>
+    <text x="480" y="188" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">S3 Bucket</text>
+  </g>
+  <text x="480" y="218" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">(Static Assets)</text>
+
+  <!-- API Gateway -->
+  <g filter="url(#shadow)">
+    <rect x="420" y="260" width="120" height="80" rx="8" fill="url(#apiGatewayGrad)"/>
+    <rect x="455" y="280" width="50" height="6" rx="2" fill="white" opacity="0.8"/>
+    <rect x="455" y="292" width="50" height="6" rx="2" fill="white" opacity="0.6"/>
+    <rect x="455" y="304" width="50" height="6" rx="2" fill="white" opacity="0.4"/>
+    <text x="480" y="328" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">API Gateway</text>
+  </g>
+
+  <!-- Lambda -->
+  <g filter="url(#shadow)">
+    <rect x="600" y="260" width="120" height="80" rx="8" fill="url(#lambdaGrad)"/>
+    <text x="660" y="295" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" text-anchor="middle">λ</text>
+    <text x="660" y="328" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Lambda</text>
+  </g>
+
+  <!-- DynamoDB -->
+  <g filter="url(#shadow)">
+    <rect x="780" y="260" width="100" height="80" rx="8" fill="url(#dynamoGrad)"/>
+    <rect x="800" y="282" width="60" height="8" rx="2" fill="white" opacity="0.8"/>
+    <rect x="800" y="294" width="60" height="8" rx="2" fill="white" opacity="0.6"/>
+    <rect x="800" y="306" width="60" height="8" rx="2" fill="white" opacity="0.4"/>
+    <text x="830" y="328" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">DynamoDB</text>
+  </g>
+
+  <!-- Cognito -->
+  <g filter="url(#shadow)">
+    <rect x="420" y="420" width="120" height="80" rx="8" fill="url(#cognitoGrad)"/>
+    <circle cx="480" cy="450" r="15" fill="white" opacity="0.3"/>
+    <circle cx="480" cy="445" r="7" fill="white" opacity="0.8"/>
+    <path d="M468 460 Q480 472 492 460" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+    <text x="480" y="488" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Cognito</text>
+  </g>
+  <text x="480" y="518" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">(Authentication)</text>
+
+  <!-- Arrows -->
+  <!-- Web User to CloudFront -->
+  <path d="M150 180 L230 290" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Mobile User to CloudFront -->
+  <path d="M150 420 L230 310" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- CloudFront to S3 -->
+  <path d="M340 280 L420 180" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- CloudFront to API Gateway -->
+  <path d="M360 300 L420 300" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- API Gateway to Lambda -->
+  <path d="M540 300 L600 300" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Lambda to DynamoDB -->
+  <path d="M720 300 L780 300" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Cognito auth arrows -->
+  <path d="M340 320 L420 440" stroke="#DD344C" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arrowheadRed)"/>
+  <path d="M480 420 L480 340" stroke="#DD344C" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arrowheadRed)"/>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowheadRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#DD344C"/>
+    </marker>
+  </defs>
+
+  <!-- Labels for flow -->
+  <text x="195" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">HTTPS</text>
+  <text x="195" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">HTTPS</text>
+  <text x="380" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Static</text>
+  <text x="380" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Content</text>
+  <text x="390" y="288" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">/api/*</text>
+  <text x="570" y="288" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Invoke</text>
+  <text x="750" y="288" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Read/</text>
+  <text x="750" y="298" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Write</text>
+  
+  <!-- Auth flow labels -->
+  <text x="365" y="395" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#DD344C" text-anchor="middle">Auth</text>
+  <text x="498" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#DD344C" text-anchor="middle">Validate</text>
+  <text x="498" y="395" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#DD344C" text-anchor="middle">Token</text>
+
+  <!-- Legend -->
+  <rect x="230" y="545" width="440" height="30" rx="4" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="250" y1="560" x2="280" y2="560" stroke="#94a3b8" stroke-width="2"/>
+  <text x="290" y="564" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Data Flow</text>
+  <line x1="380" y1="560" x2="410" y2="560" stroke="#DD344C" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="420" y="564" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Auth Flow</text>
+  <rect x="510" y="553" width="14" height="14" rx="2" fill="url(#cloudFrontGrad)"/>
+  <text x="530" y="564" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">AWS Services</text>
+</svg>

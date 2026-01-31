@@ -4,6 +4,8 @@ Create a new AWS project from scratch including CloudFront, API Gateway, Lambdas
 
 [![npm version](https://img.shields.io/npm/v/create-aws-project.svg)](https://www.npmjs.com/package/create-aws-project)
 
+![AWS Architecture Diagram](./aws-architecture-diagram.svg)
+
 ## Quick Start
 
 ```bash
