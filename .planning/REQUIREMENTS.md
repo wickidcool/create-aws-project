@@ -12,6 +12,12 @@
 - [ ] **TPL-02**: Generated mobile projects use @testing-library/react-native/extend-expect instead of deprecated @testing-library/jest-native
 - [ ] **TPL-03**: Generated mobile projects use jest-jasmine2 test runner for Jest 30 + Expo SDK 53 compatibility
 
+## CLI Architecture
+
+- [ ] **CLI-01**: IAM deployment user and policy creation moved from initialize-github to setup-aws-envs (all AWS resources created together during org setup)
+- [ ] **CLI-02**: initialize-github reads existing user name from config and only creates access key + GitHub secrets
+- [ ] **CLI-03**: Backward compatibility preserved — initialize-github falls back to full user creation for older projects without deploymentUsers in config
+
 ## Documentation
 
 - [ ] **DOC-01**: PROJECT.md key decisions updated to reflect libsodium-wrappers, createRequire, jest-jasmine2, and react-native extend-expect decisions
@@ -32,6 +38,9 @@
 | TPL-01 | 15 |
 | TPL-02 | 15 |
 | TPL-03 | 15 |
+| CLI-01 | 15 |
+| CLI-02 | 15 |
+| CLI-03 | 15 |
 | DOC-01 | 15 |
 
 ---
