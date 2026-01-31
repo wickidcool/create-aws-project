@@ -2,25 +2,25 @@
 
 ## Encryption Fix
 
-- [ ] **ENC-01**: GitHub secrets encryption uses libsodium crypto_box_seal (replacing broken tweetnacl implementation that caused 422 errors)
-- [ ] **ENC-02**: libsodium-wrappers loads correctly at runtime in ESM context (via createRequire CJS fallback)
-- [ ] **ENC-03**: tweetnacl and tweetnacl-util dependencies removed from package.json
+- [x] **ENC-01**: GitHub secrets encryption uses libsodium crypto_box_seal (replacing broken tweetnacl implementation that caused 422 errors)
+- [x] **ENC-02**: libsodium-wrappers loads correctly at runtime in ESM context (via createRequire CJS fallback)
+- [x] **ENC-03**: tweetnacl and tweetnacl-util dependencies removed from package.json
 
 ## Template Fixes
 
-- [ ] **TPL-01**: Generated web projects include @testing-library/dom as explicit devDependency (peer dep of @testing-library/react v16)
-- [ ] **TPL-02**: Generated mobile projects use @testing-library/react-native/extend-expect instead of deprecated @testing-library/jest-native
-- [ ] **TPL-03**: Generated mobile projects use jest-jasmine2 test runner for Jest 30 + Expo SDK 53 compatibility
+- [x] **TPL-01**: Generated web projects include @testing-library/dom as explicit devDependency (peer dep of @testing-library/react v16)
+- [x] **TPL-02**: Generated mobile projects use @testing-library/react-native/extend-expect instead of deprecated @testing-library/jest-native
+- [x] **TPL-03**: Generated mobile projects use jest-jasmine2 test runner for Jest 30 + Expo SDK 53 compatibility
 
 ## CLI Architecture
 
-- [ ] **CLI-01**: IAM deployment user and policy creation moved from initialize-github to setup-aws-envs (all AWS resources created together during org setup)
-- [ ] **CLI-02**: initialize-github reads existing user name from config and only creates access key + GitHub secrets
-- [ ] **CLI-03**: Backward compatibility preserved — initialize-github falls back to full user creation for older projects without deploymentUsers in config
+- [x] **CLI-01**: IAM deployment user and policy creation moved from initialize-github to setup-aws-envs (all AWS resources created together during org setup)
+- [x] **CLI-02**: initialize-github reads existing user name from config and only creates access key + GitHub secrets
+- [x] **CLI-03**: Backward compatibility preserved — initialize-github falls back to full user creation for older projects without deploymentUsers in config
 
 ## Documentation
 
-- [ ] **DOC-01**: PROJECT.md key decisions updated to reflect libsodium-wrappers, createRequire, jest-jasmine2, and react-native extend-expect decisions
+- [x] **DOC-01**: PROJECT.md key decisions updated to reflect libsodium-wrappers, createRequire, jest-jasmine2, and react-native extend-expect decisions
 
 ## Out of Scope
 

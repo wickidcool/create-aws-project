@@ -5,7 +5,7 @@
 - ✅ **v1.2 AWS Organizations Support** - Phases 1-3 (shipped 2026-01-20)
 - ✅ **v1.3 CLI Architecture Refactor** - Phases 4-9 (shipped 2026-01-23)
 - ✅ **v1.4 Generated Project Validation** - Phases 10-14 (shipped 2026-01-24)
-- 🔧 **v1.5 Bug Fixes & Stability** - Phase 15
+- ✅ **v1.5 Bug Fixes & Stability** - Phase 15 (shipped 2026-01-31)
 
 ## Phases
 
@@ -50,7 +50,7 @@ See `.planning/milestones/v1.4-ROADMAP.md` for details.
 **Plans:** 1 plan
 
 Plans:
-- [ ] 15-01-PLAN.md -- Harden CLI error handling, verify fixes, commit v1.5 changeset
+- [x] 15-01-PLAN.md -- Harden CLI error handling, verify fixes, commit v1.5 changeset
 
 ## Progress
 
@@ -59,7 +59,7 @@ Plans:
 | 1-3 | v1.2 | 8/8 | Complete | 2026-01-20 |
 | 4-9 | v1.3 | 8/8 | Complete | 2026-01-23 |
 | 10-14 | v1.4 | 5/5 | Complete | 2026-01-24 |
-| 15 | v1.5 | 0/1 | In Progress | -- |
+| 15 | v1.5 | 1/1 | Complete | 2026-01-31 |
 
 ---
 *Created: 2026-01-18*
