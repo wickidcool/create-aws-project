@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 15 — Formalize Bug Fixes
-Plan: —
-Status: Ready to plan/execute
-Last activity: 2026-01-31 — Milestone v1.5 roadmap created
+Plan: 1 of 1
+Status: Phase complete
+Last activity: 2026-01-31 — Completed 15-01-PLAN.md
 
-Progress: Phase 15 ready (all code changes already implemented, needs verification and commit)
+Progress: ████████████████████ 100% (1/1 plan complete)
 
 ## Milestones
 
@@ -23,6 +23,7 @@ Progress: Phase 15 ready (all code changes already implemented, needs verificati
 | v1.2 | AWS Organizations Support | 1-3 | Complete | 2026-01-20 |
 | v1.3 | CLI Architecture Refactor | 4-9 | Complete | 2026-01-23 |
 | v1.4 | Generated Project Validation | 10-14 | Complete | 2026-01-24 |
+| v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 
 ## Performance Metrics
 
@@ -57,11 +58,28 @@ Progress: Phase 15 ready (all code changes already implemented, needs verificati
 | Lines added | +7,421 |
 | LOC total | ~10,700 |
 
+### v1.5 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Phases completed | 1 |
+| Plans executed | 1 |
+| Duration | 4 minutes |
+| Files modified | 5 |
+| Commits | 2 |
+| Tests passing | 118/118 |
+
 ## Accumulated Context
 
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
+
+**v1.5 Key Decisions:**
+- Tag-based adoption of existing IAM users (safety over convenience)
+- Access key limit detection with actionable error messages
+- Summary table format for multi-environment output
+- Deployment user name (not full ARN) in CLI output
 
 ### Deferred Issues
 
@@ -78,9 +96,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: v1.5 roadmap created
+Stopped at: Completed 15-01-PLAN.md (phase 15 complete)
 Resume file: None
-Next: `/gsd:plan-phase 15` or `/gsd:execute-phase 15`
+Next: Ready to ship v1.5.0
 
 ---
-*Updated: 2026-01-31 after v1.5 roadmap created*
+*Updated: 2026-01-31 after phase 15 completion*
