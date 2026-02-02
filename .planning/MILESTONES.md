@@ -1,5 +1,33 @@
 # Project Milestones: create-aws-starter-kit
 
+## v1.5.1 Fixes & Git Setup (Shipped: 2026-02-01)
+
+**Delivered:** Fixed CLI argument handling and package name references, added optional GitHub repository setup after project generation.
+
+**Phases completed:** 16 (2 plans total)
+
+**Key accomplishments:**
+
+- Fixed CLI argument handling: `npx create-aws-project my-app` pre-fills project name in wizard
+- Corrected all package name references from `create-aws-starter-kit` to `create-aws-project`
+- Optional GitHub repository setup after project generation (git init, commit, push)
+- Automatic remote repository creation via GitHub API (user and org repos)
+- Secure PAT handling with immediate cleanup from `.git/config` after push
+- Non-fatal git setup: failures are warnings, project creation always succeeds
+
+**Stats:**
+
+- 15 files created/modified
+- +1,815 / -27 lines (12,122 total TypeScript LOC)
+- 1 phase, 2 plans, 13 commits
+- 1 day (2026-02-01)
+
+**Git range:** `e5e1ba7` → `a7eebe1`
+
+**What's next:** TBD (run `/gsd:new-milestone` to define next milestone)
+
+---
+
 ## v1.5 Bug Fixes & Stability (Shipped: 2026-01-31)
 
 **Delivered:** Formalized bug fixes from v1.4 validation into stable release with corrected encryption, template dependencies, and hardened CLI commands for idempotent re-runs.

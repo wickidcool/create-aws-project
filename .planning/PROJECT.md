@@ -2,35 +2,28 @@
 
 ## What This Is
 
-An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with separate post-install commands for AWS and GitHub setup. Includes automated validation of all 14 generated project configurations.
+An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with optional GitHub repository setup, separate post-install commands for AWS and GitHub deployment configuration, and automated validation of all 14 generated project configurations.
 
 ## Core Value
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
-## Current Milestone: v1.5.1 Fixes & Git Setup
+## Current State (v1.5.1)
 
-**Goal:** Fix CLI arg handling and docs, add optional git repo initialization after project generation.
+Shipped v1.5.1 on 2026-02-01. Patch release with CLI fixes and optional git setup:
 
-**Target features:**
-- Fix: project name from `npx create-aws-project <name>` not used by wizard
-- Fix: docs show wrong command for AWS Organizations setup
-- Feature: optional git hookup after generation (wizard prompt for repo URL, git init + remote + push, create repo if missing)
-
-## Current State (v1.5.0)
-
-Shipped v1.5.0 on 2026-01-31. Stable release with corrected encryption, template dependencies, and hardened CLI commands:
-
-- **Wizard:** 7 prompts for project scaffolding (name, platforms, auth, features, region, theme)
+- **Wizard:** 7 prompts for project scaffolding (name, platforms, auth, features, region, theme) + optional git setup
+- **Git setup:** Optional GitHub repo URL prompt after generation (git init, commit, push, auto-create repo)
 - **setup-aws-envs:** Creates AWS Organization and dev/stage/prod accounts
 - **initialize-github <env>:** Configures GitHub Environment with AWS credentials
 - **Validation:** 14-config test matrix validates all platform/auth combinations build and pass tests
 
 Tech stack:
-- TypeScript with ES modules (~11,900 LOC)
+- TypeScript with ES modules (~12,100 LOC)
 - `prompts` library for interactive wizard
 - AWS SDK v3 (Organizations, IAM, STS)
 - GitHub REST API with libsodium-wrappers encryption (crypto_box_seal)
+- `@octokit/rest` for GitHub repository creation during git setup
 - Template-based generation with `{{TOKEN}}` substitution
 - Conditional Handlebars blocks for platform/feature-specific code
 - Test harness with execa for E2E validation
@@ -71,12 +64,13 @@ Tech stack:
 - ✓ @testing-library/react-native/extend-expect migration — v1.5.0
 - ✓ Jest 30 + Expo SDK 53 compatibility (jest-jasmine2) — v1.5.0
 - ✓ Idempotent CLI commands with tag-based IAM user adoption — v1.5.0
+- ✓ CLI argument passthrough for project name — v1.5.1
+- ✓ Correct package name references in help text and templates — v1.5.1
+- ✓ Optional GitHub repository setup after project generation — v1.5.1
 
 ### Active
 
-- Fix project name CLI argument not passed to wizard — v1.5.1
-- Fix docs showing wrong AWS Organizations command — v1.5.1
-- Optional git repo setup after project generation — v1.5.1
+(None — define next milestone with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -123,6 +117,12 @@ Tech stack:
 | createRequire for CJS loading | libsodium-wrappers ESM build has broken relative import; CJS build works via createRequire | ✓ Good |
 | jest-jasmine2 for mobile tests | Jest 30 jest-circus runner conflicts with Expo SDK 53 runtime | ✓ Good |
 | @testing-library/react-native/extend-expect | @testing-library/jest-native deprecated; react-native v12.4+ includes extend-expect | ✓ Good |
+| WizardOptions interface for extensibility | Clean configuration pattern, avoids mutating module exports | ✓ Good |
+| First non-flag CLI arg as project name | Standard CLI convention (matches npm, git, etc.) | ✓ Good |
+| Optional git setup with empty-to-skip | Non-intrusive UX, pressing Enter skips entirely | ✓ Good |
+| PAT cleanup from .git/config after push | Security: PAT should not persist on disk | ✓ Good |
+| Non-fatal git setup errors | Git is convenience, not core — project is still usable | ✓ Good |
+| @octokit/rest for repo creation | Official GitHub SDK, handles user vs org repos | ✓ Good |
 
 ---
-*Last updated: 2026-02-01 after v1.5.1 milestone started*
+*Last updated: 2026-02-01 after v1.5.1 milestone*
