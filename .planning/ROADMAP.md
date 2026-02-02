@@ -6,7 +6,7 @@
 - [x] **v1.3 CLI Architecture Refactor** - Phases 4-9 (shipped 2026-01-23)
 - [x] **v1.4 Generated Project Validation** - Phases 10-14 (shipped 2026-01-24)
 - [x] **v1.5 Bug Fixes & Stability** - Phase 15 (shipped 2026-01-31)
-- [ ] **v1.5.1 Fixes & Git Setup** - Phase 16 (in progress)
+- [x] **v1.5.1 Fixes & Git Setup** - Phase 16 (complete 2026-02-02)
 
 ## Phases
 
@@ -38,11 +38,11 @@ See: `.planning/milestones/v1.5-ROADMAP.md`
 
 </details>
 
-### v1.5.1 Fixes & Git Setup (In Progress)
+### v1.5.1 Fixes & Git Setup (Complete)
 
 **Milestone Goal:** Fix CLI arg handling and docs, add optional git repo initialization after project generation.
 
-- [ ] **Phase 16: Fixes & Git Setup** - Fix CLI bugs and add optional GitHub repo creation during wizard flow
+- [x] **Phase 16: Fixes & Git Setup** - Fix CLI bugs and add optional GitHub repo creation during wizard flow (complete 2026-02-02)
 
 ## Phase Details
 
@@ -59,8 +59,8 @@ See: `.planning/milestones/v1.5-ROADMAP.md`
 **Plans**: 2 plans
 
 Plans:
-- [ ] 16-01-PLAN.md -- Fix CLI name arg passthrough and stale package name references
-- [ ] 16-02-PLAN.md -- Add optional GitHub repository setup after project generation
+- [x] 16-01-PLAN.md -- Fix CLI name arg passthrough and stale package name references (complete)
+- [x] 16-02-PLAN.md -- Add optional GitHub repository setup after project generation (complete)
 
 ## Progress
 
@@ -68,7 +68,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 16. Fixes & Git Setup | v1.5.1 | 0/2 | Not started | - |
+| 16. Fixes & Git Setup | v1.5.1 | 2/2 | Complete | 2026-02-02 |
 
 ---
 *Created: 2026-02-01*
