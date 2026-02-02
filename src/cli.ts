@@ -8,6 +8,7 @@ import type { ProjectConfig } from './types.js';
 import { showDeprecationNotice } from './commands/setup-github.js';
 import { runSetupAwsEnvs } from './commands/setup-aws-envs.js';
 import { runInitializeGitHub } from './commands/initialize-github.js';
+import { promptGitSetup, setupGitRepository } from './git/setup.js';
 
 /**
  * Config file structure for .aws-starter-config.json
@@ -175,6 +176,12 @@ async function runCreate(args: string[]): Promise<void> {
 
   // Write config file for downstream commands
   writeConfigFile(outputDir, config);
+
+  // Optional: GitHub repository setup
+  const gitResult = await promptGitSetup();
+  if (gitResult) {
+    await setupGitRepository(outputDir, gitResult.repoUrl, gitResult.pat);
+  }
 
   // Success message and next steps
   console.log('');
