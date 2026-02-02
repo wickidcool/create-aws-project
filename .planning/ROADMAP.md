@@ -56,10 +56,11 @@ See: `.planning/milestones/v1.5-ROADMAP.md`
   3. After project generation, user is prompted for a GitHub repo URL which can be skipped to skip all git setup
   4. When repo URL and PAT are provided, the generated project is git-initialized, committed, and pushed to the remote
   5. If the specified remote repository does not exist, it is automatically created via GitHub API before pushing
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 16-01: TBD
+- [ ] 16-01-PLAN.md -- Fix CLI name arg passthrough and stale package name references
+- [ ] 16-02-PLAN.md -- Add optional GitHub repository setup after project generation
 
 ## Progress
 
@@ -67,7 +68,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 16. Fixes & Git Setup | v1.5.1 | 0/TBD | Not started | - |
+| 16. Fixes & Git Setup | v1.5.1 | 0/2 | Not started | - |
 
 ---
 *Created: 2026-02-01*
