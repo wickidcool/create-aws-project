@@ -8,6 +8,15 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.5.1 Fixes & Git Setup
+
+**Goal:** Fix CLI arg handling and docs, add optional git repo initialization after project generation.
+
+**Target features:**
+- Fix: project name from `npx create-aws-project <name>` not used by wizard
+- Fix: docs show wrong command for AWS Organizations setup
+- Feature: optional git hookup after generation (wizard prompt for repo URL, git init + remote + push, create repo if missing)
+
 ## Current State (v1.5.0)
 
 Shipped v1.5.0 on 2026-01-31. Stable release with corrected encryption, template dependencies, and hardened CLI commands:
@@ -65,7 +74,9 @@ Tech stack:
 
 ### Active
 
-(None — define next milestone with `/gsd:new-milestone`)
+- Fix project name CLI argument not passed to wizard — v1.5.1
+- Fix docs showing wrong AWS Organizations command — v1.5.1
+- Optional git repo setup after project generation — v1.5.1
 
 ### Out of Scope
 
@@ -114,4 +125,4 @@ Tech stack:
 | @testing-library/react-native/extend-expect | @testing-library/jest-native deprecated; react-native v12.4+ includes extend-expect | ✓ Good |
 
 ---
-*Last updated: 2026-01-31 after v1.5 milestone*
+*Last updated: 2026-02-01 after v1.5.1 milestone started*
