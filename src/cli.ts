@@ -60,7 +60,7 @@ function getVersion(): string {
  */
 function printHelp(): void {
   console.log(`
-create-aws-starter-kit [command] [options]
+create-aws-project [command] [options]
 
 Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructure.
 
@@ -75,15 +75,15 @@ Options:
   --version, -v       Show version number
 
 Usage:
-  create-aws-starter-kit                         Run interactive wizard
-  create-aws-starter-kit setup-aws-envs          Create AWS accounts
-  create-aws-starter-kit initialize-github dev   Configure dev environment
+  create-aws-project                         Run interactive wizard
+  create-aws-project setup-aws-envs          Create AWS accounts
+  create-aws-project initialize-github dev   Configure dev environment
 
 Examples:
-  create-aws-starter-kit my-app
-  create-aws-starter-kit setup-aws-envs
-  create-aws-starter-kit initialize-github dev
-  create-aws-starter-kit --help
+  create-aws-project my-app
+  create-aws-project setup-aws-envs
+  create-aws-project initialize-github dev
+  create-aws-project --help
 `.trim());
 }
 
@@ -94,7 +94,7 @@ function printWelcome(): void {
   console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║            create-aws-starter-kit                     ║
+║            create-aws-project                     ║
 ║       AWS Starter Kit Project Generator               ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝

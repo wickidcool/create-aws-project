@@ -109,7 +109,7 @@ Push to main to trigger your first deployment:
 git push origin main
 ```
 
-For detailed setup instructions and troubleshooting, see the [create-aws-project documentation](https://www.npmjs.com/package/create-aws-starter-kit).
+For detailed setup instructions and troubleshooting, see the [create-aws-project documentation](https://www.npmjs.com/package/create-aws-project).
 
 ## CI/CD Workflows
 
