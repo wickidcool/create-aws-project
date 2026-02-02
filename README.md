@@ -69,6 +69,7 @@ The interactive wizard will ask you about:
    - VS Code workspace configuration
 6. **AWS region** - Where to deploy your infrastructure
 7. **Brand color** - Theme color for your UI (blue, purple, teal, green, orange)
+8. **GitHub repository** *(optional)* - Provide a repo URL to git init, commit, and push automatically. Press Enter to skip.
 
 ## Requirements
 
@@ -84,32 +85,9 @@ After creating your project, you'll set up AWS environments and GitHub deploymen
 
 Before you begin:
 - AWS CLI configured with credentials from your AWS management account
-- GitHub repository created for your project
 - GitHub Personal Access Token with "repo" scope ([create one here](https://github.com/settings/tokens/new))
 
-### Step 1: connect to your .git project
-
-* Initialize the repository
-```
-git init
-```
-
-* Add the remote repository using the git remote add <name> <url> command. A common practice is to name it origin.
-```bash
-git remote add origin <REMOTE_URL>
-```
-
-* Verify the connection by listing your remotes. The -v flag shows the URLs.
-```bash
-git remote -v
-```
-
-* Push your local commits to the remote repository for the first time.
-```bash
-git push -u origin main
-```
-
-### Step 2: Set Up AWS Environments
+### Step 1: Set Up AWS Environments
 
 From your project directory, run:
 
@@ -136,7 +114,7 @@ AWS environment setup complete!
 
 Account IDs are saved to `.aws-starter-config.json` for the next step.
 
-### Step 3: Configure GitHub Environments
+### Step 2: Configure GitHub Environments
 
 For each environment, run:
 
