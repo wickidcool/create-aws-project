@@ -141,11 +141,14 @@ function printNextSteps(projectName: string, platforms: string[]): void {
  * Run the create project wizard flow
  * This is the default command when no subcommand is specified
  */
-async function runCreate(_args: string[]): Promise<void> {
+async function runCreate(args: string[]): Promise<void> {
   printWelcome();
   console.log('');  // blank line after banner
 
-  const config = await runWizard();
+  // Extract project name from CLI args (first non-flag argument)
+  const nameArg = args.find(arg => !arg.startsWith('-'));
+
+  const config = await runWizard(nameArg ? { defaultName: nameArg } : undefined);
 
   if (!config) {
     console.log('\nProject creation cancelled.');

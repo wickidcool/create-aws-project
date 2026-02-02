@@ -8,10 +8,18 @@ import { featuresPrompt } from './prompts/features.js';
 import { awsRegionPrompt } from './prompts/aws-config.js';
 import { themePrompt } from './prompts/theme.js';
 
-export async function runWizard(): Promise<ProjectConfig | null> {
+export interface WizardOptions {
+  defaultName?: string;
+}
+
+export async function runWizard(options: WizardOptions = {}): Promise<ProjectConfig | null> {
+  // Create name prompt with optional default override
+  const namePrompt = options.defaultName
+    ? { ...projectNamePrompt, initial: options.defaultName }
+    : projectNamePrompt;
   const response = await prompts(
     [
-      projectNamePrompt,
+      namePrompt,
       platformsPrompt,
       authProviderPrompt,
       authFeaturesPrompt,
