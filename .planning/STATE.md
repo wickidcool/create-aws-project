@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-01)
 ## Current Position
 
 Phase: 16 of 16 (Fixes & Git Setup)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-01 — Roadmap created for v1.5.1
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-02-02 — Completed 16-01-PLAN.md (CLI Fixes)
 
 Progress: ░░░░░░░░░░░░░░░░░░░░ 0%
 
@@ -78,6 +78,11 @@ Progress: ░░░░░░░░░░░░░░░░░░░░ 0%
 
 All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
 
+Recent decisions from Phase 16-01:
+- WizardOptions interface for wizard configuration extensibility
+- First non-flag CLI arg extraction pattern for project name
+- Preserved IAM ManagedBy tags for v1.5.0 backward compatibility
+
 ### Deferred Issues
 
 None.
@@ -92,10 +97,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-01
-Stopped at: Roadmap created for v1.5.1
+Last session: 2026-02-02
+Stopped at: Completed 16-01-PLAN.md
 Resume file: None
-Next: Plan phase 16
+Next: Continue phase 16 plans
 
 ---
-*Updated: 2026-02-01 after v1.5.1 roadmap created*
+*Updated: 2026-02-02 after 16-01 execution*
