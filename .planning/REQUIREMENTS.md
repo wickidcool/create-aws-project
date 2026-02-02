@@ -32,19 +32,19 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FIX-01 | TBD | Pending |
-| FIX-02 | TBD | Pending |
-| GIT-01 | TBD | Pending |
-| GIT-02 | TBD | Pending |
-| GIT-03 | TBD | Pending |
-| GIT-04 | TBD | Pending |
-| GIT-05 | TBD | Pending |
-| GIT-06 | TBD | Pending |
+| FIX-01 | Phase 16 | Pending |
+| FIX-02 | Phase 16 | Pending |
+| GIT-01 | Phase 16 | Pending |
+| GIT-02 | Phase 16 | Pending |
+| GIT-03 | Phase 16 | Pending |
+| GIT-04 | Phase 16 | Pending |
+| GIT-05 | Phase 16 | Pending |
+| GIT-06 | Phase 16 | Pending |
 
 **Coverage:**
 - v1 requirements: 8 total
-- Mapped to phases: 0
-- Unmapped: 8 ⚠️
+- Mapped to phases: 8
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-01*
