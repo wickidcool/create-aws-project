@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 17 of 20 (Root Credential Handling)
-Plan: Ready to plan Phase 17
-Status: Roadmap complete, ready to plan first phase
-Last activity: 2026-02-10 — v1.6 roadmap created
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-11 — Completed 17-01-PLAN.md
 
-Progress: [████░░░░░░░░░░░░] 16/20 phases complete (80% of past milestones, 0% of v1.6)
+Progress: [████░░░░░░░░░░░░] 16/20 phases complete (80% of past milestones, 25% of v1.6)
 
 ## Milestones
 
@@ -97,6 +97,9 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Architecture:** ALL AWS/IAM operations move to `setup-aws-envs`. `initialize-github` becomes read-config-and-push-to-GitHub only.
 - **Root handling:** CLI detects root credentials and creates admin IAM user automatically (no manual user creation step).
 - **Idempotent re-runs:** Skip email prompts for accounts that already exist in config.
+- **Admin user path:** Store admin users in `/admin/` path (separate from deployment users in `/deployment/`)
+- **Tag-based admin adoption:** Check `ManagedBy=create-aws-starter-kit` tag before adopting existing admin users
+- **Retry on key creation:** Wrap admin access key creation in retry with exponential backoff for IAM eventual consistency
 
 ### Deferred Issues
 
@@ -112,10 +115,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-10
-Stopped at: Roadmap creation complete
+Last session: 2026-02-11 05:07
+Stopped at: Completed 17-01-PLAN.md
 Resume file: None
-Next: `/gsd:plan-phase 17`
+Next: Execute 17-02-PLAN.md
 
 ---
-*Updated: 2026-02-10 after v1.6 roadmap creation*
+*Updated: 2026-02-11 after 17-01 execution*
