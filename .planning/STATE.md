@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 17 of 20 (Root Credential Handling) — COMPLETE
-Plan: 2/2 complete, verified
-Status: Phase 17 verified and complete
-Last activity: 2026-02-11 — Phase 17 verified (5/5 must-haves passed)
+Phase: 18 of 20 (Architecture Simplification) — IN PROGRESS
+Plan: 1/2 complete
+Status: Executing phase 18
+Last activity: 2026-02-11 — Completed 18-01-PLAN.md
 
 Progress: [█████░░░░░░░░░░░] 17/20 phases complete (85% overall, 25% of v1.6)
 
@@ -104,6 +104,9 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Credential persistence strategy (17-02):** Admin credentials stored in memory for session, only userName+accessKeyId persisted to config
 - **Conditional client creation (17-02):** Organizations and IAM clients check adminCredentials and create with explicit credentials when available
 - **Skip behavior (17-02):** When adminUser exists in config, skip root detection entirely (user should have switched to IAM or admin exists)
+- **Credential storage structure (18-01):** Store credentials as `Record<string, DeploymentCredentials>` in config, keyed by environment name
+- **Idempotent credential handling (18-01):** Check existingCredentials before creating new keys, reuse existing if present
+- **Partial failure resilience (18-01):** Call updateConfig after each successful key creation (same pattern as accounts/users)
 
 ### Deferred Issues
 
@@ -120,9 +123,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Phase 17 verified and complete
+Stopped at: Completed 18-01-PLAN.md
 Resume file: None
-Next: `/gsd:discuss-phase 18` or `/gsd:plan-phase 18`
+Next: Execute 18-02-PLAN.md
 
 ---
-*Updated: 2026-02-11 after Phase 17 verification passed*
+*Updated: 2026-02-11 after completing 18-01-PLAN.md*
