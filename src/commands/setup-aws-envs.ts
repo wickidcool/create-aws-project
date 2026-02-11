@@ -18,11 +18,19 @@ import {
   waitForAccountCreation,
 } from '../aws/organizations.js';
 import {
+  createIAMClient,
   createCrossAccountIAMClient,
   createOrAdoptDeploymentUser,
   createCDKDeploymentPolicy,
   attachPolicyToUser,
 } from '../aws/iam.js';
+import {
+  detectRootCredentials,
+  createOrAdoptAdminUser,
+} from '../aws/root-credentials.js';
+import { IAMClient } from '@aws-sdk/client-iam';
+import { OrganizationsClient } from '@aws-sdk/client-organizations';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 
 /**
  * Email addresses for each environment account

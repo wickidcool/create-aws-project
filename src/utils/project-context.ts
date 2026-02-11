@@ -27,6 +27,10 @@ export interface ProjectConfigMinimal {
   configVersion?: string;
   accounts?: Record<string, string>;
   deploymentUsers?: Record<string, string>;
+  adminUser?: {
+    userName: string;
+    accessKeyId: string;
+  };
 }
 
 /**
