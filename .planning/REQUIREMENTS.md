@@ -7,12 +7,12 @@
 
 ### Root Credential Handling
 
-- [ ] **ROOT-01**: CLI detects root credentials via STS GetCallerIdentity before any cross-account operations
-- [ ] **ROOT-02**: When root detected, CLI creates an IAM admin user in the management account with AdministratorAccess policy
-- [ ] **ROOT-03**: CLI generates access keys for the admin user and switches to those credentials for subsequent operations
-- [ ] **ROOT-04**: CLI retries IAM operations with exponential backoff to handle eventual consistency (3-4s window)
-- [ ] **ROOT-05**: On re-run, CLI adopts existing admin user via tag-based matching instead of creating a duplicate
-- [ ] **ROOT-06**: CLI handles access key limit (2 max) by detecting existing keys before creating new ones
+- [x] **ROOT-01**: CLI detects root credentials via STS GetCallerIdentity before any cross-account operations
+- [x] **ROOT-02**: When root detected, CLI creates an IAM admin user in the management account with AdministratorAccess policy
+- [x] **ROOT-03**: CLI generates access keys for the admin user and switches to those credentials for subsequent operations
+- [x] **ROOT-04**: CLI retries IAM operations with exponential backoff to handle eventual consistency (3-4s window)
+- [x] **ROOT-05**: On re-run, CLI adopts existing admin user via tag-based matching instead of creating a duplicate
+- [x] **ROOT-06**: CLI handles access key limit (2 max) by detecting existing keys before creating new ones
 
 ### Idempotent Setup
 
@@ -48,12 +48,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ROOT-01 | Phase 17 | Pending |
-| ROOT-02 | Phase 17 | Pending |
-| ROOT-03 | Phase 17 | Pending |
-| ROOT-04 | Phase 17 | Pending |
-| ROOT-05 | Phase 17 | Pending |
-| ROOT-06 | Phase 17 | Pending |
+| ROOT-01 | Phase 17 | Complete |
+| ROOT-02 | Phase 17 | Complete |
+| ROOT-03 | Phase 17 | Complete |
+| ROOT-04 | Phase 17 | Complete |
+| ROOT-05 | Phase 17 | Complete |
+| ROOT-06 | Phase 17 | Complete |
 | IDEM-01 | Phase 19 | Pending |
 | IDEM-02 | Phase 19 | Pending |
 | IDEM-03 | Phase 19 | Pending |
@@ -69,4 +69,4 @@
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 after roadmap creation*
+*Last updated: 2026-02-11 after Phase 17 completion*

@@ -174,8 +174,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — Root credential detection and admin user module with tests
-- [ ] 17-02-PLAN.md — Wire root detection into setup-aws-envs with credential switching
+- [x] 17-01-PLAN.md — Root credential detection and admin user module with tests
+- [x] 17-02-PLAN.md — Wire root detection into setup-aws-envs with credential switching
 
 #### Phase 18: Architecture Simplification
 **Goal**: All AWS/IAM operations consolidated in setup-aws-envs, GitHub operations isolated in initialize-github
@@ -241,10 +241,10 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 14. CI Integration | v1.4 | 2/2 | Complete | 2026-01-24 |
 | 15. Critical Fixes | v1.5 | 1/1 | Complete | 2026-01-31 |
 | 16. CLI Polish & Git Setup | v1.5.1 | 2/2 | Complete | 2026-02-01 |
-| 17. Root Credential Handling | v1.6 | 0/2 | Not started | - |
+| 17. Root Credential Handling | v1.6 | 2/2 | Complete | 2026-02-11 |
 | 18. Architecture Simplification | v1.6 | 0/0 | Not started | - |
 | 19. Idempotent Setup Improvements | v1.6 | 0/0 | Not started | - |
 | 20. End-to-End Verification | v1.6 | 0/0 | Not started | - |
 
 ---
-*Last updated: 2026-02-10 after Phase 17 planning*
+*Last updated: 2026-02-11 after Phase 17 execution complete*
