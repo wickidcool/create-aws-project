@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 17 of 20 (Root Credential Handling)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-11 — Completed 17-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-11 — Completed 17-02-PLAN.md
 
-Progress: [████░░░░░░░░░░░░] 16/20 phases complete (80% of past milestones, 25% of v1.6)
+Progress: [█████░░░░░░░░░░░] 17/20 phases complete (85% of past milestones, 50% of v1.6)
 
 ## Milestones
 
@@ -100,6 +100,10 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Admin user path:** Store admin users in `/admin/` path (separate from deployment users in `/deployment/`)
 - **Tag-based admin adoption:** Check `ManagedBy=create-aws-starter-kit` tag before adopting existing admin users
 - **Retry on key creation:** Wrap admin access key creation in retry with exponential backoff for IAM eventual consistency
+- **Root detection placement (17-02):** Root detection happens before collectEmails but after project context validation
+- **Credential persistence strategy (17-02):** Admin credentials stored in memory for session, only userName+accessKeyId persisted to config
+- **Conditional client creation (17-02):** Organizations and IAM clients check adminCredentials and create with explicit credentials when available
+- **Skip behavior (17-02):** When adminUser exists in config, skip root detection entirely (user should have switched to IAM or admin exists)
 
 ### Deferred Issues
 
@@ -115,10 +119,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-11 05:07
-Stopped at: Completed 17-01-PLAN.md
+Last session: 2026-02-11 05:13
+Stopped at: Completed 17-02-PLAN.md (Phase 17 complete)
 Resume file: None
-Next: Execute 17-02-PLAN.md
+Next: Transition to Phase 18
 
 ---
-*Updated: 2026-02-11 after 17-01 execution*
+*Updated: 2026-02-11 after 17-02 execution*
