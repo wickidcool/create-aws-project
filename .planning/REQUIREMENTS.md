@@ -16,9 +16,9 @@
 
 ### Idempotent Setup
 
-- [ ] **IDEM-01**: `setup-aws-envs` skips email prompts for accounts that already exist in config
-- [ ] **IDEM-02**: `setup-aws-envs` only prompts for emails of accounts that need to be created
-- [ ] **IDEM-03**: Partial re-runs resume from last successful step without re-prompting completed steps
+- [x] **IDEM-01**: `setup-aws-envs` skips email prompts for accounts that already exist in config
+- [x] **IDEM-02**: `setup-aws-envs` only prompts for emails of accounts that need to be created
+- [x] **IDEM-03**: Partial re-runs resume from last successful step without re-prompting completed steps
 
 ### Architecture Simplification
 
@@ -54,9 +54,9 @@
 | ROOT-04 | Phase 17 | Complete |
 | ROOT-05 | Phase 17 | Complete |
 | ROOT-06 | Phase 17 | Complete |
-| IDEM-01 | Phase 19 | Pending |
-| IDEM-02 | Phase 19 | Pending |
-| IDEM-03 | Phase 19 | Pending |
+| IDEM-01 | Phase 19 | Complete |
+| IDEM-02 | Phase 19 | Complete |
+| IDEM-03 | Phase 19 | Complete |
 | ARCH-01 | Phase 18 | Complete |
 | ARCH-02 | Phase 18 | Complete |
 | ARCH-03 | Phase 18 | Complete |
@@ -69,4 +69,4 @@
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-11 after Phase 18 completion*
+*Last updated: 2026-02-11 after Phase 19 completion*
