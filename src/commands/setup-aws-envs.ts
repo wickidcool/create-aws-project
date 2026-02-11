@@ -9,7 +9,7 @@ import ora from 'ora';
 import prompts from 'prompts';
 import pc from 'picocolors';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { requireProjectContext } from '../utils/project-context.js';
+import { requireProjectContext, type DeploymentCredentials } from '../utils/project-context.js';
 import {
   createOrganizationsClient,
   checkExistingOrganization,
@@ -23,6 +23,7 @@ import {
   createOrAdoptDeploymentUser,
   createCDKDeploymentPolicy,
   attachPolicyToUser,
+  createAccessKey,
 } from '../aws/iam.js';
 import {
   detectRootCredentials,
@@ -159,11 +160,13 @@ async function collectEmails(projectName: string): Promise<EnvironmentEmails> {
  * @param configPath Path to the config file
  * @param accounts Record of environment to account ID
  * @param deploymentUsers Optional record of environment to deployment user name
+ * @param deploymentCredentials Optional record of environment to deployment credentials
  */
 function updateConfig(
   configPath: string,
   accounts: Record<string, string>,
-  deploymentUsers?: Record<string, string>
+  deploymentUsers?: Record<string, string>,
+  deploymentCredentials?: Record<string, DeploymentCredentials>
 ): void {
   const content = readFileSync(configPath, 'utf-8');
   const config = JSON.parse(content);
@@ -171,6 +174,9 @@ function updateConfig(
   config.accounts = { ...config.accounts, ...accounts };
   if (deploymentUsers) {
     config.deploymentUsers = { ...config.deploymentUsers, ...deploymentUsers };
+  }
+  if (deploymentCredentials) {
+    config.deploymentCredentials = { ...config.deploymentCredentials, ...deploymentCredentials };
   }
 
   writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
@@ -252,6 +258,7 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
   // 2. Check if already configured (warn but don't abort - allows retry after partial failure)
   const existingAccounts = config.accounts ?? {};
   const existingUsers = config.deploymentUsers ?? {};
+  const existingCredentials = config.deploymentCredentials ?? {};
   if (Object.keys(existingAccounts).length > 0) {
     console.log('');
     console.log(pc.yellow('Warning:') + ' AWS accounts already configured in this project:');
@@ -430,17 +437,72 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
       spinner.succeed(`Created deployment user: ${userName}`);
     }
 
+    // Create access keys for deployment users
+    const deploymentCredentials: Record<string, DeploymentCredentials> = {};
+
+    for (const env of ENVIRONMENTS) {
+      // Skip if credentials already exist in config
+      if (existingCredentials[env]) {
+        spinner.succeed(`Using existing credentials for ${env}: ${existingCredentials[env].accessKeyId}`);
+        deploymentCredentials[env] = existingCredentials[env];
+        continue;
+      }
+
+      const userName = deploymentUsers[env];
+
+      spinner.start(`Creating access key for ${env} deployment user...`);
+
+      // Use the same cross-account IAM client pattern as deployment user creation
+      const accountId = accounts[env];
+      let iamClient: IAMClient;
+      if (adminCredentials) {
+        const roleArn = `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`;
+        iamClient = new IAMClient({
+          region: config.awsRegion,
+          credentials: fromTemporaryCredentials({
+            masterCredentials: {
+              accessKeyId: adminCredentials.accessKeyId,
+              secretAccessKey: adminCredentials.secretAccessKey,
+            },
+            params: {
+              RoleArn: roleArn,
+              RoleSessionName: `create-aws-project-${Date.now()}`,
+              DurationSeconds: 900,
+            },
+          }),
+        });
+      } else {
+        iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      }
+
+      const credentials = await createAccessKey(iamClient, userName);
+
+      deploymentCredentials[env] = {
+        userName,
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+      };
+
+      // Save after EACH successful key creation (partial failure resilience)
+      updateConfig(configPath, accounts, deploymentUsers, deploymentCredentials);
+
+      spinner.succeed(`Created access key for ${userName}`);
+    }
+
     // Final success with summary table
     console.log('');
     console.log(pc.green('AWS environment setup complete!'));
     console.log('');
     console.log('Summary:');
-    console.log(`  ${'Environment'.padEnd(14)}${'Account ID'.padEnd(16)}Deployment User`);
+    console.log(`  ${'Environment'.padEnd(14)}${'Account ID'.padEnd(16)}${'Deployment User'.padEnd(30)}Access Key`);
     for (const env of ENVIRONMENTS) {
-      console.log(`  ${env.padEnd(14)}${accounts[env].padEnd(16)}${deploymentUsers[env]}`);
+      const keyId = deploymentCredentials[env]?.accessKeyId ?? 'N/A';
+      console.log(`  ${env.padEnd(14)}${accounts[env].padEnd(16)}${deploymentUsers[env].padEnd(30)}${keyId}`);
     }
     console.log('');
-    console.log('Deployment users created. Next: initialize-github to create access keys and push to GitHub.');
+    console.log('AWS setup complete with deployment credentials.');
+    console.log('');
+    console.log('Next: Push credentials to GitHub:');
     console.log(`  ${pc.cyan('npx create-aws-project initialize-github dev')}`);
   } catch (error) {
     spinner.fail('AWS setup failed');
