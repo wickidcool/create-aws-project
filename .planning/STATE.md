@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 18 of 20 (Architecture Simplification) — COMPLETE
-Plan: 2/2 complete
-Status: Phase 18 verified and complete
-Last activity: 2026-02-11 — Phase 18 verified (8/8 must-haves passed)
+Phase: 19 of 20 (Idempotent Setup Improvements)
+Plan: 1 of 2 complete
+Status: In progress
+Last activity: 2026-02-11 — Completed 19-01-PLAN.md
 
 Progress: [██████░░░░░░░░░░] 18/20 phases complete (90% overall, 50% of v1.6)
 
@@ -110,6 +110,10 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Command separation (18-02):** initialize-github reads credentials from config (no AWS operations), setup-aws-envs handles all AWS/IAM
 - **Credential validation (18-02):** Check config.deploymentCredentials at start, fail fast with helpful error directing to setup-aws-envs
 - **Migration detection (18-02):** Detect projects with deploymentUsers but no credentials, show specific migration message
+- **AWS as source of truth (19-01):** Organizations ListAccounts API is authoritative for existing accounts, config syncs with AWS state
+- **Name pattern matching (19-01):** Discover accounts by matching {projectName}-{env} pattern against AWS account names
+- **Conditional email prompting (19-01):** Only collect emails for environments that need account creation based on AWS discovery
+- **Config sync after discovery (19-01):** Update config with discovered accounts immediately to stay in sync with AWS reality
 
 ### Deferred Issues
 
@@ -126,9 +130,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Phase 18 verified and complete
+Stopped at: Completed 19-01-PLAN.md
 Resume file: None
-Next: `/gsd:discuss-phase 19` or `/gsd:plan-phase 19`
+Next: Execute plan 19-02 or verify phase 19
 
 ---
-*Updated: 2026-02-11 after Phase 18 verification passed*
+*Updated: 2026-02-11 after completing plan 19-01*
