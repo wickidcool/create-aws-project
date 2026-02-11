@@ -263,15 +263,81 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
     console.log(pc.dim('Continuing will skip existing accounts and create any missing ones...'));
   }
 
-  // 3. Collect emails (all input before any AWS calls - per research pitfall #6)
+  // 3. Detect root credentials and create admin user if needed
+  let adminCredentials: { accessKeyId: string; secretAccessKey: string } | null = null;
+
+  if (config.adminUser) {
+    // Admin user already created in a previous run - skip root detection
+    console.log('');
+    console.log(pc.yellow('Note:') + ` Admin user ${pc.cyan(config.adminUser.userName)} already configured.`);
+    console.log(pc.dim('Using existing admin user. If you have switched to IAM credentials, root detection is skipped.'));
+  } else {
+    // Check if current credentials are root
+    try {
+      const identity = await detectRootCredentials(config.awsRegion);
+
+      if (identity.isRoot) {
+        console.log('');
+        console.log(pc.yellow('Root credentials detected.'));
+        console.log('Creating admin IAM user for subsequent operations...');
+        console.log('');
+
+        // Create IAM client with current (root) credentials for management account
+        const iamClient = createIAMClient(config.awsRegion);
+        const adminResult = await createOrAdoptAdminUser(iamClient, config.projectName);
+
+        // Store admin credentials for use in this session
+        adminCredentials = {
+          accessKeyId: adminResult.accessKeyId,
+          secretAccessKey: adminResult.secretAccessKey,
+        };
+
+        // Persist admin user info to config (without secret key)
+        const configContent = JSON.parse(readFileSync(configPath, 'utf-8'));
+        configContent.adminUser = {
+          userName: adminResult.userName,
+          accessKeyId: adminResult.accessKeyId,
+        };
+        writeFileSync(configPath, JSON.stringify(configContent, null, 2) + '\n', 'utf-8');
+
+        if (adminResult.adopted) {
+          console.log(pc.green(`Adopted existing admin user: ${adminResult.userName}`));
+        } else {
+          console.log(pc.green(`Created admin user: ${adminResult.userName}`));
+        }
+        console.log(pc.dim('Admin credentials will be used for all subsequent AWS operations in this session.'));
+        console.log('');
+      }
+    } catch (error) {
+      // If STS call fails, let it propagate as an AWS error
+      // This likely means credentials are not configured at all
+      const spinner = ora('').start();
+      spinner.fail('Failed to detect AWS credentials');
+      handleAwsError(error);
+    }
+  }
+
+  // 4. Collect emails (all input before any AWS calls - per research pitfall #6)
   const emails = await collectEmails(config.projectName);
 
-  // 4. Execute AWS operations with progress spinner
+  // 5. Execute AWS operations with progress spinner
   const spinner = ora('Starting AWS Organizations setup...').start();
 
   try {
     // Organizations API requires us-east-1 (region-locked per research pitfall #1)
-    const client = createOrganizationsClient('us-east-1');
+    // When admin credentials available, create OrganizationsClient with explicit credentials
+    let client: OrganizationsClient;
+    if (adminCredentials) {
+      client = new OrganizationsClient({
+        region: 'us-east-1',
+        credentials: {
+          accessKeyId: adminCredentials.accessKeyId,
+          secretAccessKey: adminCredentials.secretAccessKey,
+        },
+      });
+    } else {
+      client = createOrganizationsClient('us-east-1');
+    }
 
     // Check/create organization
     spinner.text = 'Checking for existing AWS Organization...';
@@ -327,7 +393,29 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
 
       spinner.start(`Creating deployment user in ${env} account...`);
 
-      const iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      // When admin credentials available, create cross-account client with explicit credentials
+      let iamClient: IAMClient;
+      if (adminCredentials) {
+        // Use admin credentials as the source for role assumption
+        const roleArn = `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`;
+        iamClient = new IAMClient({
+          region: config.awsRegion,
+          credentials: fromTemporaryCredentials({
+            masterCredentials: {
+              accessKeyId: adminCredentials.accessKeyId,
+              secretAccessKey: adminCredentials.secretAccessKey,
+            },
+            params: {
+              RoleArn: roleArn,
+              RoleSessionName: `create-aws-project-${Date.now()}`,
+              DurationSeconds: 900,
+            },
+          }),
+        });
+      } else {
+        iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      }
+
       await createOrAdoptDeploymentUser(iamClient, userName);
 
       spinner.text = `Creating deployment policy for ${env}...`;
