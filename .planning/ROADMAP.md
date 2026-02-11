@@ -200,10 +200,10 @@ Plans:
   1. User with existing accounts in config is not re-prompted for their email addresses
   2. setup-aws-envs only prompts for emails of accounts that need to be created
   3. Partial re-runs (after failures) resume from last successful step without re-prompting completed information
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 19-01: TBD
+- [ ] 19-01-PLAN.md — Pre-flight AWS account discovery and conditional email prompting
 
 #### Phase 20: End-to-End Verification
 **Goal**: Complete workflow from root credentials to deployed project works reliably
@@ -243,8 +243,8 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 16. CLI Polish & Git Setup | v1.5.1 | 2/2 | Complete | 2026-02-01 |
 | 17. Root Credential Handling | v1.6 | 2/2 | Complete | 2026-02-11 |
 | 18. Architecture Simplification | v1.6 | 2/2 | Complete | 2026-02-11 |
-| 19. Idempotent Setup Improvements | v1.6 | 0/0 | Not started | - |
+| 19. Idempotent Setup Improvements | v1.6 | 0/1 | Planned | - |
 | 20. End-to-End Verification | v1.6 | 0/0 | Not started | - |
 
 ---
-*Last updated: 2026-02-11 after Phase 18 execution complete*
+*Last updated: 2026-02-11 after Phase 19 planning complete*
