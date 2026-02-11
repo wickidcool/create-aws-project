@@ -48,25 +48,25 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ROOT-01 | TBD | Pending |
-| ROOT-02 | TBD | Pending |
-| ROOT-03 | TBD | Pending |
-| ROOT-04 | TBD | Pending |
-| ROOT-05 | TBD | Pending |
-| ROOT-06 | TBD | Pending |
-| IDEM-01 | TBD | Pending |
-| IDEM-02 | TBD | Pending |
-| IDEM-03 | TBD | Pending |
-| ARCH-01 | TBD | Pending |
-| ARCH-02 | TBD | Pending |
-| ARCH-03 | TBD | Pending |
-| ARCH-04 | TBD | Pending |
+| ROOT-01 | Phase 17 | Pending |
+| ROOT-02 | Phase 17 | Pending |
+| ROOT-03 | Phase 17 | Pending |
+| ROOT-04 | Phase 17 | Pending |
+| ROOT-05 | Phase 17 | Pending |
+| ROOT-06 | Phase 17 | Pending |
+| IDEM-01 | Phase 19 | Pending |
+| IDEM-02 | Phase 19 | Pending |
+| IDEM-03 | Phase 19 | Pending |
+| ARCH-01 | Phase 18 | Pending |
+| ARCH-02 | Phase 18 | Pending |
+| ARCH-03 | Phase 18 | Pending |
+| ARCH-04 | Phase 18 | Pending |
 
 **Coverage:**
 - v1.6 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 after initial definition*
+*Last updated: 2026-02-10 after roadmap creation*
