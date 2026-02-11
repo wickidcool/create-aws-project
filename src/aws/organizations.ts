@@ -6,6 +6,8 @@ import {
   DescribeOrganizationCommand,
   AlreadyInOrganizationException,
   CreateAccountState,
+  ListAccountsCommand,
+  Account,
 } from '@aws-sdk/client-organizations';
 import pc from 'picocolors';
 
@@ -44,6 +46,31 @@ export async function checkExistingOrganization(
     }
     throw error;
   }
+}
+
+/**
+ * Lists all accounts in the AWS Organization with automatic pagination handling
+ * @param client - OrganizationsClient instance
+ * @returns Array of Account objects from the organization
+ */
+export async function listOrganizationAccounts(
+  client: OrganizationsClient
+): Promise<Account[]> {
+  const accounts: Account[] = [];
+  let nextToken: string | undefined;
+
+  do {
+    const command = new ListAccountsCommand({ NextToken: nextToken });
+    const response = await client.send(command);
+
+    if (response.Accounts) {
+      accounts.push(...response.Accounts);
+    }
+
+    nextToken = response.NextToken;
+  } while (nextToken);
+
+  return accounts;
 }
 
 /**
