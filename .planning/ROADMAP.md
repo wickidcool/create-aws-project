@@ -7,7 +7,7 @@
 - ✅ **v1.4 Generated Project Validation** - Phases 10-14 (shipped 2026-01-24)
 - ✅ **v1.5 Bug Fixes & Stability** - Phase 15 (shipped 2026-01-31)
 - ✅ **v1.5.1 Fixes & Git Setup** - Phase 16 (shipped 2026-02-01)
-- 🚧 **v1.6 End-to-End AWS Setup** - Phases 17-20 (in progress)
+- 🚧 **v1.6 End-to-End AWS Setup** - Phases 17-21 (in progress)
 
 ## Phases
 
@@ -213,15 +213,23 @@ Plans:
   1. User can run full workflow (project generation → setup-aws-envs with root → initialize-github) without errors
   2. Generated project deploys successfully to AWS with working CI/CD from GitHub Actions
   3. Re-running any command is safe and idempotent (no duplicate resources or errors)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 20-01: TBD
+- [ ] 20-01-PLAN.md — Manual test protocol creation and end-to-end workflow verification
+
+#### Phase 21: Fix AWS -> GitHub Setup
+**Goal**: [To be planned]
+**Depends on**: Phase 20
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 21 to break down)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 17 → 18 → 19 → 20
+Phases execute in numeric order: 17 → 18 → 19 → 20 → 21
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -245,6 +253,7 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 18. Architecture Simplification | v1.6 | 2/2 | Complete | 2026-02-11 |
 | 19. Idempotent Setup Improvements | v1.6 | 1/1 | Complete | 2026-02-11 |
 | 20. End-to-End Verification | v1.6 | 0/0 | Not started | - |
+| 21. Fix AWS -> GitHub Setup | v1.6 | 0/0 | Not started | - |
 
 ---
 *Last updated: 2026-02-11 after Phase 19 execution complete*
