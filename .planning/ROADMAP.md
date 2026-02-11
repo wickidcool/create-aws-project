@@ -186,11 +186,11 @@ Plans:
   2. Deployment credentials are persisted in project config after setup-aws-envs completes
   3. initialize-github reads credentials from config and pushes to GitHub secrets without making AWS API calls
   4. initialize-github still prompts for GitHub PAT and handles environment selection and secret encryption
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 18-01: TBD
-- [ ] 18-02: TBD
+- [ ] 18-01-PLAN.md — Add deployment access key creation to setup-aws-envs and extend config schema
+- [ ] 18-02-PLAN.md — Simplify initialize-github to read credentials from config (no AWS operations)
 
 #### Phase 19: Idempotent Setup Improvements
 **Goal**: Re-running setup-aws-envs resumes cleanly without redundant prompts
