@@ -95,11 +95,11 @@ export async function promptGitSetup(): Promise<{ repoUrl: string; pat: string }
 }
 
 /**
- * Sets up git repository with initial commit and pushes to GitHub
- * Creates the remote repository if it doesn't exist
+ * Sets up local git repository and ensures GitHub remote exists
+ * Does NOT commit or push — code is pushed after AWS accounts are configured
  * @param projectDir - Path to the project directory
  * @param repoUrl - GitHub repository URL
- * @param pat - GitHub Personal Access Token
+ * @param pat - GitHub Personal Access Token (used to create repo if needed)
  */
 export async function setupGitRepository(
   projectDir: string,
@@ -118,21 +118,9 @@ export async function setupGitRepository(
     // Git init
     spinner.start('Initializing git repository...');
     execSync('git init -b main', { cwd: projectDir, stdio: 'pipe' });
-
-    // Check for git user config, set if not configured
-    try {
-      execSync('git config user.name', { cwd: projectDir, stdio: 'pipe' });
-    } catch {
-      // User config not set, use defaults
-      execSync('git config user.name "create-aws-project"', { cwd: projectDir, stdio: 'pipe' });
-      execSync('git config user.email "noreply@create-aws-project"', { cwd: projectDir, stdio: 'pipe' });
-    }
-
-    execSync('git add .', { cwd: projectDir, stdio: 'pipe' });
-    execSync('git commit -m "Initial commit from create-aws-project"', { cwd: projectDir, stdio: 'pipe' });
     spinner.succeed('Git repository initialized');
 
-    // Ensure remote repo exists
+    // Ensure remote repo exists on GitHub
     spinner.start('Checking GitHub repository...');
     try {
       await octokit.rest.repos.get({ owner, repo });
@@ -163,24 +151,37 @@ export async function setupGitRepository(
       }
     }
 
-    // Push to remote
-    spinner.start('Pushing to GitHub...');
-    const authUrl = `https://${pat}@github.com/${owner}/${repo}.git`;
-    execSync(`git remote add origin ${authUrl}`, { cwd: projectDir, stdio: 'pipe' });
-    execSync('git push -u origin main', { cwd: projectDir, stdio: 'pipe' });
-
-    // CRITICAL: Remove PAT from .git/config
+    // Set origin remote (clean URL, no PAT embedded)
+    spinner.start('Setting remote origin...');
     const cleanUrl = `https://github.com/${owner}/${repo}.git`;
-    execSync(`git remote set-url origin ${cleanUrl}`, { cwd: projectDir, stdio: 'pipe' });
+    execSync(`git remote add origin ${cleanUrl}`, { cwd: projectDir, stdio: 'pipe' });
+    spinner.succeed(`Origin set to ${owner}/${repo}`);
 
-    spinner.succeed(`Pushed to ${owner}/${repo}`);
-  } catch (error) {
+    // Guide user on next steps
+    console.log('');
+    console.log(pc.dim('Code will be committed and pushed after AWS setup is complete.'));
+    console.log(pc.dim('Next: run setup-aws-envs to configure AWS accounts.'));
+  } catch (error: any) {
     // Git setup failure should not prevent the user from using their project
     if (spinner.isSpinning) {
       spinner.fail();
     }
 
-    console.log(pc.yellow('Warning:') + ' Git setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    // Detect GitHub auth/permission errors and give actionable guidance
+    if (error?.status === 401 || error?.status === 403 || error?.message?.includes('Bad credentials')) {
+      console.log('');
+      console.log(pc.red('GitHub authentication failed.'));
+      console.log('');
+      console.log('Create a Personal Access Token at:');
+      console.log(`  ${pc.cyan('https://github.com/settings/tokens/new')}`);
+      console.log('');
+      console.log('Required scopes:');
+      console.log(`  ${pc.bold('repo')} — full repository access`);
+      console.log('');
+      console.log('Then re-run project creation and enter the new token.');
+    } else {
+      console.log(pc.yellow('Warning:') + ' Git setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
     console.log(pc.dim('Your project was created successfully. You can set up git manually.'));
   }
 }

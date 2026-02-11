@@ -347,9 +347,28 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     } else {
       console.log(pc.bold('All environments configured!'));
       console.log('');
-      console.log('Deploy your application by pushing to the main branch:');
-      console.log(`  ${pc.cyan('git push origin main')}`);
+      console.log(pc.bold('Get started:'));
       console.log('');
+      console.log(`  ${pc.cyan('npm install')}`);
+      console.log('');
+
+      if (config.platforms?.includes('web')) {
+        console.log(`  ${pc.gray('# Start web app')}`);
+        console.log(`  ${pc.cyan('npm run web')}`);
+        console.log('');
+      }
+
+      if (config.platforms?.includes('mobile')) {
+        console.log(`  ${pc.gray('# Start mobile app')}`);
+        console.log(`  ${pc.cyan('npm run mobile')}`);
+        console.log('');
+      }
+
+      if (config.platforms?.includes('api')) {
+        console.log(`  ${pc.gray('# Deploy API')}`);
+        console.log(`  ${pc.cyan('npm run cdk:deploy')}`);
+        console.log('');
+      }
     }
   } catch (error) {
     spinner.fail(`Failed to configure ${env} environment`);

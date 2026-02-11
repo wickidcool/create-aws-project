@@ -105,36 +105,18 @@ function printWelcome(): void {
 /**
  * Print post-generation instructions
  */
-function printNextSteps(projectName: string, platforms: string[]): void {
+function printNextSteps(projectName: string): void {
   console.log('');
   console.log(pc.bold('Next steps:'));
   console.log('');
   console.log(`  ${pc.cyan('cd')} ${projectName}`);
-  console.log(`  ${pc.cyan('npm install')}`);
   console.log('');
-
-  if (platforms.includes('web')) {
-    console.log(`  ${pc.gray('# Start web app')}`);
-    console.log(`  ${pc.cyan('npm run web')}`);
-    console.log('');
-  }
-
-  if (platforms.includes('mobile')) {
-    console.log(`  ${pc.gray('# Start mobile app')}`);
-    console.log(`  ${pc.cyan('npm run mobile')}`);
-    console.log('');
-  }
-
-  if (platforms.includes('api')) {
-    console.log(`  ${pc.gray('# Deploy API')}`);
-    console.log(`  ${pc.cyan('npm run cdk:deploy')}`);
-    console.log('');
-  }
-
-  console.log(`  ${pc.gray('# Configure AWS environments')}`);
+  console.log(`  ${pc.gray('# Set up AWS accounts and credentials')}`);
   console.log(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
   console.log('');
-
+  console.log(`  ${pc.gray('# Push credentials to GitHub secrets')}`);
+  console.log(`  ${pc.cyan('npx create-aws-project initialize-github')}`);
+  console.log('');
   console.log(pc.gray('Happy coding!'));
 }
 
@@ -187,7 +169,7 @@ async function runCreate(args: string[]): Promise<void> {
   console.log('');
   console.log(pc.green('✔') + ` Created ${pc.bold(config.projectName)} successfully!`);
 
-  printNextSteps(config.projectName, config.platforms);
+  printNextSteps(config.projectName);
 
   process.exit(0);
 }
