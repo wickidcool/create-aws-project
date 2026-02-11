@@ -8,6 +8,15 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.6 End-to-End AWS Setup
+
+**Goal:** Make the full AWS setup workflow complete reliably from root credentials through GitHub deployment configuration.
+
+**Target features:**
+- Root credential detection and automatic IAM admin user creation
+- Skip redundant email prompts when accounts already exist
+- End-to-end flow verification: project generation → AWS setup → GitHub setup
+
 ## Current State (v1.5.1)
 
 Shipped v1.5.1 on 2026-02-01. Patch release with CLI fixes and optional git setup:
@@ -70,7 +79,12 @@ Tech stack:
 
 ### Active
 
-(None — define next milestone with `/gsd:new-milestone`)
+- [ ] Root credential detection via STS GetCallerIdentity — v1.6
+- [ ] Automatic IAM admin user creation when root detected — v1.6
+- [ ] Use admin credentials for cross-account role assumption — v1.6
+- [ ] Skip email prompts for existing accounts on re-run — v1.6
+- [ ] End-to-end setup-aws-envs completion (org + accounts + IAM users) — v1.6
+- [ ] End-to-end initialize-github completion with root-created admin — v1.6
 
 ### Out of Scope
 
@@ -125,4 +139,4 @@ Tech stack:
 | @octokit/rest for repo creation | Official GitHub SDK, handles user vs org repos | ✓ Good |
 
 ---
-*Last updated: 2026-02-01 after v1.5.1 milestone*
+*Last updated: 2026-02-10 after v1.6 milestone start*

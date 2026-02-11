@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-01)
+See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Planning next milestone
+**Current focus:** v1.6 End-to-End AWS Setup
 
 ## Current Position
 
-Phase: Not started
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-01 — v1.5.1 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-10 — Milestone v1.6 started
 
-Progress: Ready for next milestone
+Progress: Defining requirements
 
 ## Milestones
 
@@ -25,6 +25,7 @@ Progress: Ready for next milestone
 | v1.4 | Generated Project Validation | 10-14 | Complete | 2026-01-24 |
 | v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 | v1.5.1 | Fixes & Git Setup | 16 | Complete | 2026-02-01 |
+| v1.6 | End-to-End AWS Setup | TBD | Active | — |
 
 ## Performance Metrics
 
@@ -105,10 +106,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-01
-Stopped at: v1.5.1 milestone complete
+Last session: 2026-02-10
+Stopped at: Defining v1.6 requirements
 Resume file: None
-Next: `/gsd:new-milestone` to define next milestone
+Next: Complete requirements → roadmap
 
 ---
-*Updated: 2026-02-01 after v1.5.1 milestone completion*
+*Updated: 2026-02-10 after v1.6 milestone start*
