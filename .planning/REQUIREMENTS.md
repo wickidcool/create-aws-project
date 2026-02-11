@@ -22,10 +22,10 @@
 
 ### Architecture Simplification
 
-- [ ] **ARCH-01**: `setup-aws-envs` creates deployment IAM users and access keys in child accounts (moved from `initialize-github`)
-- [ ] **ARCH-02**: Deployment credentials are stored in project config for `initialize-github` to consume
-- [ ] **ARCH-03**: `initialize-github` reads stored credentials from config and pushes to GitHub secrets (no AWS operations)
-- [ ] **ARCH-04**: `initialize-github` continues to handle GitHub PAT prompt, environment selection, and secret encryption
+- [x] **ARCH-01**: `setup-aws-envs` creates deployment IAM users and access keys in child accounts (moved from `initialize-github`)
+- [x] **ARCH-02**: Deployment credentials are stored in project config for `initialize-github` to consume
+- [x] **ARCH-03**: `initialize-github` reads stored credentials from config and pushes to GitHub secrets (no AWS operations)
+- [x] **ARCH-04**: `initialize-github` continues to handle GitHub PAT prompt, environment selection, and secret encryption
 
 ## Future Requirements
 
@@ -57,10 +57,10 @@
 | IDEM-01 | Phase 19 | Pending |
 | IDEM-02 | Phase 19 | Pending |
 | IDEM-03 | Phase 19 | Pending |
-| ARCH-01 | Phase 18 | Pending |
-| ARCH-02 | Phase 18 | Pending |
-| ARCH-03 | Phase 18 | Pending |
-| ARCH-04 | Phase 18 | Pending |
+| ARCH-01 | Phase 18 | Complete |
+| ARCH-02 | Phase 18 | Complete |
+| ARCH-03 | Phase 18 | Complete |
+| ARCH-04 | Phase 18 | Complete |
 
 **Coverage:**
 - v1.6 requirements: 13 total
@@ -69,4 +69,4 @@
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-11 after Phase 17 completion*
+*Last updated: 2026-02-11 after Phase 18 completion*

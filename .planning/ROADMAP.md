@@ -189,8 +189,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 18-01-PLAN.md — Add deployment access key creation to setup-aws-envs and extend config schema
-- [ ] 18-02-PLAN.md — Simplify initialize-github to read credentials from config (no AWS operations)
+- [x] 18-01-PLAN.md — Add deployment access key creation to setup-aws-envs and extend config schema
+- [x] 18-02-PLAN.md — Simplify initialize-github to read credentials from config (no AWS operations)
 
 #### Phase 19: Idempotent Setup Improvements
 **Goal**: Re-running setup-aws-envs resumes cleanly without redundant prompts
@@ -242,9 +242,9 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 15. Critical Fixes | v1.5 | 1/1 | Complete | 2026-01-31 |
 | 16. CLI Polish & Git Setup | v1.5.1 | 2/2 | Complete | 2026-02-01 |
 | 17. Root Credential Handling | v1.6 | 2/2 | Complete | 2026-02-11 |
-| 18. Architecture Simplification | v1.6 | 0/0 | Not started | - |
+| 18. Architecture Simplification | v1.6 | 2/2 | Complete | 2026-02-11 |
 | 19. Idempotent Setup Improvements | v1.6 | 0/0 | Not started | - |
 | 20. End-to-End Verification | v1.6 | 0/0 | Not started | - |
 
 ---
-*Last updated: 2026-02-11 after Phase 17 execution complete*
+*Last updated: 2026-02-11 after Phase 18 execution complete*
