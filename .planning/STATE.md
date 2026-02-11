@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 18 of 20 (Architecture Simplification) — IN PROGRESS
-Plan: 1/2 complete
-Status: Executing phase 18
-Last activity: 2026-02-11 — Completed 18-01-PLAN.md
+Phase: 18 of 20 (Architecture Simplification) — COMPLETE
+Plan: 2/2 complete
+Status: Phase complete, ready for phase 19
+Last activity: 2026-02-11 — Completed 18-02-PLAN.md
 
-Progress: [█████░░░░░░░░░░░] 17/20 phases complete (85% overall, 25% of v1.6)
+Progress: [██████░░░░░░░░░░] 18/20 phases complete (90% overall, 50% of v1.6)
 
 ## Milestones
 
@@ -107,6 +107,9 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Credential storage structure (18-01):** Store credentials as `Record<string, DeploymentCredentials>` in config, keyed by environment name
 - **Idempotent credential handling (18-01):** Check existingCredentials before creating new keys, reuse existing if present
 - **Partial failure resilience (18-01):** Call updateConfig after each successful key creation (same pattern as accounts/users)
+- **Command separation (18-02):** initialize-github reads credentials from config (no AWS operations), setup-aws-envs handles all AWS/IAM
+- **Credential validation (18-02):** Check config.deploymentCredentials at start, fail fast with helpful error directing to setup-aws-envs
+- **Migration detection (18-02):** Detect projects with deploymentUsers but no credentials, show specific migration message
 
 ### Deferred Issues
 
@@ -123,9 +126,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 18-01-PLAN.md
+Stopped at: Completed 18-02-PLAN.md (Phase 18 complete)
 Resume file: None
-Next: Execute 18-02-PLAN.md
+Next: Begin phase 19
 
 ---
-*Updated: 2026-02-11 after completing 18-01-PLAN.md*
+*Updated: 2026-02-11 after completing 18-02-PLAN.md*
