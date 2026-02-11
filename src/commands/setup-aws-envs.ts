@@ -16,6 +16,7 @@ import {
   createOrganization,
   createAccount,
   waitForAccountCreation,
+  listOrganizationAccounts,
 } from '../aws/organizations.js';
 import {
   createIAMClient,
@@ -32,15 +33,6 @@ import {
 import { IAMClient } from '@aws-sdk/client-iam';
 import { OrganizationsClient } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
-
-/**
- * Email addresses for each environment account
- */
-interface EnvironmentEmails {
-  dev: string;
-  stage: string;
-  prod: string;
-}
 
 /**
  * Environment names for account creation
@@ -82,16 +74,26 @@ function validateUniqueEmail(value: string, existing: string[]): boolean | strin
 }
 
 /**
- * Collects unique email addresses for each environment account
+ * Collects unique email addresses for environments that need account creation
  * @param projectName Project name for display
- * @returns EnvironmentEmails object with dev, stage, prod emails
+ * @param environmentsToCreate Array of environment names that need accounts
+ * @returns Record of environment name to email address
  */
-async function collectEmails(projectName: string): Promise<EnvironmentEmails> {
+async function collectEmails(
+  projectName: string,
+  environmentsToCreate: readonly string[]
+): Promise<Record<string, string>> {
   console.log('');
   console.log(pc.bold('AWS Account Configuration'));
   console.log('');
   console.log(`Setting up environment accounts for ${pc.cyan(projectName)}`);
   console.log('');
+
+  if (environmentsToCreate.length < ENVIRONMENTS.length) {
+    console.log(pc.dim('Note: Only collecting emails for accounts that need creation.'));
+    console.log('');
+  }
+
   console.log('Each AWS environment account requires a unique root email address.');
   console.log(pc.dim('Tip: Use email aliases like yourname+dev@company.com'));
   console.log('');
@@ -101,58 +103,64 @@ async function collectEmails(projectName: string): Promise<EnvironmentEmails> {
     process.exit(1);
   };
 
-  // Collect emails sequentially to enable uniqueness validation
-  const devResponse = await prompts(
-    {
-      type: 'text',
-      name: 'dev',
-      message: 'Dev account root email:',
-      validate: validateEmail,
-    },
-    { onCancel }
-  );
+  const emails: Record<string, string> = {};
+  const collectedEmails: string[] = [];
 
-  if (!devResponse.dev) {
-    console.log(pc.red('Error:') + ' Dev email is required.');
-    process.exit(1);
+  if (environmentsToCreate.includes('dev')) {
+    const response = await prompts(
+      {
+        type: 'text',
+        name: 'dev',
+        message: 'Dev account root email:',
+        validate: validateEmail,
+      },
+      { onCancel }
+    );
+    if (!response.dev) {
+      console.log(pc.red('Error:') + ' Dev email is required.');
+      process.exit(1);
+    }
+    emails.dev = response.dev;
+    collectedEmails.push(response.dev);
   }
 
-  const stageResponse = await prompts(
-    {
-      type: 'text',
-      name: 'stage',
-      message: 'Stage account root email:',
-      validate: (v: string): boolean | string => validateUniqueEmail(v, [devResponse.dev]),
-    },
-    { onCancel }
-  );
-
-  if (!stageResponse.stage) {
-    console.log(pc.red('Error:') + ' Stage email is required.');
-    process.exit(1);
+  if (environmentsToCreate.includes('stage')) {
+    const response = await prompts(
+      {
+        type: 'text',
+        name: 'stage',
+        message: 'Stage account root email:',
+        validate: (v: string) => validateUniqueEmail(v, collectedEmails),
+      },
+      { onCancel }
+    );
+    if (!response.stage) {
+      console.log(pc.red('Error:') + ' Stage email is required.');
+      process.exit(1);
+    }
+    emails.stage = response.stage;
+    collectedEmails.push(response.stage);
   }
 
-  const prodResponse = await prompts(
-    {
-      type: 'text',
-      name: 'prod',
-      message: 'Prod account root email:',
-      validate: (v: string): boolean | string =>
-        validateUniqueEmail(v, [devResponse.dev, stageResponse.stage]),
-    },
-    { onCancel }
-  );
-
-  if (!prodResponse.prod) {
-    console.log(pc.red('Error:') + ' Prod email is required.');
-    process.exit(1);
+  if (environmentsToCreate.includes('prod')) {
+    const response = await prompts(
+      {
+        type: 'text',
+        name: 'prod',
+        message: 'Prod account root email:',
+        validate: (v: string) => validateUniqueEmail(v, collectedEmails),
+      },
+      { onCancel }
+    );
+    if (!response.prod) {
+      console.log(pc.red('Error:') + ' Prod email is required.');
+      process.exit(1);
+    }
+    emails.prod = response.prod;
+    collectedEmails.push(response.prod);
   }
 
-  return {
-    dev: devResponse.dev,
-    stage: stageResponse.stage,
-    prod: prodResponse.prod,
-  };
+  return emails;
 }
 
 /**
@@ -324,10 +332,7 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
     }
   }
 
-  // 4. Collect emails (all input before any AWS calls - per research pitfall #6)
-  const emails = await collectEmails(config.projectName);
-
-  // 5. Execute AWS operations with progress spinner
+  // 4. Execute AWS operations with progress spinner
   const spinner = ora('Starting AWS Organizations setup...').start();
 
   try {
@@ -358,13 +363,69 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
       spinner.succeed(`Using existing AWS Organization: ${orgId}`);
     }
 
+    // Discover existing accounts from AWS (source of truth)
+    spinner.start('Checking for existing AWS accounts...');
+    const allOrgAccounts = await listOrganizationAccounts(client);
+
+    // Map accounts by environment using name pattern matching
+    const discoveredAccounts = new Map<string, string>();
+    for (const account of allOrgAccounts) {
+      for (const env of ENVIRONMENTS) {
+        const expectedName = `${config.projectName}-${env}`;
+        if (account.Name === expectedName && account.Id) {
+          discoveredAccounts.set(env, account.Id);
+        }
+      }
+    }
+
+    // Determine which environments still need account creation
+    const environmentsNeedingCreation = ENVIRONMENTS.filter(
+      env => !discoveredAccounts.has(env)
+    );
+
+    // Report findings
+    for (const [env, accountId] of discoveredAccounts.entries()) {
+      spinner.info(`Found existing ${env} account: ${accountId}`);
+    }
+
+    // Warn if config has accounts not found in AWS
+    for (const [env, accountId] of Object.entries(existingAccounts)) {
+      if (!discoveredAccounts.has(env)) {
+        console.log(pc.yellow('Warning:') + ` Account ${env} (${accountId}) in config but not found in AWS Organization`);
+      }
+    }
+
+    spinner.stop();
+
+    // Collect emails only for environments that need account creation
+    let emails: Record<string, string> = {};
+    if (environmentsNeedingCreation.length > 0) {
+      // Must be outside spinner (prompts conflict with ora)
+      emails = await collectEmails(config.projectName, environmentsNeedingCreation);
+      spinner.start('Continuing AWS setup...');
+    } else {
+      console.log('');
+      console.log(pc.green('All environment accounts already exist in AWS.'));
+      console.log(pc.dim('Skipping email collection, proceeding to deployment user setup...'));
+      console.log('');
+    }
+
     // Create accounts sequentially (per research - AWS rate limits require sequential)
+    // Start with accounts discovered from AWS (source of truth)
     const accounts: Record<string, string> = { ...existingAccounts };
+    for (const [env, accountId] of discoveredAccounts.entries()) {
+      accounts[env] = accountId;
+    }
+
+    // Update config with discovered accounts (sync config with AWS state)
+    if (discoveredAccounts.size > 0) {
+      updateConfig(configPath, accounts);
+    }
 
     for (const env of ENVIRONMENTS) {
-      // Skip if account already exists
-      if (existingAccounts[env]) {
-        spinner.succeed(`Using existing ${env} account: ${existingAccounts[env]}`);
+      // Skip if account already exists (in config OR discovered from AWS)
+      if (accounts[env]) {
+        spinner.succeed(`Using existing ${env} account: ${accounts[env]}`);
         continue;
       }
 
