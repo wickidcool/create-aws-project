@@ -17,6 +17,16 @@ import pc from 'picocolors';
 export const CONFIG_FILE = '.aws-starter-config.json';
 
 /**
+ * Deployment credentials for a single environment
+ * Created by setup-aws-envs, consumed by initialize-github
+ */
+export interface DeploymentCredentials {
+  userName: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+}
+
+/**
  * Minimal project config structure for context detection
  * Full config defined in types.ts - this is subset needed for context
  */
@@ -27,6 +37,7 @@ export interface ProjectConfigMinimal {
   configVersion?: string;
   accounts?: Record<string, string>;
   deploymentUsers?: Record<string, string>;
+  deploymentCredentials?: Record<string, DeploymentCredentials>;
   adminUser?: {
     userName: string;
     accessKeyId: string;
