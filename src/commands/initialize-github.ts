@@ -12,11 +12,6 @@ import pc from 'picocolors';
 import { execSync } from 'node:child_process';
 import { requireProjectContext } from '../utils/project-context.js';
 import {
-  createCrossAccountIAMClient,
-  createDeploymentUserWithCredentials,
-  createAccessKey,
-} from '../aws/iam.js';
-import {
   createGitHubClient,
   setEnvironmentCredentials,
   parseGitHubUrl,
@@ -188,51 +183,15 @@ async function promptForRepoInfo(): Promise<GitHubRepoInfo> {
 }
 
 /**
- * Handles AWS and GitHub errors with actionable messages
+ * Handles GitHub errors with actionable messages
  * @param error The error to handle
- * @param env The environment being configured
  * @returns never - always exits
  */
-function handleError(error: unknown, env: string): never {
+function handleError(error: unknown): never {
   console.error('');
 
   if (!(error instanceof Error)) {
     console.error(pc.red('Error:') + ' Unknown error occurred');
-    process.exit(1);
-  }
-
-  // AWS AssumeRole errors
-  if (error.name === 'AccessDenied' || error.message.includes('AssumeRole')) {
-    console.error(pc.red('Error: Cannot assume role in target account'));
-    console.error('');
-    console.error('This command requires cross-account access via:');
-    console.error(`  arn:aws:iam::<${env}-account-id>:role/OrganizationAccountAccessRole`);
-    console.error('');
-    console.error('Ensure:');
-    console.error(`  1. The ${env} account was created via setup-aws-envs`);
-    console.error('  2. Your credentials are from the management account');
-    console.error('  3. OrganizationAccountAccessRole exists in target account');
-    process.exit(1);
-  }
-
-  // IAM user already exists
-  if (error.message.includes('already exists')) {
-    console.error(pc.red('Error:') + ` ${error.message}`);
-    console.error('');
-    console.error('To retry, delete the IAM user first:');
-    console.error('  1. Go to AWS Console > IAM > Users');
-    console.error(`  2. Find and delete the existing deployment user`);
-    console.error('  3. Run this command again');
-    process.exit(1);
-  }
-
-  // Access key limit exceeded
-  if (error.name === 'LimitExceeded' || error.message.includes('LimitExceeded')) {
-    console.error(pc.red('Error: Access key limit exceeded'));
-    console.error('');
-    console.error('IAM users can only have 2 active access keys.');
-    console.error('Delete an existing key before creating a new one:');
-    console.error('  AWS Console > IAM > Users > Security credentials > Access keys');
     process.exit(1);
   }
 
@@ -266,7 +225,6 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
   // 1. Validate we're in a project directory
   const context = await requireProjectContext();
   const { config } = context;
-  const { projectName, awsRegion } = config;
 
   // 2. Determine environment
   let env: Environment;
@@ -294,13 +252,13 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
   } else {
     // Interactive environment selection
     const configuredEnvs = VALID_ENVIRONMENTS.filter(
-      (e) => config.accounts?.[e]
+      (e) => config.deploymentCredentials?.[e]
     );
 
     if (configuredEnvs.length === 0) {
       console.error(pc.red('Error:') + ' No environments configured.');
       console.error('');
-      console.error('Run setup-aws-envs first to create environment accounts:');
+      console.error('Run setup-aws-envs first to create deployment credentials:');
       console.error(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
       process.exit(1);
     }
@@ -308,17 +266,7 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     env = await promptForEnvironment(configuredEnvs);
   }
 
-  // 3. Validate account ID exists for environment
-  const accountId = config.accounts?.[env];
-  if (!accountId) {
-    console.error(pc.red('Error:') + ` No account ID for ${env}.`);
-    console.error('');
-    console.error('Run setup-aws-envs first to create environment accounts:');
-    console.error(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
-    process.exit(1);
-  }
-
-  // 4. Get repository info (try git remote, fallback to prompt)
+  // 3. Get repository info (try git remote, fallback to prompt)
   let repoInfo: GitHubRepoInfo | null = getGitRemoteOrigin();
 
   if (!repoInfo) {
@@ -330,42 +278,32 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     console.log(`Detected repository: ${pc.cyan(`${repoInfo.owner}/${repoInfo.repo}`)}`);
   }
 
-  // 5. Prompt for GitHub PAT (always interactive per CONTEXT.md)
+  // 4. Prompt for GitHub PAT (always interactive per CONTEXT.md)
   const pat = await promptForGitHubPAT();
 
-  // 6. Execute AWS and GitHub setup
+  // 5. Execute GitHub setup
   const spinner = ora(`Initializing ${env} environment...`).start();
 
   try {
-    // Step 1: Create cross-account IAM client
-    spinner.text = `Assuming role in ${env} account (${accountId})...`;
-    const iamClient = createCrossAccountIAMClient(awsRegion, accountId);
+    // Step 1: Validate deployment credentials exist in config
+    const credentials = config.deploymentCredentials?.[env];
+    if (!credentials) {
+      spinner.fail(`No deployment credentials found for ${env}`);
+      console.error('');
 
-    // Step 2: Get deployment user credentials
-    // If setup-aws-envs already created the user, just create an access key.
-    // Otherwise fall back to full user creation (backward compat with older projects).
-    const existingUserName = config.deploymentUsers?.[env];
-    let userName: string;
-    let credentials: { accessKeyId: string; secretAccessKey: string };
+      // Check if user exists but credentials don't (migration case)
+      if (config.deploymentUsers?.[env]) {
+        console.error(pc.yellow('Note:') + ' Deployment user exists but credentials were not found.');
+        console.error('Your project may have been set up with an older version.');
+        console.error('');
+      }
 
-    if (existingUserName) {
-      spinner.text = `Using existing deployment user: ${existingUserName}`;
-      userName = existingUserName;
-      credentials = await createAccessKey(iamClient, userName);
-      spinner.succeed(`Created access key for ${userName}`);
-    } else {
-      spinner.text = `Creating IAM deployment user...`;
-      const fullCredentials = await createDeploymentUserWithCredentials(
-        iamClient,
-        projectName,
-        env,
-        accountId
-      );
-      userName = fullCredentials.userName;
-      credentials = fullCredentials;
+      console.error('Run setup-aws-envs first to create deployment credentials:');
+      console.error(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
+      process.exit(1);
     }
 
-    // Step 3: Configure GitHub
+    // Step 2: Configure GitHub environment
     const githubEnvName = GITHUB_ENV_NAMES[env];
     spinner.text = `Configuring GitHub Environment "${githubEnvName}"...`;
     const githubClient = createGitHubClient(pat);
@@ -384,16 +322,10 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     console.log('');
     console.log(pc.green(`${env} environment setup complete!`));
     console.log('');
-    console.log('Resources created:');
-    console.log(`  Deployment User: ${pc.cyan(userName)}`);
+    console.log('Credentials pushed to GitHub:');
+    console.log(`  Deployment User: ${pc.cyan(credentials.userName)}`);
+    console.log(`  Access Key ID: ${pc.cyan(credentials.accessKeyId)}`);
     console.log(`  GitHub Environment: ${pc.cyan(githubEnvName)}`);
-
-    // Add note if using existing user from setup-aws-envs
-    if (existingUserName) {
-      console.log('');
-      console.log(pc.dim('Note: Deployment user was created by setup-aws-envs. Access key created for GitHub.'));
-    }
-
     console.log('');
     console.log('View secrets at:');
     console.log(`  ${pc.cyan(`https://github.com/${repoInfo.owner}/${repoInfo.repo}/settings/environments`)}`);
@@ -401,7 +333,7 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
 
     // Show next steps (other environments if any remain)
     const remainingEnvs = VALID_ENVIRONMENTS.filter(
-      (e) => e !== env && config.accounts?.[e]
+      (e) => e !== env && config.deploymentCredentials?.[e]
     );
 
     if (remainingEnvs.length > 0) {
@@ -421,6 +353,6 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     }
   } catch (error) {
     spinner.fail(`Failed to configure ${env} environment`);
-    handleError(error, env);
+    handleError(error);
   }
 }
