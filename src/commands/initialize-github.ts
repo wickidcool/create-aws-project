@@ -183,6 +183,54 @@ async function promptForRepoInfo(): Promise<GitHubRepoInfo> {
 }
 
 /**
+ * Determines batch environments from CLI args
+ * @param args Command arguments
+ * @param config Project config with deployment credentials
+ * @returns Array of environments to configure
+ */
+function determineBatchEnvironments(
+  args: string[],
+  config: { deploymentCredentials?: Record<string, unknown> }
+): Environment[] {
+  if (args.includes('--all')) {
+    const envs = VALID_ENVIRONMENTS.filter(
+      env => config.deploymentCredentials?.[env]
+    );
+    if (envs.length === 0) {
+      console.error(pc.red('Error:') + ' No environments have credentials configured.');
+      console.error('Run setup-aws-envs first to create deployment credentials:');
+      console.error(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
+      process.exit(1);
+    }
+    return [...envs];
+  }
+
+  // Multiple positional arguments (filter out flags)
+  const envArgs = args.filter(arg => !arg.startsWith('--'));
+
+  for (const envArg of envArgs) {
+    if (envArg !== envArg.toLowerCase()) {
+      console.error(pc.red('Error:') + ` Environment must be lowercase: ${pc.bold(envArg)}`);
+      console.error(`Did you mean: ${pc.cyan(envArg.toLowerCase())}?`);
+      process.exit(1);
+    }
+    if (!isValidEnvironment(envArg)) {
+      console.error(pc.red('Error:') + ` Invalid environment: ${pc.bold(envArg)}`);
+      console.error('Valid environments: ' + VALID_ENVIRONMENTS.join(', '));
+      process.exit(1);
+    }
+    if (!config.deploymentCredentials?.[envArg]) {
+      console.error(pc.red('Error:') + ` No credentials for ${pc.bold(envArg)}.`);
+      console.error('Run setup-aws-envs first to create deployment credentials:');
+      console.error(`  ${pc.cyan('npx create-aws-project setup-aws-envs')}`);
+      process.exit(1);
+    }
+  }
+
+  return envArgs as Environment[];
+}
+
+/**
  * Handles GitHub errors with actionable messages
  * @param error The error to handle
  * @returns never - always exits
@@ -226,6 +274,107 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
   const context = await requireProjectContext();
   const { config } = context;
 
+  // 2. Detect batch mode
+  const nonFlagArgs = args.filter(a => !a.startsWith('--'));
+  const isBatchMode = args.includes('--all') || nonFlagArgs.length > 1;
+
+  if (isBatchMode) {
+    // BATCH MODE: Configure multiple environments
+    const environments = determineBatchEnvironments(args, config);
+
+    // Get repository info once (try git remote, fallback to prompt)
+    let repoInfo: GitHubRepoInfo | null = getGitRemoteOrigin();
+
+    if (!repoInfo) {
+      console.log('');
+      console.log(pc.yellow('Note:') + ' Could not detect GitHub repository from git remote.');
+      repoInfo = await promptForRepoInfo();
+    } else {
+      console.log('');
+      console.log(`Detected repository: ${pc.cyan(`${repoInfo.owner}/${repoInfo.repo}`)}`);
+    }
+
+    // Prompt for GitHub PAT once
+    const pat = await promptForGitHubPAT();
+
+    // Create GitHub client once
+    const githubClient = createGitHubClient(pat);
+
+    // Track results for each environment
+    const results: Array<{ env: string; success: boolean; error?: string }> = [];
+
+    // Process each environment
+    for (const env of environments) {
+      const spinner = ora(`Configuring ${env} environment...`).start();
+
+      try {
+        const credentials = config.deploymentCredentials?.[env];
+        if (!credentials) {
+          throw new Error(`No deployment credentials found for ${env}`);
+        }
+
+        const githubEnvName = GITHUB_ENV_NAMES[env];
+        spinner.text = `Configuring GitHub Environment "${githubEnvName}"...`;
+
+        await setEnvironmentCredentials(
+          githubClient,
+          repoInfo.owner,
+          repoInfo.repo,
+          githubEnvName,
+          credentials.accessKeyId,
+          credentials.secretAccessKey
+        );
+
+        spinner.succeed(`Configured ${githubEnvName} environment`);
+        results.push({ env, success: true });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        spinner.fail(`Failed ${env}`);
+        results.push({ env, success: false, error: errorMessage });
+      }
+    }
+
+    // Show batch summary
+    console.log('');
+    console.log(pc.bold('Batch Configuration Summary'));
+    console.log('');
+
+    for (const result of results) {
+      if (result.success) {
+        console.log(`  ${pc.green('✓')} Configured ${GITHUB_ENV_NAMES[result.env]} environment`);
+      } else {
+        console.log(`  ${pc.red('✗')} Failed ${result.env}: ${result.error}`);
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    console.log('');
+    console.log(`Successfully configured ${successCount} of ${results.length} environments`);
+
+    if (successCount < results.length) {
+      console.log('');
+      console.log('You can retry failed environments individually:');
+      for (const result of results) {
+        if (!result.success) {
+          console.log(`  ${pc.cyan(`npx create-aws-project initialize-github ${result.env}`)}`);
+        }
+      }
+    }
+
+    console.log('');
+    console.log('View secrets at:');
+    console.log(`  ${pc.cyan(`https://github.com/${repoInfo.owner}/${repoInfo.repo}/settings/environments`)}`);
+    console.log('');
+
+    // Exit with error code if any failed
+    if (successCount < results.length) {
+      process.exit(1);
+    }
+
+    return;
+  }
+
+  // SINGLE MODE (existing behavior, unchanged)
   // 2. Determine environment
   let env: Environment;
 
