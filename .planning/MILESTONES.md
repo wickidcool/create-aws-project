@@ -1,5 +1,34 @@
 # Project Milestones: create-aws-starter-kit
 
+## v1.6 End-to-End AWS Setup (Shipped: 2026-02-13)
+
+**Delivered:** Complete end-to-end AWS setup workflow from root credentials through CDK bootstrap and GitHub deployment configuration, with full idempotency and streamlined UX.
+
+**Phases completed:** 17-22 (9 plans total)
+
+**Key accomplishments:**
+
+- Root credential detection with automatic IAM admin user creation (tag-based adoption, exponential backoff)
+- Architecture simplification: all AWS/IAM operations consolidated in setup-aws-envs, initialize-github reads config only
+- Idempotent setup with pre-flight AWS account discovery and conditional email prompting
+- Comprehensive E2E verification with 6-test manual protocol (all passed with real AWS)
+- Batch mode for initialize-github (--all flag) with inline continuation from setup-aws-envs
+- Automated CDK bootstrap via cross-account STS AssumeRole in every environment
+
+**Stats:**
+
+- 13 source files modified (+1,728 / -227)
+- 9,083 total TypeScript LOC
+- 6 phases, 9 plans, 45 commits
+- 4 days (2026-02-10 → 2026-02-13)
+- 146 tests passing (28 new: 16 root-credentials + 12 cdk-bootstrap)
+
+**Git range:** `feat(17-01)` → `feat(21-02)`
+
+**What's next:** TBD (run `/gsd:new-milestone` to define next milestone)
+
+---
+
 ## v1.5.1 Fixes & Git Setup (Shipped: 2026-02-01)
 
 **Delivered:** Fixed CLI argument handling and package name references, added optional GitHub repository setup after project generation.

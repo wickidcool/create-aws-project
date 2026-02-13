@@ -2,33 +2,25 @@
 
 ## What This Is
 
-An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with optional GitHub repository setup, separate post-install commands for AWS and GitHub deployment configuration, and automated validation of all 14 generated project configurations.
+An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with optional GitHub repository setup, and a streamlined two-command AWS setup flow (setup-aws-envs handles root credentials, admin user, org, accounts, deployment users, CDK bootstrap; initialize-github reads config and pushes secrets). Includes automated validation of all 14 generated project configurations.
 
 ## Core Value
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
-## Current Milestone: v1.6 End-to-End AWS Setup
+## Current State (v1.6)
 
-**Goal:** Make the full AWS setup workflow complete reliably from root credentials through GitHub deployment configuration.
-
-**Target features:**
-- Root credential detection and automatic IAM admin user creation
-- Skip redundant email prompts when accounts already exist
-- End-to-end flow verification: project generation → AWS setup → GitHub setup
-
-## Current State (v1.5.1)
-
-Shipped v1.5.1 on 2026-02-01. Patch release with CLI fixes and optional git setup:
+Shipped v1.6 on 2026-02-13. End-to-end AWS setup with root credential handling and streamlined workflow:
 
 - **Wizard:** 7 prompts for project scaffolding (name, platforms, auth, features, region, theme) + optional git setup
 - **Git setup:** Optional GitHub repo URL prompt after generation (git init, commit, push, auto-create repo)
-- **setup-aws-envs:** Creates AWS Organization and dev/stage/prod accounts
-- **initialize-github <env>:** Configures GitHub Environment with AWS credentials
+- **setup-aws-envs:** Root credential detection, admin user creation, AWS Organization, dev/stage/prod accounts, deployment IAM users/keys, CDK bootstrap, continuation prompt to initialize-github
+- **initialize-github:** Reads deployment credentials from config, pushes to GitHub secrets (no AWS operations). Supports batch mode (--all flag) and single-environment mode.
 - **Validation:** 14-config test matrix validates all platform/auth combinations build and pass tests
+- **Tests:** 146 passing across 10 test suites
 
 Tech stack:
-- TypeScript with ES modules (~12,100 LOC)
+- TypeScript with ES modules (~9,083 LOC)
 - `prompts` library for interactive wizard
 - AWS SDK v3 (Organizations, IAM, STS)
 - GitHub REST API with libsodium-wrappers encryption (crypto_box_seal)
@@ -76,22 +68,26 @@ Tech stack:
 - ✓ CLI argument passthrough for project name — v1.5.1
 - ✓ Correct package name references in help text and templates — v1.5.1
 - ✓ Optional GitHub repository setup after project generation — v1.5.1
+- ✓ Root credential detection via STS GetCallerIdentity — v1.6
+- ✓ Automatic IAM admin user creation when root detected — v1.6
+- ✓ Admin credentials for cross-account role assumption — v1.6
+- ✓ Skip email prompts for existing accounts on re-run — v1.6
+- ✓ End-to-end setup-aws-envs completion (org + accounts + IAM users + CDK bootstrap) — v1.6
+- ✓ End-to-end initialize-github completion with config-based credentials — v1.6
+- ✓ Batch mode for initialize-github (--all flag) — v1.6
+- ✓ Continuation prompt from setup-aws-envs to initialize-github — v1.6
+- ✓ Automated CDK bootstrap in every environment account — v1.6
 
 ### Active
 
-- [ ] Root credential detection via STS GetCallerIdentity — v1.6
-- [ ] Automatic IAM admin user creation when root detected — v1.6
-- [ ] Use admin credentials for cross-account role assumption — v1.6
-- [ ] Skip email prompts for existing accounts on re-run — v1.6
-- [ ] End-to-end setup-aws-envs completion (org + accounts + IAM users) — v1.6
-- [ ] End-to-end initialize-github completion with root-created admin — v1.6
+(None — run `/gsd:new-milestone` to define next milestone requirements)
 
 ### Out of Scope
 
 - Multi-region deployment support — deferred to future version
-- SSO/IAM Identity Center integration — complexity
+- SSO/IAM Identity Center integration — complexity, admin IAM user sufficient
 - Cost budgets/alerts per environment — nice-to-have, not core
-- `initialize-github all` option — users run per-environment for granular control
+- MFA enforcement on admin user — UX friction, deferred to user's own security hardening
 - Performance optimizations (cached npm install, parallel validation) — future enhancement
 - Watch mode for template development — future enhancement
 
@@ -137,6 +133,16 @@ Tech stack:
 | PAT cleanup from .git/config after push | Security: PAT should not persist on disk | ✓ Good |
 | Non-fatal git setup errors | Git is convenience, not core — project is still usable | ✓ Good |
 | @octokit/rest for repo creation | Official GitHub SDK, handles user vs org repos | ✓ Good |
+| Root detection before operations | Prevents cross-account IAM failures with root creds | ✓ Good |
+| Admin user in /admin/ path | Clean separation from /deployment/ users | ✓ Good |
+| Tag-based admin adoption | ManagedBy tag enables idempotent re-runs | ✓ Good |
+| AWS as source of truth for accounts | Organizations ListAccounts API authoritative, config syncs | ✓ Good |
+| Deployment creds in config | Clean handoff from setup-aws-envs to initialize-github | ✓ Good |
+| Zero AWS operations in initialize-github | Pure GitHub operations, reads config only | ✓ Good |
+| STS AssumeRole for CDK bootstrap | Temporary cross-account credentials for bootstrap | ✓ Good |
+| Batch mode for initialize-github | --all flag or multiple args, single PAT prompt | ✓ Good |
+| Continuation prompt after AWS setup | Defaults to yes, natural workflow progression | ✓ Good |
+| Direct function chaining for continuation | Import/call pattern, not subprocess spawn | ✓ Good |
 
 ---
-*Last updated: 2026-02-10 after v1.6 milestone start*
+*Last updated: 2026-02-13 after v1.6 milestone*
