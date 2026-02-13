@@ -31,6 +31,7 @@ import {
   detectRootCredentials,
   createOrAdoptAdminUser,
 } from '../aws/root-credentials.js';
+import { runInitializeGitHub } from './initialize-github.js';
 import { IAMClient } from '@aws-sdk/client-iam';
 import { OrganizationsClient } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
@@ -574,8 +575,33 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
     console.log('');
     console.log('AWS setup complete. All environments bootstrapped and ready for CDK deployments.');
     console.log('');
-    console.log('Next: Push credentials to GitHub:');
-    console.log(`  ${pc.cyan('npx create-aws-project initialize-github dev')}`);
+
+    // Offer continuation to GitHub setup
+    const continueResponse = await prompts(
+      {
+        type: 'confirm',
+        name: 'continueToGitHub',
+        message: 'Continue to GitHub Environment setup?',
+        initial: true,
+      },
+      {
+        onCancel: () => {
+          // User pressed Ctrl+C — show next step hint and exit gracefully
+          console.log('');
+          console.log('Next: Push credentials to GitHub:');
+          console.log(`  ${pc.cyan('npx create-aws-project initialize-github --all')}`);
+        },
+      }
+    );
+
+    if (continueResponse.continueToGitHub) {
+      console.log('');
+      await runInitializeGitHub(['--all']);
+    } else {
+      console.log('');
+      console.log('Next: Push credentials to GitHub:');
+      console.log(`  ${pc.cyan('npx create-aws-project initialize-github --all')}`);
+    }
   } catch (error) {
     spinner.fail('AWS setup failed');
     handleAwsError(error);
