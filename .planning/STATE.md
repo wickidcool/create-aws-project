@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 21 of 22 (Fix AWS -> GitHub Setup) — COMPLETE
-Plan: 1/1 complete
+Plan: 2/2 complete
 Status: Phase 21 complete. Phase 22 (CDK Bootstrap) is next.
-Last activity: 2026-02-13 — Completed 21-01-PLAN.md (batch mode for initialize-github)
+Last activity: 2026-02-13 — Completed 21-02-PLAN.md (continuation prompt for setup-aws-envs)
 
-Progress: [██████████████████░░] 22/22 phases complete (100% overall, 100% of v1.6)
+Progress: [██████████████████░░] 21/22 phases complete (95% overall, 100% of v1.6 planned phases)
 Note: All planned v1.6 phases complete. Phase 22 (CDK bootstrap) remains.
 
 ## Milestones
@@ -121,6 +121,10 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Batch mode triggers (21-01):** initialize-github enters batch mode when --all flag present OR multiple positional args provided
 - **Per-environment error collection (21-01):** Batch mode collects results per environment, continues on failure, reports summary at end
 - **Backward compatibility (21-01):** Single-environment mode preserved exactly as-is for backward compatibility
+- **Continuation prompt defaults (21-02):** setup-aws-envs continuation prompt defaults to yes (natural next step in workflow)
+- **onCancel handling (21-02):** Prompts include onCancel handler for graceful Ctrl+C with helpful next-step message
+- **Direct function chaining (21-02):** Command continuation uses direct function import/call, not subprocess spawn
+- **Seamless workflow (21-02):** AWS -> GitHub flow reduced from 4 commands to 2 confirmation prompts via inline continuation
 
 ### Roadmap Evolution
 
@@ -142,9 +146,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 21-01-PLAN.md (batch mode for initialize-github)
+Stopped at: Completed 21-02-PLAN.md (continuation prompt for setup-aws-envs)
 Resume file: None
-Next: `/gsd:plan-phase 22` (CDK bootstrap) or ship v1.6
+Next: Phase 22 (CDK bootstrap) or ship v1.6
 
 ---
-*Updated: 2026-02-13 after completing Phase 21 Plan 01*
+*Updated: 2026-02-13 after completing Phase 21 Plan 02*
