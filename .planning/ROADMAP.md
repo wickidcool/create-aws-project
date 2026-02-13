@@ -219,12 +219,13 @@ Plans:
 - [x] 20-01-PLAN.md — Manual test protocol creation and end-to-end workflow verification
 
 #### Phase 21: Fix AWS -> GitHub Setup
-**Goal**: [To be planned]
+**Goal**: Improve UX for AWS -> GitHub setup flow by adding batch mode to initialize-github and continuation prompt to setup-aws-envs
 **Depends on**: Phase 20
-**Plans**: 0 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 21 to break down)
+- [ ] 21-01-PLAN.md — Add batch mode to initialize-github (--all flag, multiple positional args, single PAT prompt)
+- [ ] 21-02-PLAN.md — Add continuation prompt to setup-aws-envs (offer inline GitHub setup after AWS completion)
 
 #### Phase 22: Add CDK Bootstrap to Environment Initialization
 **Goal**: setup-aws-envs automatically bootstraps CDK in every environment account after deployment user setup
@@ -261,7 +262,7 @@ Phases execute in numeric order: 17 → 18 → 19 → 20 → 21 → 22
 | 18. Architecture Simplification | v1.6 | 2/2 | Complete | 2026-02-11 |
 | 19. Idempotent Setup Improvements | v1.6 | 1/1 | Complete | 2026-02-11 |
 | 20. End-to-End Verification | v1.6 | 1/1 | Complete | 2026-02-13 |
-| 21. Fix AWS -> GitHub Setup | v1.6 | 0/0 | Not started | - |
+| 21. Fix AWS -> GitHub Setup | v1.6 | 0/2 | Not started | - |
 | 22. Add CDK Bootstrap to Environment Initialization | v1.6 | 1/1 | Complete | 2026-02-13 |
 
 ---
