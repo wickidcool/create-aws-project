@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 19 of 20 (Idempotent Setup Improvements) — COMPLETE
+Phase: 22 of 22 (Add CDK Bootstrap to Environment Initialization)
 Plan: 1/1 complete
-Status: Phase 19 verified and complete
-Last activity: 2026-02-11 — Phase 19 verified (5/5 must-haves passed)
+Status: Phase 22 complete
+Last activity: 2026-02-13 — Completed 22-01-PLAN.md (CDK bootstrap module)
 
-Progress: [████████░░░░░░░░] 19/20 phases complete (95% overall, 75% of v1.6)
+Progress: [██████████████████████] 22/22 phases complete (100% overall, 100% of v1.6)
 
 ## Milestones
 
@@ -25,7 +25,7 @@ Progress: [████████░░░░░░░░] 19/20 phases comple
 | v1.4 | Generated Project Validation | 10-14 | Complete | 2026-01-24 |
 | v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 | v1.5.1 | Fixes & Git Setup | 16 | Complete | 2026-02-01 |
-| v1.6 | End-to-End AWS Setup | 17-20 | Active | — |
+| v1.6 | End-to-End AWS Setup | 17-22 | Active | — |
 
 ## Performance Metrics
 
@@ -114,6 +114,14 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **Name pattern matching (19-01):** Discover accounts by matching {projectName}-{env} pattern against AWS account names
 - **Conditional email prompting (19-01):** Only collect emails for environments that need account creation based on AWS discovery
 - **Config sync after discovery (19-01):** Update config with discovered accounts immediately to stay in sync with AWS reality
+- **STS AssumeRole for bootstrap credentials (22-01):** Use STS AssumeRole to get temporary credentials for CDK bootstrap in cross-account scenario
+- **Environment variables for subprocess credentials (22-01):** Pass AWS credentials to npx cdk bootstrap via AWS_* environment variables
+- **Idempotent bootstrap (22-01):** Always run CDK bootstrap (no check-before-run) since it's safe to run multiple times
+
+### Roadmap Evolution
+
+- Phase 21 added: Fix AWS -> GitHub Setup
+- Phase 22 added: Add CDK bootstrap to environment initialization
 
 ### Deferred Issues
 
@@ -129,10 +137,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-11
-Stopped at: Phase 19 verified and complete
+Last session: 2026-02-13
+Stopped at: Completed 22-01-PLAN.md
 Resume file: None
-Next: `/gsd:discuss-phase 20` or `/gsd:plan-phase 20`
+Next: Phase 22 complete - v1.6 milestone complete
 
 ---
-*Updated: 2026-02-11 after Phase 19 verification passed*
+*Updated: 2026-02-13 after completing Phase 22 Plan 01*
