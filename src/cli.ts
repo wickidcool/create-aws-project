@@ -68,7 +68,7 @@ Scaffold a new AWS Starter Kit project with React, Lambda, and CDK infrastructur
 Commands:
   (default)           Create a new project (interactive wizard)
   setup-aws-envs      Set up AWS Organizations and environment accounts
-  initialize-github   Configure GitHub Environment for deployment
+  initialize-github   Configure GitHub Environment for deployment (supports batch mode)
   setup-github        ${pc.dim('[DEPRECATED]')} Use initialize-github instead
 
 Options:
@@ -76,14 +76,18 @@ Options:
   --version, -v       Show version number
 
 Usage:
-  create-aws-project                         Run interactive wizard
-  create-aws-project setup-aws-envs          Create AWS accounts
-  create-aws-project initialize-github dev   Configure dev environment
+  create-aws-project                              Run interactive wizard
+  create-aws-project setup-aws-envs               Create AWS accounts
+  create-aws-project initialize-github dev        Configure dev environment
+  create-aws-project initialize-github --all      Configure all environments
+  create-aws-project initialize-github dev stage  Configure specific environments
 
 Examples:
   create-aws-project my-app
   create-aws-project setup-aws-envs
   create-aws-project initialize-github dev
+  create-aws-project initialize-github --all
+  create-aws-project initialize-github dev stage prod
   create-aws-project --help
 `.trim());
 }
