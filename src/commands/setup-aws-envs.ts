@@ -26,6 +26,7 @@ import {
   attachPolicyToUser,
   createAccessKey,
 } from '../aws/iam.js';
+import { bootstrapAllEnvironments } from '../aws/cdk-bootstrap.js';
 import {
   detectRootCredentials,
   createOrAdoptAdminUser,
@@ -550,6 +551,14 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
       spinner.succeed(`Created access key for ${userName}`);
     }
 
+    // Bootstrap CDK in each environment account
+    await bootstrapAllEnvironments({
+      accounts,
+      region: config.awsRegion,
+      adminCredentials,
+      spinner,
+    });
+
     // Final success with summary table
     console.log('');
     console.log(pc.green('AWS environment setup complete!'));
@@ -561,7 +570,9 @@ export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
       console.log(`  ${env.padEnd(14)}${accounts[env].padEnd(16)}${deploymentUsers[env].padEnd(30)}${keyId}`);
     }
     console.log('');
-    console.log('AWS setup complete with deployment credentials.');
+    console.log(pc.dim('CDK bootstrapped in all environment accounts.'));
+    console.log('');
+    console.log('AWS setup complete. All environments bootstrapped and ready for CDK deployments.');
     console.log('');
     console.log('Next: Push credentials to GitHub:');
     console.log(`  ${pc.cyan('npx create-aws-project initialize-github dev')}`);
