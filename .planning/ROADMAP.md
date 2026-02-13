@@ -7,7 +7,7 @@
 - ✅ **v1.4 Generated Project Validation** - Phases 10-14 (shipped 2026-01-24)
 - ✅ **v1.5 Bug Fixes & Stability** - Phase 15 (shipped 2026-01-31)
 - ✅ **v1.5.1 Fixes & Git Setup** - Phase 16 (shipped 2026-02-01)
-- 🚧 **v1.6 End-to-End AWS Setup** - Phases 17-21 (in progress)
+- 🚧 **v1.6 End-to-End AWS Setup** - Phases 17-22 (in progress)
 
 ## Phases
 
@@ -226,10 +226,18 @@ Plans:
 Plans:
 - [ ] TBD (run /gsd:plan-phase 21 to break down)
 
+#### Phase 22: Add CDK Bootstrap to Environment Initialization
+**Goal**: setup-aws-envs automatically bootstraps CDK in every environment account after deployment user setup
+**Depends on**: Phase 21
+**Plans**: 1 plan
+
+Plans:
+- [ ] 22-01-PLAN.md — Create CDK bootstrap module and wire into setup-aws-envs
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 17 → 18 → 19 → 20 → 21
+Phases execute in numeric order: 17 → 18 → 19 → 20 → 21 → 22
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -254,6 +262,7 @@ Phases execute in numeric order: 17 → 18 → 19 → 20 → 21
 | 19. Idempotent Setup Improvements | v1.6 | 1/1 | Complete | 2026-02-11 |
 | 20. End-to-End Verification | v1.6 | 0/0 | Not started | - |
 | 21. Fix AWS -> GitHub Setup | v1.6 | 0/0 | Not started | - |
+| 22. Add CDK Bootstrap to Environment Initialization | v1.6 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-02-11 after Phase 19 execution complete*
+*Last updated: 2026-02-13 after Phase 22 planning complete*
