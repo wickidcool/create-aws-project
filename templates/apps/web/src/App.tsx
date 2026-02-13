@@ -41,8 +41,10 @@ function App() {
 
   // Fetch users on mount
   useEffect(() => {
-    handleFetchUsers();
-  }, []);
+    if (isAuthenticated) {
+      handleFetchUsers();
+    }
+  }, [isAuthenticated]);
 
   const handleLoadDemoUser = () => {
     const demoUser: User = {

@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
       strictPort: false, // Try next port if 3000 is taken
       open: false, // Don't auto-open browser
       cors: true,
+      fs: {
+        allow: [path.resolve(__dirname, '../..')],
+      },
       // Proxy API requests to backend during development
       // Note: Vite automatically loads VITE_ prefixed env vars
       proxy: mode === 'development' ? {
