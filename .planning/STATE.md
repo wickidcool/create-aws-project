@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 20 of 22 (End-to-End Verification) — COMPLETE
+Phase: 21 of 22 (Fix AWS -> GitHub Setup) — COMPLETE
 Plan: 1/1 complete
-Status: Phase 20 verified and complete. Phase 21 still pending.
-Last activity: 2026-02-13 — Phase 20 verified (5/5 must-haves passed, 6/6 tests passed)
+Status: Phase 21 complete. Phase 22 (CDK Bootstrap) is next.
+Last activity: 2026-02-13 — Completed 21-01-PLAN.md (batch mode for initialize-github)
 
-Progress: [█████████████████░░░] 21/22 phases complete (95% overall, 83% of v1.6)
-Note: Phase 21 (Fix AWS -> GitHub Setup) remains.
+Progress: [██████████████████░░] 22/22 phases complete (100% overall, 100% of v1.6)
+Note: All planned v1.6 phases complete. Phase 22 (CDK bootstrap) remains.
 
 ## Milestones
 
@@ -118,6 +118,9 @@ All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.
 - **STS AssumeRole for bootstrap credentials (22-01):** Use STS AssumeRole to get temporary credentials for CDK bootstrap in cross-account scenario
 - **Environment variables for subprocess credentials (22-01):** Pass AWS credentials to npx cdk bootstrap via AWS_* environment variables
 - **Idempotent bootstrap (22-01):** Always run CDK bootstrap (no check-before-run) since it's safe to run multiple times
+- **Batch mode triggers (21-01):** initialize-github enters batch mode when --all flag present OR multiple positional args provided
+- **Per-environment error collection (21-01):** Batch mode collects results per environment, continues on failure, reports summary at end
+- **Backward compatibility (21-01):** Single-environment mode preserved exactly as-is for backward compatibility
 
 ### Roadmap Evolution
 
@@ -139,9 +142,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Phase 20 verified and complete
+Stopped at: Completed 21-01-PLAN.md (batch mode for initialize-github)
 Resume file: None
-Next: `/gsd:plan-phase 21` or `/gsd:discuss-phase 21`
+Next: `/gsd:plan-phase 22` (CDK bootstrap) or ship v1.6
 
 ---
-*Updated: 2026-02-13 after completing Phase 20 Plan 01*
+*Updated: 2026-02-13 after completing Phase 21 Plan 01*
