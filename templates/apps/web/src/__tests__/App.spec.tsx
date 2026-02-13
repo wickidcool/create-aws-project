@@ -15,15 +15,9 @@ jest.mock('../config/api', () => ({
 }));
 
 // Mock useAuth hook to provide auth context for tests
+const mockUseAuth = jest.fn();
 jest.mock('../auth/use-auth', () => ({
-  useAuth: () => ({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    login: jest.fn(),
-    logout: jest.fn(),
-    getAccessToken: jest.fn().mockResolvedValue(null),
-  }),
+  useAuth: (...args: unknown[]) => mockUseAuth(...args),
 }));
 
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -51,6 +45,15 @@ describe('App', () => {
     });
     // Reset mocks
     jest.clearAllMocks();
+    // Default: not authenticated
+    mockUseAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      signIn: jest.fn(),
+      signOut: jest.fn(),
+      getAccessToken: jest.fn().mockResolvedValue(null),
+    });
     // Default mock implementations
     mockApiClient.getUsers.mockResolvedValue([]);
   });
@@ -217,7 +220,16 @@ describe('App', () => {
     });
   });
 
-  it('should fetch users on mount and display count', async () => {
+  it('should fetch users on mount when authenticated', async () => {
+    mockUseAuth.mockReturnValue({
+      user: { email: 'test@example.com' },
+      isAuthenticated: true,
+      isLoading: false,
+      signIn: jest.fn(),
+      signOut: jest.fn(),
+      getAccessToken: jest.fn().mockResolvedValue('token'),
+    });
+
     const mockUsers = [
       { id: '1', email: 'user1@example.com', name: 'User 1', createdAt: '2024-01-01' },
       { id: '2', email: 'user2@example.com', name: 'User 2', createdAt: '2024-01-02' },
@@ -234,6 +246,12 @@ describe('App', () => {
     await waitFor(() => {
       expect(useUserStore.getState().users).toEqual(mockUsers);
     });
+  });
+
+  it('should not fetch users on mount when not authenticated', async () => {
+    await renderWithChakra(<App />);
+
+    expect(mockApiClient.getUsers).not.toHaveBeenCalled();
   });
 
   it('should display error message when error state is set', async () => {
