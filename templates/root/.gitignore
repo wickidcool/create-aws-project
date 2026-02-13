@@ -40,6 +40,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# AWS Starter Kit config (contains account IDs and credentials)
+.aws-starter-config.json
+
 # Nx
 .nx/cache
 .nx/workspace-data

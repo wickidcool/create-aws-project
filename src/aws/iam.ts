@@ -250,6 +250,23 @@ function getCDKDeploymentPolicyDocument(accountId: string): string {
         ],
         Resource: '*',
       },
+      {
+        Sid: 'S3ListBuckets',
+        Effect: 'Allow',
+        Action: 's3:ListAllMyBuckets',
+        Resource: '*',
+      },
+      {
+        Sid: 'AccessWebBucket',
+        Effect: 'Allow',
+        Action: [
+          's3:*'
+        ],
+        Resource: [
+          `arn:aws:s3:::*-development-web-${accountId}`,
+          `arn:aws:s3:::*-development-web-${accountId}/*`,
+        ],
+      },
     ],
   };
 
