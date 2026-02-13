@@ -18,7 +18,7 @@ Before starting, ensure you have:
   - Note: This must be a dedicated test account or you must be willing to create an Organization
 - [ ] **No existing AWS Organization** in the account (or willingness to use existing one)
 - [ ] **GitHub Account** with repository access
-  - Personal Access Token with `repo` scope ([create one](https://github.com/settings/tokens/new))
+  - Personal Access Token with `repo` and `admin:org` scopes ([create one](https://github.com/settings/tokens/new))
   - Existing repository or willingness to create one for testing
 - [ ] **Development Environment**
   - Node.js 22+ installed (`node --version`)
@@ -38,6 +38,10 @@ export AWS_REGION="us-east-1"
 
 # Verify credentials are set
 echo "Access Key: ${AWS_ACCESS_KEY_ID:0:10}..."
+```
+or 
+```
+aws login
 ```
 
 **Important:** These must be **root user** credentials (not IAM user) to test the root detection feature.
@@ -211,7 +215,17 @@ echo "Access Key: ${AWS_ACCESS_KEY_ID:0:10}..."
    Created access key for [project-name]-dev-deploy
    ```
 
-9. **Review final summary table:**
+9. **Verify CDK bootstrap runs:**
+
+   After deployment users and credentials are created, CDK bootstrap runs automatically in each environment account:
+   ```
+   CDK bootstrapped in all environment accounts.
+   AWS setup complete. All environments bootstrapped and ready for CDK deployments.
+   ```
+
+   **Note:** CDK bootstrap uses STS AssumeRole to get temporary credentials for each child account. This may add 1-2 minutes to total execution time.
+
+10. **Review final summary table:**
 
    Expected output:
    ```
@@ -224,7 +238,7 @@ echo "Access Key: ${AWS_ACCESS_KEY_ID:0:10}..."
      prod             345678901234     [project-name]-prod-deploy     AKIA...
    ```
 
-10. **Verify config file updated:**
+11. **Verify config file updated:**
 
     ```bash
     cat .aws-starter-config.json
@@ -260,12 +274,14 @@ In AWS Console:
 - ✓ All 3 environment accounts created (dev, stage, prod)
 - ✓ Deployment users created in each account
 - ✓ Access keys created for each deployment user
+- ✓ CDK bootstrap runs in all environment accounts
+- ✓ Output shows "CDK bootstrapped in all environment accounts"
 - ✓ `.aws-starter-config.json` updated with:
   - `adminUser` populated
   - `accounts` populated with 3 account IDs
   - `deploymentUsers` populated
   - `deploymentCredentials` populated
-- ✓ Total execution time is reasonable (< 20 minutes)
+- ✓ Total execution time is reasonable (< 25 minutes, includes CDK bootstrap)
 
 ### Troubleshooting
 
@@ -909,6 +925,6 @@ Expected output should show root account ARN: `arn:aws:iam::123456789012:root`
 
 ---
 
-**Test protocol version:** 1.0
+**Test protocol version:** 1.1
 **Created:** 2026-02-11
-**Last updated:** 2026-02-11
+**Last updated:** 2026-02-13
