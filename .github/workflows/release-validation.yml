@@ -3,6 +3,12 @@ name: Release Validation
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "The release branch to run the script against"
+        required: true
+        default: "main"
 
 jobs:
   validate:
