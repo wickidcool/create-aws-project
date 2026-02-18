@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-13)
+See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Planning next milestone
+**Current focus:** v1.7 AI-Friendly CLI
 
 ## Current Position
 
-Phase: 22 of 22 — v1.6 SHIPPED
-Plan: N/A
-Status: v1.6 milestone complete and archived. Ready for next milestone.
-Last activity: 2026-02-13 — v1.6 End-to-End AWS Setup shipped
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.7
+Last activity: 2026-02-18 — Milestone v1.7 started
 
-Progress: [████████████████████] 22/22 phases complete (100%)
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (requirements phase)
 
 ## Milestones
 
@@ -26,78 +26,7 @@ Progress: [████████████████████] 22/22 p
 | v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 | v1.5.1 | Fixes & Git Setup | 16 | Complete | 2026-02-01 |
 | v1.6 | End-to-End AWS Setup | 17-22 | Complete | 2026-02-13 |
-
-## Performance Metrics
-
-### v1.2 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 3 |
-| Plans executed | 8 |
-| Duration | 2 days |
-| LOC added/modified | ~2,500 |
-
-### v1.3 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 6 |
-| Plans executed | 8 |
-| Duration | 3 days |
-| Files modified | 49 |
-| LOC total | ~9,600 |
-
-### v1.4 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 5 |
-| Plans executed | 5 |
-| Duration | 2 days |
-| Files modified | 47 |
-| Commits | 38 |
-| Lines added | +7,421 |
-| LOC total | ~10,700 |
-
-### v1.5 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 1 |
-| Plans executed | 1 |
-| Duration | 7 days |
-| Files modified | 27 |
-| Commits | 20 |
-| Lines | +1,755 / -267 |
-| LOC total | ~11,900 |
-| Tests passing | 118/118 |
-
-### v1.5.1 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 1 |
-| Plans executed | 2 |
-| Duration | 1 day |
-| Files modified | 15 |
-| Commits | 13 |
-| Lines | +1,815 / -27 |
-| LOC total | ~12,100 |
-| Tests passing | 118/118 |
-
-### v1.6 Metrics
-
-| Metric | Value |
-|--------|-------|
-| Phases completed | 6 |
-| Plans executed | 9 |
-| Duration | 4 days |
-| Source files modified | 13 |
-| Commits | 45 |
-| Lines | +1,728 / -227 |
-| LOC total | ~9,083 |
-| Tests passing | 146/146 |
+| v1.7 | AI-Friendly CLI | — | Active | — |
 
 ## Accumulated Context
 
@@ -119,10 +48,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-13
-Stopped at: v1.6 milestone archived and shipped.
+Last session: 2026-02-18
+Stopped at: Defining requirements for v1.7
 Resume file: None
-Next: `/gsd:new-milestone`
+Next: Define requirements and create roadmap
 
 ---
-*Updated: 2026-02-13 after v1.6 milestone completion*
+*Updated: 2026-02-18 after v1.7 milestone start*

@@ -8,6 +8,16 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.7 AI-Friendly CLI
+
+**Goal:** Enable AI coding agents to drive the CLI non-interactively via a config file, with sensible defaults for all optional values.
+
+**Target features:**
+- `--config project.json` flag for non-interactive wizard execution
+- Sensible defaults for all optional wizard values (only `name` required)
+- Clear validation errors for invalid config values (no fallback to prompting)
+- Fix template test for auth-gated data fetching
+
 ## Current State (v1.6)
 
 Shipped v1.6 on 2026-02-13. End-to-end AWS setup with root credential handling and streamlined workflow:
@@ -80,7 +90,10 @@ Tech stack:
 
 ### Active
 
-(None — run `/gsd:new-milestone` to define next milestone requirements)
+- [ ] Non-interactive wizard mode via `--config` flag — v1.7
+- [ ] Sensible defaults for all optional wizard values — v1.7
+- [ ] Config validation with clear error messages — v1.7
+- [ ] Fix template App.spec.tsx test for auth-gated fetching — v1.7
 
 ### Out of Scope
 
@@ -145,4 +158,4 @@ Tech stack:
 | Direct function chaining for continuation | Import/call pattern, not subprocess spawn | ✓ Good |
 
 ---
-*Last updated: 2026-02-13 after v1.6 milestone*
+*Last updated: 2026-02-18 after v1.7 milestone start*
