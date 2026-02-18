@@ -1,6 +1,6 @@
 {
   "name": "create-aws-project",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "CLI tool to scaffold AWS projects",
   "type": "module",
   "main": "./dist/index.js",
@@ -52,11 +52,12 @@
     "@aws-sdk/credential-providers": "^3.971.0",
     "@octokit/rest": "^22.0.1",
     "find-up": "^8.0.0",
+    "libsodium-wrappers": "^0.7.15",
     "ora": "^9.1.0",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2",
-    "libsodium-wrappers": "^0.7.15",
-    "validate-npm-package-name": "^7.0.2"
+    "validate-npm-package-name": "^7.0.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
