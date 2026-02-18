@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 23 (ready to execute — already done, commit phase)
 Plan: —
-Status: Defining requirements for v1.7
-Last activity: 2026-02-18 — Milestone v1.7 started
+Status: Roadmap created, Phase 23 complete (FIX-01 already implemented)
+Last activity: 2026-02-18 — v1.7 roadmap created (Phases 23-25)
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (requirements phase)
+Progress: [####################] 33% (1/3 phases done)
 
 ## Milestones
 
@@ -26,7 +26,7 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (req
 | v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 | v1.5.1 | Fixes & Git Setup | 16 | Complete | 2026-02-01 |
 | v1.6 | End-to-End AWS Setup | 17-22 | Complete | 2026-02-13 |
-| v1.7 | AI-Friendly CLI | — | Active | — |
+| v1.7 | AI-Friendly CLI | 23-25 | Active | — |
 
 ## Accumulated Context
 
@@ -44,14 +44,15 @@ None.
 
 ### Outstanding Todos
 
-None.
+- Plan and execute Phase 24: Non-Interactive Wizard Mode (NI-01 through NI-06)
+- Plan and execute Phase 25: Non-Interactive setup-aws-envs (NI-07 through NI-09)
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Defining requirements for v1.7
+Stopped at: Roadmap created for v1.7
 Resume file: None
-Next: Define requirements and create roadmap
+Next: Commit Phase 23 (FIX-01 already done), then plan Phase 24
 
 ---
-*Updated: 2026-02-18 after v1.7 milestone start*
+*Updated: 2026-02-18 after v1.7 roadmap created*

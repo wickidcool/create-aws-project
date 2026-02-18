@@ -19,7 +19,7 @@
 
 ### Template Fixes
 
-- [ ] **FIX-01**: App.spec.tsx test mock supports configurable auth state (fetch on mount only when authenticated)
+- [x] **FIX-01**: App.spec.tsx test mock supports configurable auth state (fetch on mount only when authenticated)
 
 ## Future Requirements
 
@@ -42,21 +42,21 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NI-01 | — | Pending |
-| NI-02 | — | Pending |
-| NI-03 | — | Pending |
-| NI-04 | — | Pending |
-| NI-05 | — | Pending |
-| NI-06 | — | Pending |
-| NI-07 | — | Pending |
-| NI-08 | — | Pending |
-| NI-09 | — | Pending |
-| FIX-01 | — | Pending |
+| FIX-01 | Phase 23 | Done |
+| NI-01 | Phase 24 | Pending |
+| NI-02 | Phase 24 | Pending |
+| NI-03 | Phase 24 | Pending |
+| NI-04 | Phase 24 | Pending |
+| NI-05 | Phase 24 | Pending |
+| NI-06 | Phase 24 | Pending |
+| NI-07 | Phase 25 | Pending |
+| NI-08 | Phase 25 | Pending |
+| NI-09 | Phase 25 | Pending |
 
 **Coverage:**
 - v1.7 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10
+- Mapped to phases: 10
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-18*
