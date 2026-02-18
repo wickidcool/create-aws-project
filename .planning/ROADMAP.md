@@ -45,7 +45,7 @@ Phases 1-22 are complete. See `.planning/milestones/` for archived phase details
 
 **Goal:** The create-aws-project CLI can run entirely without user input by reading a JSON config file, enabling AI agents and CI pipelines to generate projects programmatically.
 
-**Status:** Planned
+**Status:** Done
 
 **Dependencies:** Phase 23
 
@@ -54,8 +54,8 @@ Phases 1-22 are complete. See `.planning/milestones/` for archived phase details
 **Plans:** 2 plans
 
 Plans:
-- [ ] 24-01-PLAN.md — TDD: Non-interactive config schema + loader (Zod schema, defaults, validation, tests)
-- [ ] 24-02-PLAN.md — Wire --config flag into CLI (detection, runNonInteractive, skip git, E2E verification)
+- [x] 24-01-PLAN.md — TDD: Non-interactive config schema + loader (Zod schema, defaults, validation, tests)
+- [x] 24-02-PLAN.md — Wire --config flag into CLI (detection, runNonInteractive, skip git, E2E verification)
 
 **Success Criteria:**
 1. Running `npx create-aws-project --config project.json` with only `{"name": "my-app"}` generates a project with all other values at their defaults (platforms: web+api, auth: none, features: github-actions+vscode-config, region: us-east-1, brandColor: blue).
@@ -93,7 +93,7 @@ Plans:
 | 16 | v1.5.1 Fixes & Git Setup | — | Complete |
 | 17-22 | v1.6 End-to-End AWS Setup | — | Complete |
 | 23 | Template Fix: Configurable Auth Test Mock | FIX-01 | Done |
-| 24 | Non-Interactive Wizard Mode | NI-01, NI-02, NI-03, NI-04, NI-05, NI-06 | Planned |
+| 24 | Non-Interactive Wizard Mode | NI-01, NI-02, NI-03, NI-04, NI-05, NI-06 | Done |
 | 25 | Non-Interactive setup-aws-envs | NI-07, NI-08, NI-09 | Pending |
 
 **v1.7 coverage:** 10/10 requirements mapped

@@ -7,12 +7,12 @@
 
 ### Non-Interactive Mode
 
-- [ ] **NI-01**: CLI accepts `--config <path>` flag pointing to a JSON config file
-- [ ] **NI-02**: When `--config` is provided, wizard runs without any interactive prompts
-- [ ] **NI-03**: Config schema covers all wizard values: `name`, `platforms`, `auth`, `authFeatures`, `features`, `region`, `brandColor`
-- [ ] **NI-04**: Only `name` is required; all other fields default to wizard defaults (`platforms: ["web","api"]`, `auth: "none"`, `features: ["github-actions","vscode-config"]`, `region: "us-east-1"`, `brandColor: "blue"`)
-- [ ] **NI-05**: Invalid config values produce a clear error listing all validation failures (no fallback to prompting)
-- [ ] **NI-06**: Git setup is skipped in non-interactive mode
+- [x] **NI-01**: CLI accepts `--config <path>` flag pointing to a JSON config file
+- [x] **NI-02**: When `--config` is provided, wizard runs without any interactive prompts
+- [x] **NI-03**: Config schema covers all wizard values: `name`, `platforms`, `auth`, `authFeatures`, `features`, `region`, `brandColor`
+- [x] **NI-04**: Only `name` is required; all other fields default to wizard defaults (`platforms: ["web","api"]`, `auth: "none"`, `features: ["github-actions","vscode-config"]`, `region: "us-east-1"`, `brandColor: "blue"`)
+- [x] **NI-05**: Invalid config values produce a clear error listing all validation failures (no fallback to prompting)
+- [x] **NI-06**: Git setup is skipped in non-interactive mode
 - [ ] **NI-07**: `setup-aws-envs --config <path>` accepts config with `email` field for root email
 - [ ] **NI-08**: Environment emails auto-generated from root email by inserting `-{env}` before `@` (e.g., `user@example.com` → `user-dev@example.com`)
 - [ ] **NI-09**: `setup-aws-envs` skips all interactive prompts when `--config` is provided
@@ -43,12 +43,12 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | FIX-01 | Phase 23 | Done |
-| NI-01 | Phase 24 | Pending |
-| NI-02 | Phase 24 | Pending |
-| NI-03 | Phase 24 | Pending |
-| NI-04 | Phase 24 | Pending |
-| NI-05 | Phase 24 | Pending |
-| NI-06 | Phase 24 | Pending |
+| NI-01 | Phase 24 | Complete |
+| NI-02 | Phase 24 | Complete |
+| NI-03 | Phase 24 | Complete |
+| NI-04 | Phase 24 | Complete |
+| NI-05 | Phase 24 | Complete |
+| NI-06 | Phase 24 | Complete |
 | NI-07 | Phase 25 | Pending |
 | NI-08 | Phase 25 | Pending |
 | NI-09 | Phase 25 | Pending |
