@@ -1,0 +1,62 @@
+# Requirements: create-aws-project v1.7
+
+**Defined:** 2026-02-18
+**Core Value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
+
+## v1.7 Requirements
+
+### Non-Interactive Mode
+
+- [ ] **NI-01**: CLI accepts `--config <path>` flag pointing to a JSON config file
+- [ ] **NI-02**: When `--config` is provided, wizard runs without any interactive prompts
+- [ ] **NI-03**: Config schema covers all wizard values: `name`, `platforms`, `auth`, `authFeatures`, `features`, `region`, `brandColor`
+- [ ] **NI-04**: Only `name` is required; all other fields default to wizard defaults (`platforms: ["web","api"]`, `auth: "none"`, `features: ["github-actions","vscode-config"]`, `region: "us-east-1"`, `brandColor: "blue"`)
+- [ ] **NI-05**: Invalid config values produce a clear error listing all validation failures (no fallback to prompting)
+- [ ] **NI-06**: Git setup is skipped in non-interactive mode
+- [ ] **NI-07**: `setup-aws-envs --config <path>` accepts config with `email` field for root email
+- [ ] **NI-08**: Environment emails auto-generated from root email by inserting `-{env}` before `@` (e.g., `user@example.com` → `user-dev@example.com`)
+- [ ] **NI-09**: `setup-aws-envs` skips all interactive prompts when `--config` is provided
+
+### Template Fixes
+
+- [ ] **FIX-01**: App.spec.tsx test mock supports configurable auth state (fetch on mount only when authenticated)
+
+## Future Requirements
+
+### Extended Non-Interactive Support
+
+- **NI-EXT-01**: `initialize-github --config <path>` for non-interactive GitHub setup
+- **NI-EXT-02**: JSON output mode for structured AI-readable output
+- **NI-EXT-03**: CLI flags as alternative to config file (`--name`, `--platforms`, etc.)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Non-interactive initialize-github | Deferred — focus on wizard and AWS setup first |
+| CLI flags for individual values | Config file sufficient for AI agents, flags add complexity |
+| YAML/TOML config support | JSON is the universal AI interchange format |
+| Config file generation command | AI agents can generate JSON directly |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| NI-01 | — | Pending |
+| NI-02 | — | Pending |
+| NI-03 | — | Pending |
+| NI-04 | — | Pending |
+| NI-05 | — | Pending |
+| NI-06 | — | Pending |
+| NI-07 | — | Pending |
+| NI-08 | — | Pending |
+| NI-09 | — | Pending |
+| FIX-01 | — | Pending |
+
+**Coverage:**
+- v1.7 requirements: 10 total
+- Mapped to phases: 0
+- Unmapped: 10
+
+---
+*Requirements defined: 2026-02-18*
