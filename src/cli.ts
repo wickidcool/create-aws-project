@@ -9,6 +9,7 @@ import { showDeprecationNotice } from './commands/setup-github.js';
 import { runSetupAwsEnvs } from './commands/setup-aws-envs.js';
 import { runInitializeGitHub } from './commands/initialize-github.js';
 import { promptGitSetup, setupGitRepository } from './git/setup.js';
+import { loadNonInteractiveConfig } from './config/non-interactive.js';
 
 /**
  * Config file structure for .aws-starter-config.json
@@ -74,9 +75,11 @@ Commands:
 Options:
   --help, -h          Show this help message
   --version, -v       Show version number
+  --config <path>     Create project from JSON config file (non-interactive)
 
 Usage:
   create-aws-project                              Run interactive wizard
+  create-aws-project --config project.json        Non-interactive mode
   create-aws-project setup-aws-envs               Create AWS accounts
   create-aws-project initialize-github dev        Configure dev environment
   create-aws-project initialize-github --all      Configure all environments
@@ -84,6 +87,7 @@ Usage:
 
 Examples:
   create-aws-project my-app
+  create-aws-project --config project.json
   create-aws-project setup-aws-envs
   create-aws-project initialize-github dev
   create-aws-project initialize-github --all
@@ -125,6 +129,40 @@ function printNextSteps(projectName: string): void {
 }
 
 /**
+ * Run project creation in non-interactive mode from a JSON config file.
+ * Skips all prompts and git setup (NI-02, NI-06).
+ */
+async function runNonInteractive(configPath: string): Promise<void> {
+  const config = loadNonInteractiveConfig(configPath);
+  const outputDir = resolve(process.cwd(), config.projectName);
+
+  // Check if directory already exists
+  if (existsSync(outputDir)) {
+    console.error(pc.red('Error:') + ` Directory ${pc.cyan(config.projectName)} already exists.`);
+    process.exit(1);
+  }
+
+  // Create project directory
+  mkdirSync(outputDir, { recursive: true });
+
+  // Generate project
+  console.log('');
+  await generateProject(config, outputDir);
+
+  // Write config file for downstream commands
+  writeConfigFile(outputDir, config);
+
+  // NI-06: Skip git setup entirely in non-interactive mode
+  // promptGitSetup() is NOT called
+
+  // Success message and next steps
+  console.log('');
+  console.log(pc.green('✔') + ` Created ${pc.bold(config.projectName)} successfully!`);
+  printNextSteps(config.projectName);
+  process.exit(0);
+}
+
+/**
  * Run the create project wizard flow
  * This is the default command when no subcommand is specified
  */
@@ -132,6 +170,20 @@ async function runCreate(args: string[]): Promise<void> {
   printWelcome();
   console.log('');  // blank line after banner
 
+  // Non-interactive path: --config flag provided
+  const configFlagIndex = args.findIndex(arg => arg === '--config');
+  if (configFlagIndex !== -1) {
+    const configPath = args[configFlagIndex + 1];
+    if (!configPath || configPath.startsWith('--')) {
+      console.error(pc.red('Error:') + ' --config requires a path argument');
+      console.error('  Example: npx create-aws-project --config project.json');
+      process.exit(1);
+    }
+    await runNonInteractive(configPath);
+    return;
+  }
+
+  // Interactive path (unchanged — existing code below)
   // Extract project name from CLI args (first non-flag argument)
   const nameArg = args.find(arg => !arg.startsWith('-'));
 
