@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 ## Current Position
 
 Phase: 24 of 3 (non-interactive-wizard-mode)
-Plan: 01 of N in phase 24
-Status: In progress - Plan 01 complete
-Last activity: 2026-02-18 - Completed 24-01-PLAN.md (config schema + loader)
+Plan: 02 of 02 in phase 24
+Status: Phase 24 complete
+Last activity: 2026-02-18 - Completed 24-02-PLAN.md (CLI wiring for --config flag)
 
-Progress: [####################----------] 40% (plan 01 of phase 24 done)
+Progress: [############################--] 60% (phase 24 done, phase 25 remaining)
 
 ## Milestones
 
@@ -39,6 +39,8 @@ Progress: [####################----------] 40% (plan 01 of phase 24 done)
 | 24-01 | Dual name validation: Zod min(1) + validateProjectName() | Zod catches empty/missing; npm validator catches invalid package names (e.g. UPPERCASE) |
 | 24-01 | Detect --config inside runCreate() not run() | Cleaner separation; Phase 25 can add --config to runSetupAwsEnvs() separately |
 | 24-01 | z.enum(VALID_REGIONS) not z.string().refine() | Simpler, better error messages, TypeScript infers literal union type |
+| 24-02 | printWelcome() before --config check | Banner shows in both interactive and non-interactive modes for consistent UX |
+| 24-02 | process.exit(0) at end of runNonInteractive() | Explicit exit prevents any fallthrough to interactive code paths |
 
 ### Deferred Issues
 
@@ -50,15 +52,14 @@ None.
 
 ### Outstanding Todos
 
-- Execute remaining Phase 24 plans (CLI wiring for --config flag in cli.ts)
 - Plan and execute Phase 25: Non-Interactive setup-aws-envs (NI-07 through NI-09)
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 24-01-PLAN.md
+Stopped at: Completed 24-02-PLAN.md (Phase 24 complete)
 Resume file: None
-Next: Execute Phase 24 Plan 02 (CLI wiring - detect --config in runCreate(), call loadNonInteractiveConfig(), skip git setup)
+Next: Plan and execute Phase 25 (non-interactive setup-aws-envs, NI-07 through NI-09)
 
 ---
-*Updated: 2026-02-18 after 24-01 config schema and loader complete*
+*Updated: 2026-02-18 after 24-02 CLI wiring complete - Phase 24 fully done*
