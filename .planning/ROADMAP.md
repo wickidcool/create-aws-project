@@ -75,6 +75,12 @@ Plans:
 
 **Requirements:** NI-07, NI-08, NI-09
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — TDD: Config schema + email derivation (Zod schema, loader, deriveEnvironmentEmails, tests)
+- [ ] 25-02-PLAN.md — Wire --config into setup-aws-envs (detection, non-interactive flow, auto GitHub setup)
+
 **Success Criteria:**
 1. Running `setup-aws-envs --config aws.json` with `{"email": "owner@example.com"}` completes the full AWS setup flow with no interactive prompts.
 2. Per-environment root emails are automatically derived: `owner-dev@example.com`, `owner-stage@example.com`, `owner-prod@example.com`.
