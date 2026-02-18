@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 ## Current Position
 
-Phase: 23 (ready to execute — already done, commit phase)
-Plan: —
-Status: Roadmap created, Phase 23 complete (FIX-01 already implemented)
-Last activity: 2026-02-18 — v1.7 roadmap created (Phases 23-25)
+Phase: 24 of 3 (non-interactive-wizard-mode)
+Plan: 01 of N in phase 24
+Status: In progress - Plan 01 complete
+Last activity: 2026-02-18 - Completed 24-01-PLAN.md (config schema + loader)
 
-Progress: [####################] 33% (1/3 phases done)
+Progress: [####################----------] 40% (plan 01 of phase 24 done)
 
 ## Milestones
 
@@ -32,7 +32,13 @@ Progress: [####################] 33% (1/3 phases done)
 
 ### Decisions
 
-All decisions logged in PROJECT.md Key Decisions table. Milestone archives in `.planning/milestones/` contain detailed phase decisions.
+| Phase | Decision | Rationale |
+|-------|----------|-----------|
+| 24-01 | z.object() not z.strictObject() for JSON config | Unknown keys stripped silently; schema evolution should not break automation pipelines |
+| 24-01 | authFeatures silently dropped when auth=none | Contradictory but harmless; no-op for automation; producing an error would be too strict |
+| 24-01 | Dual name validation: Zod min(1) + validateProjectName() | Zod catches empty/missing; npm validator catches invalid package names (e.g. UPPERCASE) |
+| 24-01 | Detect --config inside runCreate() not run() | Cleaner separation; Phase 25 can add --config to runSetupAwsEnvs() separately |
+| 24-01 | z.enum(VALID_REGIONS) not z.string().refine() | Simpler, better error messages, TypeScript infers literal union type |
 
 ### Deferred Issues
 
@@ -44,15 +50,15 @@ None.
 
 ### Outstanding Todos
 
-- Plan and execute Phase 24: Non-Interactive Wizard Mode (NI-01 through NI-06)
+- Execute remaining Phase 24 plans (CLI wiring for --config flag in cli.ts)
 - Plan and execute Phase 25: Non-Interactive setup-aws-envs (NI-07 through NI-09)
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Roadmap created for v1.7
+Stopped at: Completed 24-01-PLAN.md
 Resume file: None
-Next: Commit Phase 23 (FIX-01 already done), then plan Phase 24
+Next: Execute Phase 24 Plan 02 (CLI wiring - detect --config in runCreate(), call loadNonInteractiveConfig(), skip git setup)
 
 ---
-*Updated: 2026-02-18 after v1.7 roadmap created*
+*Updated: 2026-02-18 after 24-01 config schema and loader complete*
