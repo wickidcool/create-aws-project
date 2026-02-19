@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-18)
 
 ## Current Position
 
-Phase: 24 of 3 (non-interactive-wizard-mode)
-Plan: 02 of 02 in phase 24
-Status: Phase 24 complete
-Last activity: 2026-02-18 - Completed 24-02-PLAN.md (CLI wiring for --config flag)
+Phase: 25 of 25 (non-interactive-setup-aws-envs)
+Plan: 01 of 02 in phase 25
+Status: In progress
+Last activity: 2026-02-19 - Completed 25-01-PLAN.md (config schema + email derivation)
 
-Progress: [############################--] 60% (phase 24 done, phase 25 remaining)
+Progress: [##############################-] 93% (phase 25 plan 01 done, plan 02 remaining)
 
 ## Milestones
 
@@ -41,6 +41,9 @@ Progress: [############################--] 60% (phase 24 done, phase 25 remainin
 | 24-01 | z.enum(VALID_REGIONS) not z.string().refine() | Simpler, better error messages, TypeScript infers literal union type |
 | 24-02 | printWelcome() before --config check | Banner shows in both interactive and non-interactive modes for consistent UX |
 | 24-02 | process.exit(0) at end of runNonInteractive() | Explicit exit prevents any fallthrough to interactive code paths |
+| 25-01 | z.string().min(1) not z.email() for setup-aws-envs email | Avoids Zod v3/v4 chained API confusion; AWS provides authoritative email validation |
+| 25-01 | Post-safeParse includes('@') check for email format | Catches no-@ emails that would produce malformed derived addresses; Zod min(1) doesn't catch this |
+| 25-01 | lastIndexOf('@') for email splitting in deriveEnvironmentEmails | Defensive; correct for valid emails and edge cases (plus aliases, subdomains) |
 
 ### Deferred Issues
 
@@ -48,18 +51,18 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- Note: npm test (not npx jest) required for tests using jest.unstable_mockModule and top-level await - must use node --experimental-vm-modules flag
 
 ### Outstanding Todos
 
-- Plan and execute Phase 25: Non-Interactive setup-aws-envs (NI-07 through NI-09)
+- Execute Phase 25 Plan 02: Wire --config flag into setup-aws-envs CLI command
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 24-02-PLAN.md (Phase 24 complete)
+Last session: 2026-02-19
+Stopped at: Completed 25-01-PLAN.md (SetupAwsEnvsConfig schema + email derivation)
 Resume file: None
-Next: Plan and execute Phase 25 (non-interactive setup-aws-envs, NI-07 through NI-09)
+Next: Execute 25-02-PLAN.md (CLI wiring for --config flag in runSetupAwsEnvs)
 
 ---
-*Updated: 2026-02-18 after 24-02 CLI wiring complete - Phase 24 fully done*
+*Updated: 2026-02-19 after 25-01 config schema and email derivation complete*
