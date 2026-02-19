@@ -13,9 +13,9 @@
 - [x] **NI-04**: Only `name` is required; all other fields default to wizard defaults (`platforms: ["web","api"]`, `auth: "none"`, `features: ["github-actions","vscode-config"]`, `region: "us-east-1"`, `brandColor: "blue"`)
 - [x] **NI-05**: Invalid config values produce a clear error listing all validation failures (no fallback to prompting)
 - [x] **NI-06**: Git setup is skipped in non-interactive mode
-- [ ] **NI-07**: `setup-aws-envs --config <path>` accepts config with `email` field for root email
-- [ ] **NI-08**: Environment emails auto-generated from root email by inserting `-{env}` before `@` (e.g., `user@example.com` → `user-dev@example.com`)
-- [ ] **NI-09**: `setup-aws-envs` skips all interactive prompts when `--config` is provided
+- [x] **NI-07**: `setup-aws-envs --config <path>` accepts config with `email` field for root email
+- [x] **NI-08**: Environment emails auto-generated from root email by inserting `-{env}` before `@` (e.g., `user@example.com` → `user-dev@example.com`)
+- [x] **NI-09**: `setup-aws-envs` skips all interactive prompts when `--config` is provided
 
 ### Template Fixes
 
@@ -49,9 +49,9 @@
 | NI-04 | Phase 24 | Complete |
 | NI-05 | Phase 24 | Complete |
 | NI-06 | Phase 24 | Complete |
-| NI-07 | Phase 25 | Pending |
-| NI-08 | Phase 25 | Pending |
-| NI-09 | Phase 25 | Pending |
+| NI-07 | Phase 25 | Complete |
+| NI-08 | Phase 25 | Complete |
+| NI-09 | Phase 25 | Complete |
 
 **Coverage:**
 - v1.7 requirements: 10 total

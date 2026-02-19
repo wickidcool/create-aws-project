@@ -8,7 +8,7 @@
 - **v1.5 Bug Fixes & Stability** - Phase 15 (shipped 2026-01-31)
 - **v1.5.1 Fixes & Git Setup** - Phase 16 (shipped 2026-02-01)
 - **v1.6 End-to-End AWS Setup** - Phases 17-22 (shipped 2026-02-13)
-- **v1.7 AI-Friendly CLI** - Phases 23-25 (in progress)
+- **v1.7 AI-Friendly CLI** - Phases 23-25 (shipped 2026-02-19)
 
 ---
 
@@ -20,7 +20,7 @@ Phases 1-22 are complete. See `.planning/milestones/` for archived phase details
 
 ---
 
-### v1.7 AI-Friendly CLI (In Progress)
+### v1.7 AI-Friendly CLI (Complete)
 
 ---
 
@@ -69,7 +69,7 @@ Plans:
 
 **Goal:** setup-aws-envs can run without user input by reading a JSON config file, deriving per-environment emails automatically from a single root email address.
 
-**Status:** Pending
+**Status:** Done
 
 **Dependencies:** Phase 24
 
@@ -78,8 +78,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — TDD: Config schema + email derivation (Zod schema, loader, deriveEnvironmentEmails, tests)
-- [ ] 25-02-PLAN.md — Wire --config into setup-aws-envs (detection, non-interactive flow, auto GitHub setup)
+- [x] 25-01-PLAN.md — TDD: Config schema + email derivation (Zod schema, loader, deriveEnvironmentEmails, tests)
+- [x] 25-02-PLAN.md — Wire --config into setup-aws-envs (detection, non-interactive flow, auto GitHub setup)
 
 **Success Criteria:**
 1. Running `setup-aws-envs --config aws.json` with `{"email": "owner@example.com"}` completes the full AWS setup flow with no interactive prompts.
@@ -100,6 +100,6 @@ Plans:
 | 17-22 | v1.6 End-to-End AWS Setup | — | Complete |
 | 23 | Template Fix: Configurable Auth Test Mock | FIX-01 | Done |
 | 24 | Non-Interactive Wizard Mode | NI-01, NI-02, NI-03, NI-04, NI-05, NI-06 | Done |
-| 25 | Non-Interactive setup-aws-envs | NI-07, NI-08, NI-09 | Pending |
+| 25 | Non-Interactive setup-aws-envs | NI-07, NI-08, NI-09 | Done |
 
 **v1.7 coverage:** 10/10 requirements mapped
