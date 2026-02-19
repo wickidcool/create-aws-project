@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-18)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** v1.7 AI-Friendly CLI
+**Current focus:** v1.7 AI-Friendly CLI (COMPLETE)
 
 ## Current Position
 
 Phase: 25 of 25 (non-interactive-setup-aws-envs)
-Plan: 01 of 02 in phase 25
-Status: In progress
-Last activity: 2026-02-19 - Completed 25-01-PLAN.md (config schema + email derivation)
+Plan: 02 of 02 in phase 25
+Status: Phase complete
+Last activity: 2026-02-19 - Completed 25-02-PLAN.md (CLI wiring for --config flag in setup-aws-envs)
 
-Progress: [##############################-] 93% (phase 25 plan 01 done, plan 02 remaining)
+Progress: [###############################] 100% (all 25 phases complete)
 
 ## Milestones
 
@@ -26,7 +26,7 @@ Progress: [##############################-] 93% (phase 25 plan 01 done, plan 02 
 | v1.5 | Bug Fixes & Stability | 15 | Complete | 2026-01-31 |
 | v1.5.1 | Fixes & Git Setup | 16 | Complete | 2026-02-01 |
 | v1.6 | End-to-End AWS Setup | 17-22 | Complete | 2026-02-13 |
-| v1.7 | AI-Friendly CLI | 23-25 | Active | — |
+| v1.7 | AI-Friendly CLI | 23-25 | Complete | 2026-02-19 |
 
 ## Accumulated Context
 
@@ -44,6 +44,8 @@ Progress: [##############################-] 93% (phase 25 plan 01 done, plan 02 
 | 25-01 | z.string().min(1) not z.email() for setup-aws-envs email | Avoids Zod v3/v4 chained API confusion; AWS provides authoritative email validation |
 | 25-01 | Post-safeParse includes('@') check for email format | Catches no-@ emails that would produce malformed derived addresses; Zod min(1) doesn't catch this |
 | 25-01 | lastIndexOf('@') for email splitting in deriveEnvironmentEmails | Defensive; correct for valid emails and edge cases (plus aliases, subdomains) |
+| 25-02 | GitHub failure uses console.warn not handleAwsError | AWS succeeded; GitHub is best-effort; handleAwsError always exits 1 so cannot be used |
+| 25-02 | process.exit(1) inside runInitializeGitHub bypasses try/catch | Known limitation documented in code comment; try/catch catches thrown JS errors, not process.exit calls |
 
 ### Deferred Issues
 
@@ -55,14 +57,14 @@ None.
 
 ### Outstanding Todos
 
-- Execute Phase 25 Plan 02: Wire --config flag into setup-aws-envs CLI command
+None - all phases complete.
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 25-01-PLAN.md (SetupAwsEnvsConfig schema + email derivation)
+Stopped at: Completed 25-02-PLAN.md (CLI wiring for --config flag in setup-aws-envs) — ALL PHASES COMPLETE
 Resume file: None
-Next: Execute 25-02-PLAN.md (CLI wiring for --config flag in runSetupAwsEnvs)
+Next: v1.7 milestone complete; ready for release or new feature work
 
 ---
-*Updated: 2026-02-19 after 25-01 config schema and email derivation complete*
+*Updated: 2026-02-19 after 25-02 CLI wiring complete — v1.7 AI-Friendly CLI milestone finished*
