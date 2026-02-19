@@ -1,5 +1,33 @@
 # Project Milestones: create-aws-starter-kit
 
+## v1.7 AI-Friendly CLI (Shipped: 2026-02-19)
+
+**Delivered:** Non-interactive CLI mode enabling AI coding agents and CI pipelines to drive project generation and AWS setup via JSON config files, with sensible defaults and clear validation errors.
+
+**Phases completed:** 23-25 (4 plans total)
+
+**Key accomplishments:**
+
+- Non-interactive wizard mode via `--config project.json` with sensible defaults (only `name` required)
+- Zod v4 config schema validation with all-errors-at-once reporting (no fallback to prompting)
+- Non-interactive `setup-aws-envs --config aws.json` with automatic email derivation for dev/stage/prod
+- Auto-invocation of GitHub setup after non-interactive AWS setup completion
+- Configurable auth test mock in App.spec.tsx template (FIX-01)
+
+**Stats:**
+
+- 27 files changed (+3,599 / -107)
+- 8,025 total TypeScript LOC
+- 3 phases, 4 plans, 24 commits
+- 2 days (2026-02-18 → 2026-02-19)
+- 171 tests passing (25 new: 14 non-interactive + 11 non-interactive-aws)
+
+**Git range:** `c9afbd9` → `99718c5`
+
+**What's next:** TBD (run `/gsd:new-milestone` to define next milestone)
+
+---
+
 ## v1.6 End-to-End AWS Setup (Shipped: 2026-02-13)
 
 **Delivered:** Complete end-to-end AWS setup workflow from root credentials through CDK bootstrap and GitHub deployment configuration, with full idempotency and streamlined UX.

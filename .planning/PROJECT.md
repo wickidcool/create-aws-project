@@ -2,35 +2,27 @@
 
 ## What This Is
 
-An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with optional GitHub repository setup, and a streamlined two-command AWS setup flow (setup-aws-envs handles root credentials, admin user, org, accounts, deployment users, CDK bootstrap; initialize-github reads config and pushes secrets). Includes automated validation of all 14 generated project configurations.
+An npx CLI tool that scaffolds full-stack AWS projects with React web, React Native mobile, Lambda API, and CDK infrastructure. Provides a lean wizard for project generation with optional GitHub repository setup, and a streamlined two-command AWS setup flow (setup-aws-envs handles root credentials, admin user, org, accounts, deployment users, CDK bootstrap; initialize-github reads config and pushes secrets). Supports non-interactive mode via `--config` flag for AI coding agents and CI pipelines. Includes automated validation of all 14 generated project configurations.
 
 ## Core Value
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
-## Current Milestone: v1.7 AI-Friendly CLI
+## Current State (v1.7)
 
-**Goal:** Enable AI coding agents to drive the CLI non-interactively via a config file, with sensible defaults for all optional values.
-
-**Target features:**
-- `--config project.json` flag for non-interactive wizard execution
-- Sensible defaults for all optional wizard values (only `name` required)
-- Clear validation errors for invalid config values (no fallback to prompting)
-- Fix template test for auth-gated data fetching
-
-## Current State (v1.6)
-
-Shipped v1.6 on 2026-02-13. End-to-end AWS setup with root credential handling and streamlined workflow:
+Shipped v1.7 on 2026-02-19. AI-friendly CLI with non-interactive mode for both project generation and AWS setup:
 
 - **Wizard:** 7 prompts for project scaffolding (name, platforms, auth, features, region, theme) + optional git setup
-- **Git setup:** Optional GitHub repo URL prompt after generation (git init, commit, push, auto-create repo)
-- **setup-aws-envs:** Root credential detection, admin user creation, AWS Organization, dev/stage/prod accounts, deployment IAM users/keys, CDK bootstrap, continuation prompt to initialize-github
-- **initialize-github:** Reads deployment credentials from config, pushes to GitHub secrets (no AWS operations). Supports batch mode (--all flag) and single-environment mode.
+- **Non-interactive mode:** `--config project.json` generates projects without prompts; only `name` required, all other values default
+- **Git setup:** Optional GitHub repo URL prompt after generation (git init, commit, push, auto-create repo); skipped in non-interactive mode
+- **setup-aws-envs:** Root credential detection, admin user creation, AWS Organization, dev/stage/prod accounts, deployment IAM users/keys, CDK bootstrap, continuation prompt to initialize-github. Supports `--config aws.json` for non-interactive mode with automatic email derivation.
+- **initialize-github:** Reads deployment credentials from config, pushes to GitHub secrets (no AWS operations). Supports batch mode (--all flag) and single-environment mode. Auto-invoked after non-interactive AWS setup.
 - **Validation:** 14-config test matrix validates all platform/auth combinations build and pass tests
-- **Tests:** 146 passing across 10 test suites
+- **Tests:** 171 passing across 12 test suites
 
 Tech stack:
-- TypeScript with ES modules (~9,083 LOC)
+- TypeScript with ES modules (~8,025 LOC)
+- Zod v4 for config schema validation
 - `prompts` library for interactive wizard
 - AWS SDK v3 (Organizations, IAM, STS)
 - GitHub REST API with libsodium-wrappers encryption (crypto_box_seal)
@@ -87,13 +79,16 @@ Tech stack:
 - ✓ Batch mode for initialize-github (--all flag) — v1.6
 - ✓ Continuation prompt from setup-aws-envs to initialize-github — v1.6
 - ✓ Automated CDK bootstrap in every environment account — v1.6
+- ✓ Non-interactive wizard mode via `--config` flag — v1.7
+- ✓ Sensible defaults for all optional wizard values (only `name` required) — v1.7
+- ✓ Config validation with clear error messages (all-errors-at-once, no fallback to prompting) — v1.7
+- ✓ Fix template App.spec.tsx test for auth-gated fetching — v1.7
+- ✓ Non-interactive `setup-aws-envs` with automatic email derivation — v1.7
+- ✓ Zod v4 config schema validation for both wizard and AWS setup — v1.7
 
 ### Active
 
-- [ ] Non-interactive wizard mode via `--config` flag — v1.7
-- [ ] Sensible defaults for all optional wizard values — v1.7
-- [ ] Config validation with clear error messages — v1.7
-- [ ] Fix template App.spec.tsx test for auth-gated fetching — v1.7
+(None — define next milestone with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -156,6 +151,13 @@ Tech stack:
 | Batch mode for initialize-github | --all flag or multiple args, single PAT prompt | ✓ Good |
 | Continuation prompt after AWS setup | Defaults to yes, natural workflow progression | ✓ Good |
 | Direct function chaining for continuation | Import/call pattern, not subprocess spawn | ✓ Good |
+| z.object() not z.strictObject() for config | Unknown keys stripped silently; schema evolution should not break automation | ✓ Good |
+| Silently drop authFeatures when auth=none | Contradictory but harmless no-op for automation pipelines | ✓ Good |
+| Dual name validation (Zod + npm) | Zod catches empty/missing; npm validator catches invalid package names | ✓ Good |
+| Detect --config inside command functions | Cleaner separation; each command handles its own --config independently | ✓ Good |
+| z.string().min(1) not z.email() for AWS email | Avoids Zod v3/v4 API confusion; AWS provides authoritative email validation | ✓ Good |
+| lastIndexOf('@') for email derivation | Defensive; correct for plus aliases and subdomains | ✓ Good |
+| GitHub failure as warning in non-interactive | AWS succeeded; GitHub is best-effort; warning + recovery hint | ✓ Good |
 
 ---
-*Last updated: 2026-02-18 after v1.7 milestone start*
+*Last updated: 2026-02-19 after v1.7 milestone*
