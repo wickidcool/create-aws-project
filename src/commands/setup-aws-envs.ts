@@ -10,6 +10,7 @@ import prompts from 'prompts';
 import pc from 'picocolors';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { requireProjectContext, type DeploymentCredentials } from '../utils/project-context.js';
+import { loadSetupAwsEnvsConfig, deriveEnvironmentEmails } from '../config/non-interactive-aws.js';
 import {
   createOrganizationsClient,
   checkExistingOrganization,
@@ -254,13 +255,365 @@ function handleAwsError(error: unknown): never {
 }
 
 /**
+ * Runs setup-aws-envs in non-interactive mode using a JSON config file.
+ *
+ * Loads and validates the config, derives per-environment emails, then runs the
+ * full AWS setup flow (org, accounts, IAM users, access keys, CDK bootstrap)
+ * without any interactive prompts. After AWS setup completes, automatically
+ * invokes GitHub environment setup.
+ *
+ * Note: runInitializeGitHub may call process.exit(1) internally for auth failures
+ * (e.g. bad GitHub token). This bypasses the try/catch wrapper — it is a known
+ * limitation. The try/catch only catches thrown JavaScript errors (network, API).
+ *
+ * @param configPath Path to the JSON config file
+ */
+async function runSetupAwsEnvsNonInteractive(configPath: string): Promise<void> {
+  // Load and validate config
+  const awsConfig = loadSetupAwsEnvsConfig(configPath);
+
+  // Get project context (validates we're in a project directory)
+  const context = await requireProjectContext();
+  const { config, configPath: projectConfigPath } = context;
+
+  // Derive per-environment emails from the single root email
+  const emails = deriveEnvironmentEmails(awsConfig.email, ENVIRONMENTS);
+
+  // Print derived emails for transparency before AWS operations begin
+  console.log('');
+  console.log('Derived environment emails:');
+  for (const [env, email] of Object.entries(emails)) {
+    console.log(`  ${pc.cyan(env)}: ${email}`);
+  }
+  console.log('');
+
+  // Check if already configured (warn but don't abort - allows retry after partial failure)
+  const existingAccounts = config.accounts ?? {};
+  const existingUsers = config.deploymentUsers ?? {};
+  const existingCredentials = config.deploymentCredentials ?? {};
+  if (Object.keys(existingAccounts).length > 0) {
+    console.log('');
+    console.log(pc.yellow('Warning:') + ' AWS accounts already configured in this project:');
+    for (const [env, id] of Object.entries(existingAccounts)) {
+      const userInfo = existingUsers[env] ? ` (user: ${existingUsers[env]})` : '';
+      console.log(`  ${env}: ${id}${userInfo}`);
+    }
+    console.log('');
+    console.log(pc.dim('Continuing will skip existing accounts and create any missing ones...'));
+  }
+
+  // Detect root credentials and create admin user if needed
+  let adminCredentials: { accessKeyId: string; secretAccessKey: string } | null = null;
+
+  if (config.adminUser) {
+    console.log('');
+    console.log(pc.yellow('Note:') + ` Admin user ${pc.cyan(config.adminUser.userName)} already configured.`);
+    console.log(pc.dim('Using existing admin user. If you have switched to IAM credentials, root detection is skipped.'));
+  } else {
+    try {
+      const identity = await detectRootCredentials(config.awsRegion);
+
+      if (identity.isRoot) {
+        console.log('');
+        console.log(pc.yellow('Root credentials detected.'));
+        console.log('Creating admin IAM user for subsequent operations...');
+        console.log('');
+
+        const iamClient = createIAMClient(config.awsRegion);
+        const adminResult = await createOrAdoptAdminUser(iamClient, config.projectName);
+
+        adminCredentials = {
+          accessKeyId: adminResult.accessKeyId,
+          secretAccessKey: adminResult.secretAccessKey,
+        };
+
+        const configContent = JSON.parse(readFileSync(projectConfigPath, 'utf-8'));
+        configContent.adminUser = {
+          userName: adminResult.userName,
+          accessKeyId: adminResult.accessKeyId,
+        };
+        writeFileSync(projectConfigPath, JSON.stringify(configContent, null, 2) + '\n', 'utf-8');
+
+        if (adminResult.adopted) {
+          console.log(pc.green(`Adopted existing admin user: ${adminResult.userName}`));
+        } else {
+          console.log(pc.green(`Created admin user: ${adminResult.userName}`));
+        }
+        console.log(pc.dim('Admin credentials will be used for all subsequent AWS operations in this session.'));
+        console.log('');
+      }
+    } catch (error) {
+      const spinner = ora('').start();
+      spinner.fail('Failed to detect AWS credentials');
+      handleAwsError(error);
+    }
+  }
+
+  // Execute AWS operations with progress spinner
+  const spinner = ora('Starting AWS Organizations setup...').start();
+
+  try {
+    // Organizations API requires us-east-1
+    let client: OrganizationsClient;
+    if (adminCredentials) {
+      client = new OrganizationsClient({
+        region: 'us-east-1',
+        credentials: {
+          accessKeyId: adminCredentials.accessKeyId,
+          secretAccessKey: adminCredentials.secretAccessKey,
+        },
+      });
+    } else {
+      client = createOrganizationsClient('us-east-1');
+    }
+
+    // Check/create organization
+    spinner.text = 'Checking for existing AWS Organization...';
+    let orgId = await checkExistingOrganization(client);
+
+    if (!orgId) {
+      spinner.text = 'Creating AWS Organization...';
+      orgId = await createOrganization(client);
+      spinner.succeed(`Created AWS Organization: ${orgId}`);
+    } else {
+      spinner.succeed(`Using existing AWS Organization: ${orgId}`);
+    }
+
+    // Discover existing accounts from AWS (source of truth)
+    spinner.start('Checking for existing AWS accounts...');
+    const allOrgAccounts = await listOrganizationAccounts(client);
+
+    const discoveredAccounts = new Map<string, string>();
+    for (const account of allOrgAccounts) {
+      for (const env of ENVIRONMENTS) {
+        const expectedName = `${config.projectName}-${env}`;
+        if (account.Name === expectedName && account.Id) {
+          discoveredAccounts.set(env, account.Id);
+        }
+      }
+    }
+
+    // Determine which environments still need account creation
+    const environmentsNeedingCreation = ENVIRONMENTS.filter(
+      env => !discoveredAccounts.has(env)
+    );
+
+    // Report findings
+    for (const [env, accountId] of discoveredAccounts.entries()) {
+      spinner.info(`Found existing ${env} account: ${accountId}`);
+    }
+
+    // Warn if config has accounts not found in AWS
+    for (const [env, accountId] of Object.entries(existingAccounts)) {
+      if (!discoveredAccounts.has(env)) {
+        console.log(pc.yellow('Warning:') + ` Account ${env} (${accountId}) in config but not found in AWS Organization`);
+      }
+    }
+
+    // Non-interactive: emails are already derived — no collectEmails() call
+    if (environmentsNeedingCreation.length > 0) {
+      spinner.start('Continuing AWS setup with derived emails...');
+    } else {
+      spinner.stop();
+      console.log('');
+      console.log(pc.green('All environment accounts already exist in AWS.'));
+      console.log(pc.dim('Skipping email collection, proceeding to deployment user setup...'));
+      console.log('');
+      spinner.start('Continuing AWS setup...');
+    }
+
+    // Create accounts sequentially (AWS rate limits require sequential)
+    const accounts: Record<string, string> = { ...existingAccounts };
+    for (const [env, accountId] of discoveredAccounts.entries()) {
+      accounts[env] = accountId;
+    }
+
+    if (discoveredAccounts.size > 0) {
+      updateConfig(projectConfigPath, accounts);
+    }
+
+    for (const env of ENVIRONMENTS) {
+      if (accounts[env]) {
+        spinner.succeed(`Using existing ${env} account: ${accounts[env]}`);
+        continue;
+      }
+
+      spinner.start(`Creating ${env} account (this may take several minutes)...`);
+
+      const accountName = `${config.projectName}-${env}`;
+      const { requestId } = await createAccount(client, emails[env], accountName);
+
+      spinner.text = `Waiting for ${env} account creation...`;
+      const result = await waitForAccountCreation(client, requestId);
+
+      accounts[env] = result.accountId;
+
+      updateConfig(projectConfigPath, accounts);
+
+      spinner.succeed(`Created ${env} account: ${result.accountId}`);
+    }
+
+    // Create IAM deployment users in each account
+    const deploymentUsers: Record<string, string> = { ...existingUsers };
+
+    for (const env of ENVIRONMENTS) {
+      if (existingUsers[env]) {
+        spinner.succeed(`Using existing deployment user: ${existingUsers[env]}`);
+        continue;
+      }
+
+      const accountId = accounts[env];
+      const userName = `${config.projectName}-${env}-deploy`;
+      const policyName = `${config.projectName}-${env}-cdk-deploy`;
+
+      spinner.start(`Creating deployment user in ${env} account...`);
+
+      let iamClient: IAMClient;
+      if (adminCredentials) {
+        const roleArn = `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`;
+        iamClient = new IAMClient({
+          region: config.awsRegion,
+          credentials: fromTemporaryCredentials({
+            masterCredentials: {
+              accessKeyId: adminCredentials.accessKeyId,
+              secretAccessKey: adminCredentials.secretAccessKey,
+            },
+            params: {
+              RoleArn: roleArn,
+              RoleSessionName: `create-aws-project-${Date.now()}`,
+              DurationSeconds: 900,
+            },
+          }),
+        });
+      } else {
+        iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      }
+
+      await createOrAdoptDeploymentUser(iamClient, userName);
+
+      spinner.text = `Creating deployment policy for ${env}...`;
+      const policyArn = await createCDKDeploymentPolicy(iamClient, policyName, accountId);
+      await attachPolicyToUser(iamClient, userName, policyArn);
+
+      deploymentUsers[env] = userName;
+
+      updateConfig(projectConfigPath, accounts, deploymentUsers);
+
+      spinner.succeed(`Created deployment user: ${userName}`);
+    }
+
+    // Create access keys for deployment users
+    const deploymentCredentials: Record<string, DeploymentCredentials> = {};
+
+    for (const env of ENVIRONMENTS) {
+      if (existingCredentials[env]) {
+        spinner.succeed(`Using existing credentials for ${env}: ${existingCredentials[env].accessKeyId}`);
+        deploymentCredentials[env] = existingCredentials[env];
+        continue;
+      }
+
+      const userName = deploymentUsers[env];
+
+      spinner.start(`Creating access key for ${env} deployment user...`);
+
+      const accountId = accounts[env];
+      let iamClient: IAMClient;
+      if (adminCredentials) {
+        const roleArn = `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`;
+        iamClient = new IAMClient({
+          region: config.awsRegion,
+          credentials: fromTemporaryCredentials({
+            masterCredentials: {
+              accessKeyId: adminCredentials.accessKeyId,
+              secretAccessKey: adminCredentials.secretAccessKey,
+            },
+            params: {
+              RoleArn: roleArn,
+              RoleSessionName: `create-aws-project-${Date.now()}`,
+              DurationSeconds: 900,
+            },
+          }),
+        });
+      } else {
+        iamClient = createCrossAccountIAMClient(config.awsRegion, accountId);
+      }
+
+      const credentials = await createAccessKey(iamClient, userName);
+
+      deploymentCredentials[env] = {
+        userName,
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+      };
+
+      updateConfig(projectConfigPath, accounts, deploymentUsers, deploymentCredentials);
+
+      spinner.succeed(`Created access key for ${userName}`);
+    }
+
+    // Bootstrap CDK in each environment account
+    await bootstrapAllEnvironments({
+      accounts,
+      region: config.awsRegion,
+      adminCredentials,
+      spinner,
+    });
+
+    // Final success with summary table
+    console.log('');
+    console.log(pc.green('AWS environment setup complete!'));
+    console.log('');
+    console.log('Summary:');
+    console.log(`  ${'Environment'.padEnd(14)}${'Account ID'.padEnd(16)}${'Deployment User'.padEnd(30)}Access Key`);
+    for (const env of ENVIRONMENTS) {
+      const keyId = deploymentCredentials[env]?.accessKeyId ?? 'N/A';
+      console.log(`  ${env.padEnd(14)}${accounts[env].padEnd(16)}${deploymentUsers[env].padEnd(30)}${keyId}`);
+    }
+    console.log('');
+    console.log(pc.dim('CDK bootstrapped in all environment accounts.'));
+    console.log('');
+    console.log('AWS setup complete. All environments bootstrapped and ready for CDK deployments.');
+    console.log('');
+
+    // Auto-run GitHub setup (non-interactive path — no prompt)
+    console.log('Setting up GitHub environments...');
+    try {
+      await runInitializeGitHub(['--all']);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(pc.yellow('Warning:') + ` GitHub setup failed: ${msg}`);
+      console.warn('AWS setup completed successfully. Run initialize-github manually:');
+      console.warn(`  ${pc.cyan('npx create-aws-project initialize-github --all')}`);
+    }
+  } catch (error) {
+    spinner.fail('AWS setup failed');
+    handleAwsError(error);
+  }
+
+  process.exit(0);
+}
+
+/**
  * Runs the setup-aws-envs command
  *
  * Creates AWS Organizations and environment accounts (dev, stage, prod)
  *
- * @param _args Command arguments (unused)
+ * @param args Command arguments
  */
-export async function runSetupAwsEnvs(_args: string[]): Promise<void> {
+export async function runSetupAwsEnvs(args: string[]): Promise<void> {
+  // --config flag: route to non-interactive mode
+  const configFlagIndex = args.findIndex(arg => arg === '--config');
+  if (configFlagIndex !== -1) {
+    const configPath = args[configFlagIndex + 1];
+    if (!configPath || configPath.startsWith('--')) {
+      console.error(pc.red('Error:') + ' --config requires a path argument');
+      console.error('  Example: npx create-aws-project setup-aws-envs --config aws.json');
+      process.exit(1);
+    }
+    await runSetupAwsEnvsNonInteractive(configPath);
+    return;
+  }
+
   // 1. Validate we're in a project directory
   const context = await requireProjectContext();
   const { config, configPath } = context;
