@@ -8,6 +8,15 @@ An npx CLI tool that scaffolds full-stack AWS projects with React web, React Nat
 
 Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
 
+## Current Milestone: v1.8 MCP Server
+
+**Goal:** Wrap the CLI as a standalone MCP server so Claude Code and Cursor can call `create_project()`, `setup_aws_envs()`, `initialize_github()`, and `get_project_status()` as tools. Published as a separate npm package. Generated projects include pre-configured `.mcp.json` pointing at the server.
+
+**Target features:**
+- `create-aws-project-mcp` npm package implementing the MCP protocol
+- Four tools: create_project, setup_aws_envs, initialize_github, get_project_status
+- `.mcp.json` template added to all scaffolded projects for zero-config Claude/Cursor integration
+
 ## Current State (v1.7)
 
 Shipped v1.7 on 2026-02-19. AI-friendly CLI with non-interactive mode for both project generation and AWS setup:
@@ -88,7 +97,13 @@ Tech stack:
 
 ### Active
 
-(None — define next milestone with `/gsd:new-milestone`)
+- [ ] MCP server package (`create-aws-project-mcp`) implementing MCP protocol — v1.8
+- [ ] `create_project` tool: wraps wizard/--config mode — v1.8
+- [ ] `setup_aws_envs` tool: wraps setup-aws-envs command — v1.8
+- [ ] `initialize_github` tool: wraps initialize-github command — v1.8
+- [ ] `get_project_status` tool: reads project config and reports state — v1.8
+- [ ] `.mcp.json` template in generated projects for zero-config Claude/Cursor integration — v1.8
+- [ ] Published to npm as separate package — v1.8
 
 ### Out of Scope
 
@@ -160,4 +175,4 @@ Tech stack:
 | GitHub failure as warning in non-interactive | AWS succeeded; GitHub is best-effort; warning + recovery hint | ✓ Good |
 
 ---
-*Last updated: 2026-02-19 after v1.7 milestone*
+*Last updated: 2026-03-25 after v1.8 milestone start*

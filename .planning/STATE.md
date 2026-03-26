@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-19)
+See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Generated projects have production-ready multi-environment AWS infrastructure with automated CI/CD from day one.
-**Current focus:** Planning next milestone
+**Current focus:** v1.8 MCP Server milestone
 
 ## Current Position
 
-Phase: 25 of 25 (all phases complete through v1.7)
-Plan: N/A
-Status: Milestone v1.7 shipped
-Last activity: 2026-02-19 — v1.7 AI-Friendly CLI milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.8
+Last activity: 2026-03-25 — Milestone v1.8 MCP Server started
 
-Progress: [###############################] 100% (v1.7 shipped)
+Progress: [░░░░░░░░░░] 0% (v1.8 starting)
 
 ## Milestones
 
@@ -44,14 +44,14 @@ None.
 
 ### Outstanding Todos
 
-None — v1.7 milestone complete. Run `/gsd:new-milestone` to define next milestone.
+None.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: v1.7 milestone archived and shipped
+Last session: 2026-03-25
+Stopped at: Milestone v1.8 started, requirements and roadmap pending
 Resume file: None
-Next: Run `/gsd:new-milestone` to define next milestone
+Next: Research → requirements → roadmap for v1.8 MCP Server
 
 ---
-*Updated: 2026-02-19 after v1.7 milestone completion*
+*Updated: 2026-03-25 after v1.8 milestone start*
