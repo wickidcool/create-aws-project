@@ -1,368 +1,219 @@
 # Project Research Summary
 
-**Project:** create-aws-project v1.6 milestone
-**Domain:** CLI tool for AWS account bootstrapping with root credential handling
-**Researched:** 2026-02-10
-**Confidence:** HIGH
+**Project:** create-aws-project v1.8 — MCP Server Companion Package
+**Domain:** MCP stdio server wrapping an existing TypeScript CLI with long-running AWS operations
+**Researched:** 2026-03-25
+**Confidence:** HIGH (all critical claims verified against npm registry, official MCP protocol docs, and direct codebase inspection)
+
+---
 
 ## Executive Summary
 
-This milestone addresses three critical failures in the current AWS setup workflow: (1) root credentials cannot assume cross-account roles, causing setup to fail after account creation but before IAM user deployment, (2) re-running the command prompts for emails even when accounts already exist, and (3) initialize-github fails because it attempts cross-account role assumption with root credentials.
+The v1.8 milestone adds `create-aws-project-mcp`, a separate npm package that exposes the existing CLI's four major operations as MCP tools callable by AI agents. Experts build this type of companion package using `@modelcontextprotocol/sdk` v1.28.0 (the only production-ready TypeScript MCP SDK, published by Anthropic), publishing it as an ESM package invokable via `npx -y create-aws-project-mcp`. The server uses stdio transport, calls into existing CLI functions by direct import, and relies on the user's environment for AWS and GitHub credentials — never accepting secrets as tool inputs. All four tools (`create_project`, `setup_aws_envs`, `initialize_github`, `get_project_status`) are synchronous request-response with progress notifications for the two long-running operations.
 
-The solution is architectural simplification: **ALL IAM operations move to `setup-aws-envs`**. This command becomes responsible for root detection, IAM admin bootstrap (if root detected), deployment user creation across all accounts, access key generation, and credential storage. The `initialize-github` command is simplified to a pure read-config-and-push operation that takes stored credentials and writes them to GitHub secrets. No cross-account role assumption needed in initialize-github.
+The central architectural challenge is that the existing CLI functions were written for interactive terminal use: they call `console.log()` throughout, use the `prompts` library for interactive input (which writes to `process.stdout`), and call `process.exit(1)` on errors. All three behaviors are fatal to an MCP stdio server — any non-JSON write to stdout corrupts the JSON-RPC stream, `process.exit` kills the server process, and `prompts` competes with the MCP transport for stdin. The recommended resolution is a `withCliContext()` wrapper that redirects stdout and intercepts `process.exit`, combined with a strict policy of calling only the non-interactive (`--config`) code paths from MCP tool handlers. Two targeted additions to the existing package are also required: `runSetupAwsEnvsNonInteractive` must be exported, and a new `runInitializeGitHubNonInteractive` function must be added to bypass the interactive PAT prompt.
 
-The key technical insight: root credentials cannot assume IAM roles (AWS blocks this for security). The workflow must detect root credentials via `GetCallerIdentity` ARN pattern (`arn:aws:iam::ACCOUNT:root`), create an admin IAM user with AdministratorAccess, switch to those credentials, then perform all cross-account operations. The existing AWS SDK v3 packages already provide all needed APIs—no new dependencies required. The critical risk is IAM eventual consistency (3-4 second propagation delay), which requires retry logic with exponential backoff for operations immediately following IAM mutations.
+The package structure is a subdirectory in the same git repository using npm workspaces (`packages/create-aws-project-mcp/`), published independently to npm. Generated projects receive a `.mcp.json` template that launches the server via `npx -y create-aws-project-mcp` — no global install required. The most non-obvious runtime trap is working directory: MCP clients may launch the server from any directory (often `/` on macOS when opened via an OS launcher), so all project-context tools must accept `projectPath` as an explicit input parameter rather than relying on `process.cwd()`.
+
+---
 
 ## Key Findings
 
 ### Recommended Stack
 
-All required AWS SDK capabilities exist in packages already present in the project. No new dependencies needed. The existing AWS SDK v3 packages provide all APIs for root detection (`@aws-sdk/client-sts`), IAM admin creation (`@aws-sdk/client-iam`), and credential management. Current versions (3.971-3.972) are only 11-12 versions behind latest (3.983) with no breaking changes or missing features for this use case.
+The MCP server is built on `@modelcontextprotocol/sdk@^1.28.0` — the only official TypeScript SDK, published by Anthropic. Version 2 is explicitly pre-alpha and must not be used. The existing project's `zod@4.3.6` satisfies the SDK peer dependency range (`^3.25 || ^4.0`) with no version conflict. TypeScript compilation uses `module: NodeNext` (required for the ESM-only SDK) with `.js` extension imports throughout. No additional packages are needed: the SDK bundles `zod-to-json-schema` internally, `console.error()` replaces any logging library, and HTTP transport packages are irrelevant for a local stdio server.
 
 **Core technologies:**
-- **@aws-sdk/client-sts ^3.972.0**: Root detection via GetCallerIdentity — ARN format definitively identifies root vs IAM user
-- **@aws-sdk/client-iam ^3.971.0**: IAM admin user + access key creation — stable APIs unchanged since v1
-- **@aws-sdk/credential-providers ^3.971.0**: Cross-account role assumption (already used) — no changes needed
+- `@modelcontextprotocol/sdk@^1.28.0`: MCP server runtime, tool registration, stdio transport — only production-ready option; v2 is pre-alpha
+- `McpServer` + `StdioServerTransport`: high-level API for tool registration; the lower-level `Server` class is deprecated in v1.28.0
+- `server.registerTool()`: current registration API (replaces deprecated `server.tool()` overloads)
+- `zod` (reuse existing `^4.3.6`): declared as peer dependency in MCP package to avoid dual installation
+- Node.js `>=22.0.0`: matches existing project requirement (SDK minimum is `>=18`)
+- `module: NodeNext` tsconfig: mandatory for `.js` extension imports from the ESM SDK
 
-**Critical version note:** Keep existing versions. Upgrading to 3.983.0 provides no functional benefit for this milestone. Project uses `^` semver ranges so patch updates are automatic.
-
-**Implementation pattern:** Static credential objects (plain JavaScript) for credential switching. No credential provider package needed—just create new client instances with `{ credentials: { accessKeyId, secretAccessKey } }` constructor option.
+The server entry point follows the standard pattern: `McpServer` instantiated once, tools registered, `StdioServerTransport` connected, process stays alive. All diagnostic output uses `console.error()`. Any `console.log()` in any code path reachable from a tool handler corrupts the JSON-RPC stream and must be treated as a build-breaking defect.
 
 ### Expected Features
 
+The four tools map 1:1 to existing CLI operations. `create_project` wraps the `--config` non-interactive wizard. `setup_aws_envs` wraps `runSetupAwsEnvsNonInteractive`. `initialize_github` wraps a new `runInitializeGitHubNonInteractive` (to be added). `get_project_status` is new logic — a read-only status report with a computed `nextSteps` array for agent guidance. The `projectPath` return value from `create_project` is the thread connecting all four tools; an agent receives it from the first call and passes it to every subsequent call.
+
 **Must have (table stakes):**
-- **Root credential detection** — Users naturally start with root credentials (new AWS account state), CLI must detect via GetCallerIdentity ARN check
-- **Automatic IAM admin creation** — AWS best practice: don't use root for operations, create admin IAM user with AdministratorAccess
-- **Idempotent account creation** — Re-runs must skip existing accounts without failing, query Organizations API before prompting for emails
-- **Idempotent user creation** — Re-runs must skip existing IAM users without failing, check existence before creation
-- **Smart email handling** — Don't prompt for emails if accounts already exist (solves stated problem #2)
-- **State persistence** — Save progress after each successful operation for recovery
-- **Credential validation** — Verify credentials work before starting operations via GetCallerIdentity
+- All four tools with complete Zod-validated input schemas — minimum viable server
+- Environment-based credential injection (`AWS_ACCESS_KEY_ID`, `GITHUB_TOKEN`) — prevents credentials appearing in LLM context
+- `projectPath` input on all project-context tools — without this, tools fail when launched from a non-project directory
+- Structured JSON output on all tools — enables agent chaining (`projectPath` from `create_project` to subsequent tools)
+- `isError: true` results with actionable messages — agents must distinguish recoverable from fatal failures
+- Progress notifications for `create_project` (~30-60s) and `setup_aws_envs` (~3-10 min) — prevents tools from appearing hung
+- `nextSteps` array in `get_project_status` — reduces agent reasoning load about setup state
+- No interactive prompts in any MCP code path — any `prompts` call hangs indefinitely or crashes
+- `process.exit()` interception — exits kill the server process, not just the current request
+- `console.log()` prohibited throughout MCP server code — stdout is the JSON-RPC channel
 
-**Should have (competitive differentiators):**
-- **Zero-touch root-to-admin** — Fully automated credential transition with no manual swapping (stretch goal)
-- **Progressive credential validation** — Test each permission before using it, fail early with actionable errors
-- **Email alias generation** — Suggest email aliases (user+dev@example.com) for new accounts
-- **Credential security warnings** — Warn if root access keys are long-lived, suggest disabling after setup
+**Should have (differentiators):**
+- `nextSteps` derived from config state in `get_project_status` — agent gets a computed action list, not a raw config dump
+- Partial failure reporting in `initialize_github` — attempt all environments, report per-environment success/failure for targeted retries
+- Per-environment completion booleans in status — agent can check "is dev configured?" without credential parsing
+- Human-readable progress messages with duration hints ("Creating prod account (this can take 1-2 minutes)")
+- Explicit credential-source in error messages ("AWS_ACCESS_KEY_ID not set — add to .mcp.json env block: ...")
+- `warnings` array in `get_project_status` for non-blocking alerts (e.g., "AWS credentials are root — consider IAM admin")
+- `.mcp.json` template included in generated projects with env variable documentation
 
-**Defer (v2+):**
-- Multi-step undo capability (very high complexity)
-- Setup dry-run mode (medium complexity, nice-to-have)
-- MFA enforcement setup (advanced use case)
-- Credential rotation guidance (low value for initial setup)
+**Defer to post-v1.8:**
+- `outputSchema` declarations in tool definitions (nice for type-safe clients, not required for function)
+- `annotations.readOnly` on `get_project_status` (client-side optimization that skips confirmation prompts)
+- Version pinning in generated `.mcp.json` (leave unpinned for initial release, document in README)
 
-**Anti-features (explicitly avoid):**
-- Storing root credentials long-term (security risk)
-- Silent credential auto-switching (users lose track of identity)
-- Custom IAM policies for admin (use AWS-managed AdministratorAccess)
-- Complex credential management system (don't reinvent aws-vault)
+**Anti-features (explicitly do not build):**
+- `awsAccessKeyId` / `awsSecretAccessKey` / `githubToken` as tool inputs — credentials in LLM context, logs, and client UIs
+- Any interactive fallback when credentials are missing — cannot prompt in MCP, will hang
+- Subprocess invocation of the CLI instead of direct import — adds latency and loses structured errors
+- Merging `create_project` + `setup_aws_envs` into one tool — reduces agent composability and retry flexibility
+- Passing raw `.aws-starter-config.json` content to the agent — exposes deployment credentials written by `setup_aws_envs`
 
 ### Architecture Approach
 
-The architectural simplification for v1.6 eliminates cross-account role assumption from `initialize-github` entirely. Instead, `setup-aws-envs` becomes the single orchestrator for all AWS operations:
+The MCP server lives in `packages/create-aws-project-mcp/` within the same git repository, enabled by npm workspaces. It imports directly from `create-aws-project` (declared as a direct dependency, not peer), calling only the non-interactive code paths. A `withCliContext()` utility in `utils/cli-context.ts` wraps all tool handler invocations: it redirects `process.stdout.write` to a capture buffer, intercepts `process.exit` and converts it to a thrown Error, and returns the captured terminal output (ANSI-stripped) alongside the result. This captured output becomes the human-readable text content returned to the AI agent — the same progress information a terminal user would see, without corrupting the protocol.
 
 **Major components:**
+1. `packages/create-aws-project-mcp/src/index.ts` — entry point with `#!/usr/bin/env node` shebang; creates McpServer, registers all tools, starts StdioServerTransport
+2. `packages/create-aws-project-mcp/src/tools/` — one file per tool; each handler calls `withCliContext()` wrapping the relevant CLI function
+3. `packages/create-aws-project-mcp/src/utils/cli-context.ts` — `withCliContext()` combining stdout redirect and `process.exit` interception
+4. `packages/create-aws-project-mcp/src/utils/strip-ansi.ts` — cleans ANSI escape codes from captured terminal output before including in MCP responses
+5. `create-aws-project/src/commands/setup-aws-envs.ts` — add `export` to `runSetupAwsEnvsNonInteractive` (currently unexported)
+6. `create-aws-project/src/commands/initialize-github.ts` — add `runInitializeGitHubNonInteractive(config)` that reads `GITHUB_TOKEN` from environment and calls `src/github/secrets.ts` directly
 
-1. **setup-aws-envs (expanded responsibilities)**
-   - Root detection via STS GetCallerIdentity
-   - IAM admin bootstrap (if root detected): CreateUser, AttachUserPolicy, CreateAccessKey
-   - Credential switching: Create new clients with admin credentials (not root)
-   - Organization and account creation (existing)
-   - Cross-account deployment user creation: AssumeRole to each member account with admin credentials
-   - Access key generation for deployment users
-   - Credential storage in config file
-   - **Output:** Fully configured .aws-starter-config.json with all credentials
-
-2. **initialize-github (simplified to read-and-push)**
-   - Read stored credentials from .aws-starter-config.json
-   - Push credentials to GitHub secrets via GitHub API
-   - No AWS operations, no role assumption, no credential generation
-   - **Input:** Environment name (dev/stage/prod)
-   - **Output:** GitHub repository secrets configured
-
-3. **Credential switching architecture**
-   - Phase 1: Use default credentials from CLI/env (root)
-   - Phase 2: Create admin IAM user, capture access key response
-   - Phase 3: Create NEW client instances with static credentials `{ accessKeyId, secretAccessKey }`
-   - Phase 4: Use admin credentials for all cross-account operations via fromTemporaryCredentials
-
-**Key pattern:** AWS SDK v3 clients are immutable regarding credentials. Cannot update credentials on existing client. Must create new client instances when switching credential context.
-
-**Why this fixes the problems:**
-- Problem 1 (root can't assume roles): Admin user CAN assume roles, all cross-account ops use admin credentials
-- Problem 2 (email prompts on re-run): Check existing accounts before prompting
-- Problem 3 (initialize-github fails): No longer attempts cross-account operations, just reads config and pushes to GitHub
+The MCP server process is long-running — one process per client session. Tools execute sequentially (no concurrent dispatch at the stdio transport level). State is never held in memory between calls; each tool reads fresh from `.aws-starter-config.json`.
 
 ### Critical Pitfalls
 
-1. **Root User Cannot Assume Roles** — AWS blocks root credentials from assuming any IAM role, including OrganizationAccountAccessRole. Setup fails partway through with cryptic "Not authorized to perform: sts:AssumeRole" error. **Prevention:** Detect root early via ARN check (`:root` suffix), create admin IAM user BEFORE account creation loop, switch credentials before any AssumeRole calls.
+1. **stdout corruption from `console.log()` and `prompts`** — Any non-JSON write to stdout corrupts the JSON-RPC stream and disconnects the client immediately. The existing CLI has 15+ `console.log()` calls in `setup-aws-envs.ts` and `initialize-github.ts`, plus `prompts` writes to `process.stdout` by default (confirmed via `node_modules/prompts/dist/elements/prompt.js:26-27`). Solution: call only non-interactive code paths; apply `withCliContext()` stdout redirect to every tool handler; treat any `console.log()` in MCP-reachable code as a build-breaking defect. Must be solved in Phase 1 before any tool can work.
 
-2. **IAM Eventual Consistency Window (3-4 seconds)** — IAM uses distributed system with eventual consistency. CreateUser succeeds but immediate CreateAccessKey or AssumeRole fails with "User not found." Command appears flaky. **Prevention:** Exponential backoff retry for operations after IAM mutations. AWS SDK auto-retries throttling but NOT eventual consistency errors. Must implement custom retry logic for NoSuchEntity, InvalidClientTokenId, AccessDenied after user/policy creation.
+2. **Working directory is undefined at MCP server startup** — MCP clients launch the server from an arbitrary directory (often `/` on macOS when opened via IDE). The existing `find-up` usage for `.aws-starter-config.json` returns `undefined` and all project-context tools fail with confusing "config not found" errors. Solution: all project-context tools must accept `projectPath` as an explicit input parameter; resolve config from `path.join(projectPath, '.aws-starter-config.json')`, not `process.cwd()`. This must be baked into tool schema design before any implementation begins.
 
-3. **Credential Provider Chain Caching** — SDK caches first successful provider. Creating admin user doesn't switch credentials for existing clients. Subsequent operations continue using root credentials, AssumeRole still fails. **Prevention:** Create NEW client instances with explicit credentials object `{ accessKeyId, secretAccessKey }`. Don't set environment variables mid-execution. Don't expect existing clients to pick up new credentials.
+3. **`process.exit()` kills the entire server** — `handleAwsError()` and validation code call `process.exit(1)` on failure. In an MCP server, this terminates the entire server process for the rest of the client session — not just the current request. Solution: `withCliContext()` must intercept `process.exit`, convert it to a thrown Error, and allow the tool handler to catch and return it as `isError: true`.
 
-4. **Partial Failure State Management** — Command creates organization and 1-2 accounts successfully, fails on third account. Re-run prompts for ALL emails again, tries to recreate accounts, gets EMAIL_ALREADY_EXISTS error. **Prevention:** Check existing accounts BEFORE prompting for emails. Only prompt for missing environments. Handle EMAIL_ALREADY_EXISTS gracefully with recovery instructions.
+4. **Long-running tools exceed client timeouts** — `setup_aws_envs` can take 3-10 minutes. Claude Code's default timeout is approximately 60 seconds. Without progress notifications, the tool call times out even if the underlying AWS operation succeeds. Solution: emit `notifications/progress` throughout long operations; document expected duration in tool `description` fields. Per spec, clients MAY (not MUST) reset their timeout clock when receiving progress notifications — accept this uncertainty and document it.
 
-5. **Admin User Access Key Limit (2 keys maximum)** — AWS enforces hard limit of 2 access keys per IAM user. Third run fails with "User already has 2 access keys." **Prevention:** Check key count before creation. If user exists with 2 keys, error with clear instructions to delete old key. If user exists with 1 key, prompt for existing credentials instead of creating new.
+5. **Credentials in tool inputs** — Any credential field in a tool's input schema becomes visible in LLM context, client UIs, and logs. Solution: read `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, and `GITHUB_TOKEN` from the server's environment at startup via the AWS SDK default credential chain. Return actionable `isError: true` if required credentials are absent.
+
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure for v1.6 milestone:
+The v1.8 work breaks cleanly into four phases. The critical path is: workspace setup → CLI additions → MCP tools → publishing. Nothing in phase N+1 can be tested without phase N complete.
 
-### Phase 1: Root Detection and Email Deduplication
-**Rationale:** Fixes the immediate user-facing failures (root detection, duplicate email prompts) with minimal complexity. Establishes foundation for admin user creation in Phase 2.
+### Phase 1: Package Foundation and Safety Infrastructure
 
-**Delivers:**
-- Root credential detection via GetCallerIdentity ARN check
-- Check existing accounts before email prompts (solves problem #2)
-- Graceful error message if root detected (manual fallback for now)
-- Idempotent account creation (skip existing)
+**Rationale:** The `withCliContext()` utility is a hard prerequisite for every tool. Without it, the first tool call corrupts the stdio stream and the client disconnects silently. ESM setup (shebang, `module: NodeNext`, `chmod +x`) and MCP Inspector integration must be validated before writing any tool business logic. npm workspaces configuration in the root `package.json` must also happen here — it does not currently exist.
 
-**Addresses features:**
-- Root credential detection (table stakes)
-- Smart email handling (table stakes)
-- Idempotent account creation (table stakes)
+**Delivers:** A runnable MCP server binary that responds to `initialize`, registers zero tools, and starts without crashing. npm workspaces wired (`"workspaces": ["packages/*"]` in root). `withCliContext()` unit-tested in isolation with a function that writes to stdout and calls `process.exit`. MCP Inspector confirmed working against the bare server.
 
-**Avoids pitfalls:**
-- #4: Partial failure state management (check before prompt)
-- #8: STS GetCallerIdentity for root detection (correct method)
+**Addresses features:** stdout redirect, `process.exit` interception, ESM shebang, `bin` entry in `package.json`.
 
-**Implementation notes:**
-- Modify collectEmails() to query Organizations API first
-- Only prompt for missing environments
-- Add isRootUser() helper using GetCallerIdentity
-- Display clear message if root detected, exit with instructions
+**Avoids pitfalls:** Pitfall 1 (stdout corruption), Pitfall 3 (`process.exit` kills server), Pitfall 7 (ESM resolution), Pitfall 8 (testing without full IDE setup).
 
-**Complexity:** LOW
-**Risk:** LOW (purely additive, no credential switching yet)
+**Research flag:** Standard patterns — the official MCP TypeScript quickstart provides the exact implementation pattern. No additional research needed.
 
 ---
 
-### Phase 2: Admin User Bootstrap with Credential Switching
-**Rationale:** Solves problem #1 (root can't assume roles) by creating admin IAM user and switching credentials. Most complex phase due to eventual consistency handling and credential management.
+### Phase 2: CLI Additions (Changes to Existing Package)
 
-**Delivers:**
-- Admin IAM user creation (CreateUser, AttachUserPolicy)
-- Access key generation with secure display
-- Credential switching architecture (new client instances)
-- Retry logic for IAM eventual consistency
-- Tag-based admin user adoption (idempotent re-runs)
+**Rationale:** The two required changes to `create-aws-project` are a hard dependency for Phase 3. TypeScript will fail to import a non-exported function. These changes are surgical and low-risk, but they must be shipped and built before the MCP tool handlers can import from the CLI package.
 
-**Uses stack elements:**
-- @aws-sdk/client-iam for CreateUser, CreateAccessKey, AttachUserPolicy
-- Static credential objects for credential switching
-- Exponential backoff retry pattern
+**Delivers:** `runSetupAwsEnvsNonInteractive` exported from `commands/setup-aws-envs.ts`. New `runInitializeGitHubNonInteractive(config)` in `commands/initialize-github.ts` that reads `GITHUB_TOKEN` from environment and calls `src/github/secrets.ts` directly (bypassing `prompts`). Build confirmed with both new exports visible in `dist/`.
 
-**Implements architecture component:**
-- Credential switching (Phase 3 in architecture flow)
-- Admin user bootstrap (Phase 2 in architecture flow)
+**Uses:** Existing `src/github/secrets.ts` modular structure (already suitable for direct invocation). Existing `SetupAwsEnvsConfig` types.
 
-**Avoids pitfalls:**
-- #1: Root user cannot assume roles (create admin before cross-account ops)
-- #2: IAM eventual consistency (retry with backoff)
-- #3: Credential provider caching (new clients with explicit credentials)
-- #5: Access key limit (check count before creation)
-- #6: Credential security (display once with confirmation)
-- #9: Admin naming collision (tag-based adoption)
+**Avoids pitfalls:** Pitfall 9 (stdin competition — the new non-interactive function never calls `prompts`), Pitfall 4 (credential exposure — PAT comes from environment, not a function parameter).
 
-**Implementation notes:**
-- Add createAdminUserIfNeeded() function with tag-based existence check
-- Retry createAccessKey() with exponential backoff (5 retries, base 1s)
-- Create new IAMClient instances with admin credentials
-- Display credentials with confirmation prompt before proceeding
-- Wait 5 seconds after user creation before first use
-- Store admin username (NOT credentials) in config
-
-**Complexity:** HIGH
-**Risk:** MEDIUM (eventual consistency is inherently timing-dependent)
+**Research flag:** No research needed — codebase audit in ARCHITECTURE.md already identified exactly which functions need changes and what their structure should be.
 
 ---
 
-### Phase 3: Move All IAM Operations to setup-aws-envs
-**Rationale:** Completes the architectural simplification. Moves deployment user creation from initialize-github to setup-aws-envs, making initialize-github a simple read-and-push operation.
+### Phase 3: Four MCP Tools
 
-**Delivers:**
-- Deployment user creation in setup-aws-envs (using admin credentials)
-- Access key generation for all environments
-- Credential storage in .aws-starter-config.json
-- Simplified initialize-github (no AWS operations)
+**Rationale:** With `withCliContext()` ready (Phase 1) and CLI exports available (Phase 2), all four tools can be built. The recommended build order within this phase: `get_project_status` first (pure read, no CLI calls, easiest to test the plumbing), then `create_project`, then `setup_aws_envs`, then `initialize_github`. Each tool must include the `projectPath` input, structured JSON output, `isError: true` error handling, and progress notifications for the two long-running tools.
 
-**Uses stack elements:**
-- @aws-sdk/credential-providers for fromTemporaryCredentials (cross-account)
-- Existing createCrossAccountIAMClient pattern
-- Admin credentials from Phase 2
+**Delivers:** All four tools functional end-to-end via MCP Inspector. `get_project_status` returns structured status with `nextSteps`. `create_project` and `setup_aws_envs` emit progress notifications throughout execution. `initialize_github` handles partial per-environment failures. Credential detection at startup with actionable error messages pointing users to `.mcp.json` env configuration.
 
-**Implements architecture component:**
-- Cross-account operations (Phase 4 in architecture flow)
-- initialize-github simplification
+**Addresses features:** All table-stakes features. Progress notifications, `nextSteps`, partial failure reporting for `initialize_github`.
 
-**Avoids pitfalls:**
-- #2: IAM eventual consistency (retry AssumeRole with admin credentials)
-- #10: CreateAccount timeout (verify existing 10-minute timeout)
+**Avoids pitfalls:** Pitfall 2 (working directory — `projectPath` on all tools), Pitfall 3 (long-running timeouts — progress notifications), Pitfall 4 (credentials in inputs), Pitfall 5 (`isError: true` throughout).
 
-**Implementation notes:**
-- Extract deployment user creation logic from initialize-github
-- Add to setup-aws-envs after account creation loop
-- Use admin credentials for AssumeRole (not root)
-- Store deployment user credentials in config.deploymentUsers[env]
-- Modify initialize-github to read from config instead of creating
-- Update config schema to include deploymentUsers object
-
-**Complexity:** MEDIUM
-**Risk:** LOW (refactoring existing working code)
+**Research flag:** Needs targeted verification during planning — confirm `server.sendProgressNotification()` method signature in SDK v1.28.0. FEATURES.md references this method but it was not traced directly to v1.28.0 type definitions. Verify parameter names before implementation to avoid a wasted cycle.
 
 ---
 
-### Phase 4: Testing and Documentation
-**Rationale:** Validate end-to-end workflow with actual root credentials, document the new flow, ensure backward compatibility.
+### Phase 4: Publishing and Generated Template
 
-**Delivers:**
-- E2E test with root credentials
-- E2E test with IAM credentials (skip admin creation)
-- Re-run test (idempotency validation)
-- Updated README with new workflow
-- Validation checklist completion
+**Rationale:** Publishing is last — it requires a tested, working package. The `.mcp.json` template in generated projects ties the entire feature together for end users. npm workspaces build ordering must be codified in root scripts so CI builds both packages in sequence.
 
-**Addresses:**
-- Backward compatibility (existing projects)
-- Integration testing (real AWS account)
-- User documentation
+**Delivers:** `create-aws-project-mcp` published to npm. Root `build` script builds CLI then MCP package in order. Generated projects include `.mcp.json` template using `npx -y create-aws-project-mcp` with documented `env` keys for `GITHUB_TOKEN`. README updated with setup instructions for Claude Code, Claude Desktop, and Cursor. `prepublishOnly` script confirmed in MCP package `package.json`.
 
-**Avoids pitfalls:**
-- Integration Pitfall 1: Backward compatibility (test with existing configs)
-- Integration Pitfall 2: initialize-github credential dependency (document new flow)
+**Uses:** `npx -y create-aws-project-mcp` invocation pattern (verified, universal across all clients).
 
-**Implementation notes:**
-- Create test AWS account with root credentials
-- Run full workflow: setup-aws-envs → initialize-github
-- Test re-run scenarios
-- Verify spinner state on all error paths (#12)
-- Document credential security best practices
-- Add troubleshooting guide for common errors
+**Avoids pitfalls:** Pitfall 6 (version coupling — `create-aws-project` as direct dependency, `files` field, `prepublishOnly` build), Pitfall 10 (`.mcp.json` path portability — npx invocation, no relative or absolute paths).
 
-**Complexity:** LOW
-**Risk:** LOW (validation only, no new features)
+**Research flag:** Cursor `.cursor/mcp.json` format was flagged MEDIUM confidence in STACK.md (official Cursor docs inaccessible during research). Verify against Cursor docs or community sources before publishing Cursor-specific README instructions.
 
 ---
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first:** Establishes detection foundation, fixes email prompts (quick win), low risk
-- **Phase 2 second:** Most complex (credential switching, eventual consistency), needs focused effort
-- **Phase 3 third:** Depends on Phase 2 (admin credentials), completes architectural goal
-- **Phase 4 last:** Validates all changes together, ensures no regressions
-
-**Dependencies:**
-- Phase 2 depends on Phase 1 (root detection)
-- Phase 3 depends on Phase 2 (admin credentials)
-- Phase 4 depends on all previous phases (full integration)
-
-**Risk mitigation:**
-- Phase 1 is purely additive (can be shipped alone)
-- Phase 2 is isolated to credential management (no downstream changes yet)
-- Phase 3 is refactoring (existing tests catch regressions)
-- Phase 4 validates before declaring milestone complete
+- Phase 1 before Phase 3: The safety wrapper is a hard dependency; writing tool handlers without it produces an undebuggable, silently-failing server.
+- Phase 2 before Phase 3: TypeScript cannot import a non-exported function; the build fails at compile time.
+- Phase 3 before Phase 4: Cannot publish an untested package; `npx create-aws-project-mcp` must work end-to-end before publishing.
+- `get_project_status` first within Phase 3: It is read-only (no CLI calls, no `withCliContext` needed), has no credential requirements, and validates the tool registration plumbing before touching AWS-side complexity.
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 2:** Eventual consistency timing — research varies from "3-4 seconds" to "several seconds." May need empirical testing to determine optimal retry parameters.
-- **Phase 2:** Access key security — research handling for when user has existing keys but lost credentials. Options: key rotation, manual deletion guidance, or secrets manager integration.
+Phases needing deeper research during planning:
+- **Phase 3 (progress notifications):** Confirm `server.sendProgressNotification()` method signature in SDK v1.28.0 — FEATURES.md references it but it was not verified against the actual type definitions. Confirm parameter names (`progressToken`, `progress`, `total`, `message`) before implementation.
+- **Phase 4 (Cursor config):** STACK.md flagged Cursor `.cursor/mcp.json` format as MEDIUM confidence. Verify before documenting in README.
 
-**Phases with standard patterns (skip research-phase):**
-- **Phase 1:** Root detection via GetCallerIdentity is well-documented, single approach
-- **Phase 3:** Cross-account IAM operations follow existing codebase patterns
-- **Phase 4:** Testing and documentation (no new patterns)
+Phases with standard patterns (skip research-phase):
+- **Phase 1:** MCP TypeScript quickstart provides the exact implementation. No ambiguity.
+- **Phase 2:** Pure codebase changes to existing TypeScript functions. No external unknowns.
 
-**Additional research recommended:**
-- Organizations API rate limits for account creation loop (not found in current research)
-- Secrets Manager integration for admin credential storage (deferred to post-MVP, but flag for consideration)
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All APIs verified in AWS SDK v3 documentation, existing packages sufficient, no version upgrades needed |
-| Features | MEDIUM | Table stakes validated via AWS best practices docs, differentiators based on competitive analysis (not all competitor features tested) |
-| Architecture | HIGH | Credential switching pattern verified in AWS SDK docs and GitHub issues, root role assumption limitation confirmed in IAM troubleshooting docs |
-| Pitfalls | HIGH | Critical pitfalls (#1-6) verified in official AWS documentation, eventual consistency window confirmed in multiple sources including HashiCorp Vault issues |
+| Stack | HIGH | All critical claims verified: npm registry (SDK version, peer deps), SDK type definitions (McpServer, StdioServerTransport, registerTool), official MCP TypeScript quickstart. No gaps. |
+| Features | HIGH | All four tool designs verified against official MCP tools spec, progress spec, and direct project codebase inspection. Credential design follows documented MCP `env` pattern. |
+| Architecture | HIGH | Stdout conflict analysis based on direct source inspection of `prompts` and `ora` node_modules. Process model verified from official MCP architecture docs. One MEDIUM: npm workspaces not yet configured in root `package.json` — requires migration step at Phase 1 start. |
+| Pitfalls | HIGH (9/10) / MEDIUM (Pitfall 3) | 9 of 10 pitfalls are HIGH confidence (verified from official MCP spec or direct source inspection). Pitfall 3 (client-specific timeout values) is MEDIUM — timeout behavior is undocumented for Claude Code and Cursor specifically. |
 
 **Overall confidence:** HIGH
 
-**Rationale:** All critical technical decisions (root detection method, credential switching pattern, eventual consistency handling) are validated via official AWS documentation. Stack assessment is based on existing project dependencies (no unknowns). Architecture simplification is proven approach (eliminate cross-account complexity from initialize-github). Only medium confidence area is competitive feature analysis (limited competitor testing).
-
 ### Gaps to Address
 
-**Gap 1: Optimal retry parameters for eventual consistency**
-- **Issue:** Research indicates 3-4 second propagation, but optimal retry count/backoff not empirically validated
-- **Handling:** Start with conservative values (5 retries, exponential backoff from 1s), monitor in production, tune if needed
-- **Validation:** E2E testing with actual AWS account will reveal if timing is adequate
+- **Claude Code timeout value:** The ~60-second default mentioned in PITFALLS.md is "observed" not documented. Validate during Phase 3 testing via MCP Inspector with artificial delays before relying on progress notifications as a mitigation strategy.
+- **`server.sendProgressNotification()` signature:** Referenced in FEATURES.md but not traced to SDK v1.28.0 type definitions. Verify in Phase 3 planning before implementation to avoid a wasted cycle.
+- **Cursor `.cursor/mcp.json` format:** MEDIUM confidence from STACK.md. Verify from Cursor docs or community sources before Phase 4 README authoring.
+- **npm workspaces migration:** Root `package.json` does not currently have `"workspaces": ["packages/*"]`. This is a project structure change required before Phase 1 can proceed — treat as the first task in Phase 1.
 
-**Gap 2: Admin credential storage security**
-- **Issue:** Research identifies multiple approaches (display-once, temp file, Secrets Manager) but no clear winner for CLI tool context
-- **Handling:** Phase 2 implements display-once with confirmation (simplest), defer Secrets Manager to post-v1.6 based on user feedback
-- **Validation:** Security review during Phase 2 implementation
-
-**Gap 3: Edge case - user has existing admin user from different project**
-- **Issue:** Tag-based adoption works if admin user is for same project, but collision scenario if different project exists
-- **Handling:** Phase 2 implements tag check with clear error message if mismatch, document manual resolution
-- **Validation:** E2E test with pre-existing admin user
-
-**Gap 4: Organizations API quota limits**
-- **Issue:** No research found on rate limits for CreateAccount calls, relevant if creating many accounts
-- **Handling:** Current implementation creates 3 accounts (dev/stage/prod), unlikely to hit limits. Flag for investigation if expanding to more environments
-- **Validation:** Monitor AWS Service Quotas console during testing
-
-**Gap 5: Backward compatibility with v1.5.1 configs**
-- **Issue:** Existing configs don't have admin user or deployment user credentials stored
-- **Handling:** Phase 3 adds new config fields (deploymentUsers), Phase 4 tests with v1.5.1 config to ensure no breaks
-- **Validation:** E2E test with existing project config from v1.5.1
+---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-
-**AWS Official Documentation:**
-- [GetCallerIdentity API Reference](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html) — Root detection via ARN format
-- [IAM Identifiers - ARN Format](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html) — Authoritative ARN patterns for root vs user
-- [CreateUser API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateUser.html) — User creation, EntityAlreadyExistsException handling
-- [CreateAccessKey API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html) — Access key generation, secret retrieval warning
-- [IAM Troubleshooting](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_roles.html) — Root cannot assume roles (verified limitation)
-- [IAM Quotas](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html) — 2 access key limit per user
-- [AWS SDK v3 - Set Credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials.html) — Static credential object pattern
-- [Organizations CreateAccount](https://docs.aws.amazon.com/organizations/latest/APIReference/API_CreateAccount.html) — Asynchronous operations, timing expectations
-
-**AWS SDK v3 Documentation:**
-- [GetCallerIdentityCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sts/classes/getcalleridentitycommand.html) — Response structure
-- [CreateAccessKeyCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/classes/createaccesskeycommand.html) — API usage examples
-- [Credential Providers Package](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-credential-providers/) — fromTemporaryCredentials usage
+- `@modelcontextprotocol/sdk` npm registry + type definitions — SDK version 1.28.0, peer deps, McpServer/StdioServerTransport API, registerTool signature
+- modelcontextprotocol.io/quickstart/server — McpServer, StdioServerTransport, registerTool, console.error requirement, main() pattern
+- modelcontextprotocol.io/docs/concepts/transports — stdio protocol, stdout prohibition, stderr logging
+- modelcontextprotocol.io/docs/concepts/tools — isError, inputSchema JSON Schema, structured content
+- modelcontextprotocol.io/specification/2025-11-25/basic/utilities/progress — progressToken, notifications/progress format
+- modelcontextprotocol.io/docs/tools/debugging — working directory behavior, env inheritance, MCP Inspector
+- code.claude.com/docs/en/mcp — .mcp.json format, --scope project, Windows cmd /c workaround, env field
+- modelcontextprotocol.io/quickstart/user — claude_desktop_config.json format, npx -y pattern
+- Direct codebase inspection: `src/commands/setup-aws-envs.ts`, `src/commands/initialize-github.ts`, `node_modules/prompts/dist/elements/prompt.js:26-27`, `node_modules/ora/index.js:122`
 
 ### Secondary (MEDIUM confidence)
-
-**Community Resources:**
-- [IAM Persistence through Eventual Consistency](https://hackingthe.cloud/aws/post_exploitation/iam_persistence_eventual_consistency/) — 3-4 second propagation window validation
-- [HashiCorp Vault Issue #3115](https://github.com/hashicorp/vault/issues/3115) — Real-world eventual consistency observations
-- [Netflix Security Monkey Issue #1026](https://github.com/Netflix/security_monkey/issues/1026) — Root cannot assume roles (community confirmation)
-- [GitHub Issue #5731: Credential updates on existing client](https://github.com/aws/aws-sdk-js-v3/issues/5731) — Confirms new client instances required for credential switching
-- [AWS re:Post: EMAIL_ALREADY_EXISTS](https://repost.aws/knowledge-center/organizations-error-email-already-exists) — Error handling strategies
-
-**AWS Best Practices:**
-- [Root User Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html) — Root credential management guidance
-- [AWS SDK Retry Behavior](https://docs.aws.amazon.com/sdkref/latest/guide/feature-retry-behavior.html) — Default retry behavior (throttling only, not consistency)
-- [AWS Retry with Backoff Pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/retry-backoff.html) — Implementation guidance
-
-### Tertiary (LOW confidence)
-
-**Security Best Practices:**
-- [Node.js Security Best Practices](https://nodejs.org/en/learn/getting-started/security-best-practices) — Credential storage recommendations (general, not AWS-specific)
-- [OWASP Node.js Authentication Practices](https://www.nodejs-security.com/blog/owasp-nodejs-authentication-authorization-cryptography-practices) — Referenced but not directly verified for this context
-
-**Feature Research:**
-- [AWS CDK vs Terraform Comparison](https://towardsthecloud.com/blog/aws-cdk-vs-terraform) — Competitive analysis for feature expectations
-- [Node.js CLI Apps Best Practices](https://github.com/lirantal/nodejs-cli-apps-best-practices) — UX patterns for CLI tools
+- Cursor `.cursor/mcp.json` format — same `mcpServers` schema as Claude Desktop documented by community; official Cursor docs inaccessible during research
 
 ---
 
-**Research completed:** 2026-02-10
-**Ready for roadmap:** Yes
-**Architectural decision:** ALL IAM operations in setup-aws-envs, initialize-github becomes read-and-push only
+*Research completed: 2026-03-25*
+*Ready for roadmap: yes*

@@ -1,672 +1,414 @@
-# Technology Stack: Root Credential Handling & IAM Admin Bootstrap
+# Technology Stack: MCP Server Package
 
-**Project:** create-aws-project
-**Research Focus:** Stack dimension for root credential detection, IAM admin creation, and credential switching
-**Researched:** 2026-02-10
-**Confidence:** HIGH
-
-## Executive Summary
-
-All required AWS SDK capabilities exist in packages already present in the project. No new dependencies needed. The existing AWS SDK v3 packages (`@aws-sdk/client-sts`, `@aws-sdk/client-iam`) provide all APIs for root detection, IAM admin creation, and credential switching. Implementation requires creating new client instances with different credential providers rather than mutating existing clients.
+**Project:** create-aws-project-mcp (new companion package)
+**Context:** Subsequent milestone — adding an MCP server companion package to an existing CLI tool
+**Researched:** 2026-03-25
+**Overall confidence:** HIGH (all critical claims verified against npm registry and official MCP documentation)
 
 ---
 
-## Existing Stack (No Changes Required)
+## Recommended Stack
 
-The project already has all necessary AWS SDK packages:
+### Core Dependency
 
-| Technology | Current Version | Latest (2026-02) | Purpose | Status |
-|------------|-----------------|------------------|---------|--------|
-| @aws-sdk/client-sts | ^3.972.0 | 3.983.0 | Root detection via GetCallerIdentity | ✓ Adequate |
-| @aws-sdk/client-iam | ^3.971.0 | 3.983.0 | IAM admin user + access key creation | ✓ Adequate |
-| @aws-sdk/credential-providers | ^3.971.0 | 3.983.0 | fromTemporaryCredentials (already used) | ✓ Adequate |
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `@modelcontextprotocol/sdk` | `^1.28.0` | MCP server runtime, tool registration, stdio transport | Only official MCP SDK for TypeScript; published by Anthropic, PBC. Version 1.28.0 published 2026-03-25. v2 is pre-alpha — do not use. |
+| `zod` | existing (`^4.3.6`) | Tool input schema definitions | The SDK peer dependency is `^3.25 || ^4.0`. The existing project already has zod 4.3.6 — no version conflict. Reuse via peer dep; do not pin a separate copy in the MCP package. |
 
-**Recommendation:** Keep existing versions. Current versions (3.971-3.972) are only 11-12 versions behind latest (3.983). The AWS SDK v3 publishes daily/frequent updates for all service clients together. No breaking changes or critical features missing for this use case.
+### Runtime
 
-**Rationale for version stability:**
-- GetCallerIdentity, CreateUser, CreateAccessKey APIs are stable (existed since v1)
-- Credential provider patterns unchanged since v3 GA (Dec 2020)
-- Project uses `^` semver ranges, so patch updates automatic
-- Upgrading to 3.983.0 provides no functional benefit for this milestone
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| Node.js | `>=22.0.0` | Runtime | SDK requires `>=18`; existing project requires `>=22`. Use `>=22` to match the parent project. |
+| TypeScript | `^5.9.3` (inherit from workspace) | Type safety, compilation | Existing project is on `^5.9.3`. ES modules with `module: NodeNext` is the correct setting. |
 
----
+### What NOT to Add
 
-## Core APIs Required
-
-### 1. Root Credential Detection
-
-**Package:** `@aws-sdk/client-sts` (already installed)
-
-**API:** `GetCallerIdentityCommand`
-
-**Response Structure:**
-```typescript
-{
-  UserId: string;      // Unique identifier (format varies by entity type)
-  Account: string;     // 12-digit AWS account ID
-  Arn: string;         // ARN of the calling identity
-  $metadata: { ... }   // Request metadata
-}
-```
-
-**Root Detection Pattern:**
-
-Root account credentials return ARN: `arn:aws:iam::{accountId}:root`
-
-IAM user credentials return ARN: `arn:aws:iam::{accountId}:user/{userName}`
-
-**Detection logic:**
-```typescript
-import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-
-const stsClient = new STSClient({ region: 'us-east-1' });
-const identity = await stsClient.send(new GetCallerIdentityCommand({}));
-
-const isRoot = identity.Arn?.endsWith(':root');
-```
-
-**Why this works:**
-- GetCallerIdentity requires NO permissions (even if explicitly denied, it succeeds)
-- ARN format is authoritative source of identity type
-- Root ARN always ends with `:root` (no path components)
-- IAM user ARN always contains `:user/` segment
-
-**Sources:**
-- [GetCallerIdentity API Reference](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html)
-- [IAM Identifiers - ARN Format](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html)
-- [GetCallerIdentityCommand SDK v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sts/classes/getcalleridentitycommand.html)
-
-**Confidence:** HIGH - Official AWS documentation confirms ARN format differentiation
+| Package | Why Not |
+|---------|---------|
+| `express`, `hono`, HTTP server packages | This is a stdio-only server. HTTP transport is for remote deployment. The SDK bundles express/hono internally for its HTTP mode; do not install them as project deps. |
+| `@modelcontextprotocol/sdk` v2 | v2 is "pre-alpha, not for production" per the GitHub README on the `main` branch. Stay on v1.x. |
+| Separate `zod` installation | The parent package already has zod 4.3.6. Use as a peer dependency to avoid version duplication. |
+| Any logging library | `console.error()` writes to stderr, which is safe for stdio MCP servers. A logging library adds unnecessary overhead. |
 
 ---
 
-### 2. IAM Admin User Creation
+## SDK API: What to Use
 
-**Package:** `@aws-sdk/client-iam` (already installed)
+### Imports (HIGH confidence — verified from SDK type definitions)
 
-**APIs Required:**
-
-#### CreateUser
-
-**Command:** `CreateUserCommand`
-
-**Purpose:** Create IAM user in management account
-
-**Parameters:**
 ```typescript
-{
-  UserName: string;     // REQUIRED: IAM user name
-  Path?: string;        // Optional: Path prefix (e.g., "/admins/")
-  Tags?: Tag[];         // Optional: Resource tags
-}
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
 ```
 
-**Response:**
+Deep-import paths with `.js` extensions are required. The SDK is published as ES modules (`"type": "module"`). This matches the existing project's `module: NodeNext` configuration.
+
+### Server Instantiation
+
 ```typescript
-{
-  User: {
-    UserName: string;
-    UserId: string;
-    Arn: string;
-    CreateDate: Date;
-    Path: string;
+const server = new McpServer({
+  name: "create-aws-project",
+  version: "1.0.0",
+});
+```
+
+`McpServer` is the high-level API. The lower-level `Server` class is `@deprecated` and only needed for advanced cases (custom request handlers, sampling). Use `McpServer`.
+
+### Defining Tools with Zod Input Schemas
+
+The current API is `registerTool`. The older `server.tool()` overloads still work but are marked `@deprecated` in v1.28.0.
+
+```typescript
+server.registerTool(
+  "create_project",
+  {
+    description: "Scaffold a new AWS full-stack project",
+    inputSchema: {
+      projectName: z.string().min(1).describe("Name of the project"),
+      platforms: z
+        .array(z.enum(["web", "mobile"]))
+        .describe("Target platforms"),
+      awsRegion: z
+        .string()
+        .default("us-east-1")
+        .describe("AWS region for deployment"),
+    },
+  },
+  async ({ projectName, platforms, awsRegion }) => {
+    // call into create-aws-project functions directly
+    return {
+      content: [{ type: "text", text: "Project created successfully." }],
+    };
   }
-}
-```
-
-**Idempotency:** NOT idempotent. Throws `EntityAlreadyExistsException` if user exists.
-
-**Handling pattern:**
-```typescript
-import { IAMClient, CreateUserCommand, GetUserCommand, NoSuchEntityException } from '@aws-sdk/client-iam';
-
-// Check existence first (existing pattern in codebase)
-async function userExists(client: IAMClient, userName: string): Promise<boolean> {
-  try {
-    await client.send(new GetUserCommand({ UserName: userName }));
-    return true;
-  } catch (error) {
-    if (error instanceof NoSuchEntityException) {
-      return false;
-    }
-    throw error;
-  }
-}
-
-// Then create only if missing
-if (!(await userExists(iamClient, 'OrganizationAdmin'))) {
-  await iamClient.send(new CreateUserCommand({ UserName: 'OrganizationAdmin' }));
-}
-```
-
-**Rationale:** Project already uses this exact pattern in `src/aws/iam.ts:61-72`. Reuse existing `userExists` function.
-
-#### CreateAccessKey
-
-**Command:** `CreateAccessKeyCommand`
-
-**Purpose:** Generate programmatic credentials for new IAM user
-
-**Parameters:**
-```typescript
-{
-  UserName: string;     // REQUIRED: IAM user to create key for
-}
-```
-
-**Response Structure:**
-```typescript
-{
-  AccessKey: {
-    UserName: string;
-    AccessKeyId: string;          // e.g., "AKIAIOSFODNN7EXAMPLE"
-    Status: "Active" | "Inactive"; // Default: "Active"
-    SecretAccessKey: string;      // e.g., "wJalrXUtnFEMI/..."
-    CreateDate?: Date;            // Key creation timestamp
-  }
-}
-```
-
-**CRITICAL Security Note:**
-
-`SecretAccessKey` is ONLY accessible in the CreateAccessKey response. It cannot be retrieved later. Must be captured immediately and either:
-1. Used to create new credential provider
-2. Stored securely in config file
-3. Both (for persistence across runs)
-
-**Sources:**
-- [CreateUser API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateUser.html)
-- [CreateAccessKey API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html)
-- [CreateAccessKeyCommand SDK v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/classes/createaccesskeycommand.html)
-- [EntityAlreadyExistsException handling](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateUser.html)
-
-**Confidence:** HIGH - Both APIs stable since IAM v1, existing project uses similar patterns
-
----
-
-### 3. Attaching Administrator Permissions
-
-**Package:** `@aws-sdk/client-iam` (already installed)
-
-**API:** `AttachUserPolicyCommand` (already used in project)
-
-**Purpose:** Grant AdministratorAccess to new IAM admin user
-
-**Pattern:**
-```typescript
-import { AttachUserPolicyCommand } from '@aws-sdk/client-iam';
-
-await iamClient.send(new AttachUserPolicyCommand({
-  UserName: 'OrganizationAdmin',
-  PolicyArn: 'arn:aws:iam::aws:policy/AdministratorAccess'
-}));
-```
-
-**Why AdministratorAccess:**
-- IAM admin needs full permissions to create deploy users in child accounts
-- Must assume OrganizationAccountAccessRole (requires sts:AssumeRole)
-- Must create users, policies, access keys in child accounts
-- Equivalent to root permissions but auditable (CloudTrail logs IAM user actions)
-
-**Existing usage:** Project already uses `AttachUserPolicyCommand` in `src/aws/iam.ts:126`. Reuse pattern.
-
-**Sources:**
-- [AttachUserPolicy API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_AttachUserPolicy.html)
-
-**Confidence:** HIGH - Existing project code demonstrates this pattern
-
----
-
-### 4. Credential Switching (Mid-Execution)
-
-**Package:** None required (JavaScript object literal)
-
-**Pattern:** Static credential object in client constructor
-
-**How to switch credentials mid-execution:**
-
-AWS SDK v3 clients are **immutable** regarding credentials. You cannot update credentials on an existing client instance. Instead, create a new client instance with different credentials.
-
-**Implementation Pattern:**
-
-```typescript
-import { IAMClient } from '@aws-sdk/client-iam';
-import { STSClient } from '@aws-sdk/client-sts';
-import { OrganizationsClient } from '@aws-sdk/client-organizations';
-
-// Phase 1: Use default credential provider (root credentials from CLI/env)
-const rootIAMClient = new IAMClient({ region: 'us-east-1' });
-
-// Detect root, create IAM admin, get access keys
-const accessKeyResponse = await rootIAMClient.send(
-  new CreateAccessKeyCommand({ UserName: 'OrganizationAdmin' })
 );
+```
 
-// Phase 2: Create NEW clients with static credentials from access key
-const adminCredentials = {
-  accessKeyId: accessKeyResponse.AccessKey!.AccessKeyId!,
-  secretAccessKey: accessKeyResponse.AccessKey!.SecretAccessKey!
+`inputSchema` takes a plain object whose values are Zod schemas (`ZodRawShapeCompat` in the SDK type system). The SDK converts this to a JSON Schema for the MCP protocol automatically using `zod-to-json-schema` (bundled inside the SDK — no separate install needed).
+
+### Tool Result Shape
+
+```typescript
+// Success
+return {
+  content: [{ type: "text", text: "..." }],
 };
 
-const adminIAMClient = new IAMClient({
-  region: 'us-east-1',
-  credentials: adminCredentials
-});
-
-const adminSTSClient = new STSClient({
-  region: 'us-east-1',
-  credentials: adminCredentials
-});
-
-// Phase 3: Use admin clients for cross-account operations
-// Now can assume OrganizationAccountAccessRole (root cannot)
+// Execution error (not protocol error — use this for expected failures)
+return {
+  content: [{ type: "text", text: "Error: ..." }],
+  isError: true,
+};
 ```
 
-**Why this pattern:**
+Do not throw unhandled exceptions in tool callbacks. Catch all errors and return `isError: true` with a descriptive message. Unhandled throws become protocol errors (JSON-RPC error codes), which are harder for the LLM to interpret.
 
-1. **No credential provider package needed** - Static credentials are plain JavaScript objects conforming to `AwsCredentialIdentity` interface
-2. **Type-safe** - `credentials` property accepts object with `{ accessKeyId, secretAccessKey, sessionToken? }`
-3. **Explicit control** - Clear boundary where credential context changes
-4. **No mutation** - Original clients remain unchanged (no state management bugs)
-
-**Alternative (NOT recommended for this use case):**
+### Stdio Transport Wiring
 
 ```typescript
-// BAD: Using fromTemporaryCredentials for static credentials
-import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("create-aws-project MCP server running on stdio");
+}
 
-// This is for AssumeRole, NOT for switching to static credentials
-const client = new IAMClient({
-  credentials: fromTemporaryCredentials({ ... })
+main().catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
 });
 ```
 
-`fromTemporaryCredentials` is for **role assumption**, not static access key usage. The project already uses this correctly for cross-account access (see `src/aws/iam.ts:45`).
+`StdioServerTransport` reads newline-delimited JSON-RPC messages from `process.stdin` and writes to `process.stdout`. The constructor optionally accepts `(Readable, Writable)` for testing. After `server.connect(transport)`, the process stays alive waiting for stdin messages — do not exit manually.
 
-**Sources:**
-- [Set credentials - AWS SDK v3](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials.html)
-- [Client configuration docs](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html)
-- [GitHub issue #5731: Not possible to update credentials for existing client](https://github.com/aws/aws-sdk-js-v3/issues/5731)
-- [Credential providers documentation](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/migrate-credential-providers.html)
+### Logging Rule (Critical)
 
-**Confidence:** HIGH - Official documentation + GitHub issues confirm pattern + project already creates multiple client instances
+```typescript
+// NEVER in a stdio MCP server — corrupts the JSON-RPC stream
+console.log("anything");
+
+// ALWAYS use stderr
+console.error("anything");
+```
+
+Any write to stdout that is not a valid MCP JSON-RPC message corrupts the protocol and crashes the client's connection immediately. This is the most common source of silent failures in MCP server implementations.
 
 ---
 
-## Integration with Existing Stack
+## Package Structure
 
-### Current Credential Patterns in Project
-
-**Pattern 1: Default credentials (from environment/profile)**
-```typescript
-// src/aws/iam.ts:28-30
-export function createIAMClient(region: string = 'us-east-1'): IAMClient {
-  return new IAMClient({ region });
-}
-```
-
-**Pattern 2: Cross-account role assumption**
-```typescript
-// src/aws/iam.ts:38-53
-export function createCrossAccountIAMClient(region: string, targetAccountId: string): IAMClient {
-  return new IAMClient({
-    region,
-    credentials: fromTemporaryCredentials({
-      params: {
-        RoleArn: `arn:aws:iam::${targetAccountId}:role/OrganizationAccountAccessRole`,
-        RoleSessionName: `create-aws-project-${Date.now()}`,
-        DurationSeconds: 900,
-      },
-    }),
-  });
-}
-```
-
-**New Pattern 3: Static credentials from created access key**
-```typescript
-// NEW: Add to src/aws/iam.ts
-export function createIAMClientWithCredentials(
-  region: string,
-  accessKeyId: string,
-  secretAccessKey: string
-): IAMClient {
-  return new IAMClient({
-    region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-  });
-}
-```
-
-**Why this fits:**
-- Follows existing factory function pattern (`createIAMClient`, `createCrossAccountIAMClient`)
-- Explicit credential source in function name
-- Type-safe (TypeScript infers correct interface)
-- Reusable across all service clients (STSClient, OrganizationsClient, IAMClient)
-
----
-
-## Execution Flow Architecture
-
-**Milestone Goal:** Enable cross-account operations by switching from root to IAM admin credentials
-
-**Phase Sequence:**
+### Package Layout
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ PHASE 1: Root Detection (STS)                                   │
-│ ─────────────────────────────────────────────────────────────── │
-│ • Client: STSClient (default credentials from CLI/env)          │
-│ • API: GetCallerIdentityCommand                                 │
-│ • Action: Check if Arn ends with ':root'                        │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ PHASE 2: IAM Admin Bootstrap (IAM - using root credentials)     │
-│ ─────────────────────────────────────────────────────────────── │
-│ • Client: IAMClient (default credentials = root)                │
-│ • APIs:                                                          │
-│   1. GetUserCommand (check if OrganizationAdmin exists)         │
-│   2. CreateUserCommand (create if missing)                      │
-│   3. AttachUserPolicyCommand (grant AdministratorAccess)        │
-│   4. CreateAccessKeyCommand (generate programmatic credentials) │
-│ • Capture: AccessKeyId + SecretAccessKey from response          │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ PHASE 3: Credential Switch (Client Factory)                     │
-│ ─────────────────────────────────────────────────────────────── │
-│ • Action: Create NEW client instances with static credentials   │
-│ • Pattern: { credentials: { accessKeyId, secretAccessKey } }    │
-│ • Clients: IAMClient, STSClient, OrganizationsClient (all new)  │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ PHASE 4: Cross-Account Operations (using IAM admin credentials) │
-│ ─────────────────────────────────────────────────────────────── │
-│ • Client: IAMClient with fromTemporaryCredentials               │
-│ • Pattern: Assume OrganizationAccountAccessRole in child account│
-│ • Credentials: IAM admin (from Phase 3) → AssumeRole → child    │
-│ • APIs: CreateUser, CreateAccessKey, AttachUserPolicy (child)   │
-└─────────────────────────────────────────────────────────────────┘
+packages/
+  create-aws-project-mcp/
+    src/
+      index.ts                   # #!/usr/bin/env node entry point
+      server.ts                  # McpServer instantiation and tool registration
+      tools/
+        create-project.ts        # create_project tool handler
+        setup-aws-envs.ts        # setup_aws_envs tool handler
+        initialize-github.ts     # initialize_github tool handler
+        get-project-status.ts    # get_project_status tool handler
+    dist/                        # compiled output (gitignored)
+    package.json
+    tsconfig.json
 ```
 
-**Why root cannot do Phase 4:**
+If the project does not adopt a monorepo, place the MCP server under `src/mcp/` within the existing project and publish separately. The separate directory is cleaner regardless.
 
-Root credentials cannot assume IAM roles. AWS blocks this for security. The error:
-```
-AccessDenied: User: arn:aws:iam::{accountId}:root is not authorized
-to perform: sts:AssumeRole on resource: arn:aws:iam::{childAccountId}:role/OrganizationAccountAccessRole
-```
+### package.json for the MCP Package
 
-This is why IAM admin creation is required.
-
----
-
-## State Persistence (Idempotency)
-
-**Requirement:** Support re-running command without duplicating resources
-
-**Storage:** `.aws-starter-config.json` (existing project config file)
-
-**New fields to add:**
-```typescript
-interface AWSStarterConfig {
-  // ... existing fields ...
-
-  // NEW: IAM admin bootstrap state
-  iamAdminUser?: {
-    userName: string;           // "OrganizationAdmin"
-    created: boolean;           // true after CreateUser succeeds
-    accessKeyId?: string;       // Store for re-use (NOT secret key)
-    createdAt: string;          // ISO timestamp for audit
-  };
-}
-```
-
-**Security consideration:**
-
-DO NOT store `secretAccessKey` in config file. Store only `accessKeyId` for idempotency checks. If secret is lost and needed again, program can:
-1. List access keys for user (`ListAccessKeysCommand`)
-2. Delete old key (`DeleteAccessKeyCommand`)
-3. Create new key (`CreateAccessKeyCommand`)
-4. Capture new secret
-
-**Idempotent flow:**
-
-```typescript
-// Check config file
-if (config.iamAdminUser?.created) {
-  console.log('IAM admin already exists, skipping creation');
-
-  // Verify user still exists (in case manually deleted)
-  const exists = await userExists(iamClient, config.iamAdminUser.userName);
-
-  if (!exists) {
-    console.log('IAM admin deleted externally, recreating...');
-    // Re-run creation flow
-  } else {
-    // Prompt for credentials or create new access key
-  }
-} else {
-  // Run creation flow
-}
-```
-
-**Rationale:** Project already uses `.aws-starter-config.json` for account state persistence (see existing commands). Extend same pattern for IAM admin state.
-
----
-
-## Error Handling Patterns
-
-### Root Detection Errors
-
-**Scenario:** GetCallerIdentity fails (network, auth, etc.)
-
-**Handling:**
-```typescript
-try {
-  const identity = await stsClient.send(new GetCallerIdentityCommand({}));
-} catch (error) {
-  console.error('Failed to verify AWS credentials');
-  console.error('Ensure AWS credentials are configured (aws configure or environment variables)');
-  throw error;
-}
-```
-
-**Rationale:** GetCallerIdentity requires NO permissions, so failure = credential configuration problem, not authorization.
-
-### IAM Admin Creation Errors
-
-**Scenario 1:** User already exists
-
-```typescript
-import { EntityAlreadyExistsException } from '@aws-sdk/client-iam';
-
-try {
-  await iamClient.send(new CreateUserCommand({ UserName: 'OrganizationAdmin' }));
-} catch (error) {
-  if (error instanceof EntityAlreadyExistsException) {
-    console.log('IAM admin user already exists, proceeding...');
-    // Continue to access key creation or credential prompting
-  } else {
-    throw error;
+```json
+{
+  "name": "create-aws-project-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for create-aws-project CLI",
+  "type": "module",
+  "bin": {
+    "create-aws-project-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "create-aws-project": "^1.7.0"
+  },
+  "peerDependencies": {
+    "zod": "^4.0"
   }
 }
 ```
 
-**Scenario 2:** Insufficient permissions (not running as root)
+Key decisions:
+- `"type": "module"` is required because the SDK is ESM-only
+- `bin` entry enables `npx create-aws-project-mcp` invocation
+- `chmod 755` in the build script makes the entry point executable (required for shebang invocation on Unix)
+- `create-aws-project` is a direct dependency so its functions can be imported without subprocess calls
+- `zod` declared as peer dependency to avoid dual-installation with `create-aws-project`
+
+### Entry Point (src/index.ts)
 
 ```typescript
-import { AccessDeniedException } from '@aws-sdk/client-iam';
+#!/usr/bin/env node
+import { startServer } from "./server.js";
 
-try {
-  await iamClient.send(new CreateUserCommand({ UserName: 'OrganizationAdmin' }));
-} catch (error) {
-  if (error.name === 'AccessDeniedException') {
-    console.error('Insufficient permissions to create IAM user');
-    console.error('Ensure you are using root account credentials or an IAM user with iam:CreateUser permission');
-    throw error;
-  }
-  throw error;
+startServer().catch((err) => {
+  console.error("Fatal:", err);
+  process.exit(1);
+});
+```
+
+The shebang line is required for `npx` and direct invocation to work without specifying `node` explicitly.
+
+### tsconfig.json for the MCP Package
+
+```json
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "declaration": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
-**Scenario 3:** Access key limit reached (2 keys per user max)
+Identical to the existing `create-aws-project` tsconfig. `module: NodeNext` is mandatory for `.js` extension imports from ESM packages like the MCP SDK.
 
-```typescript
-import { LimitExceededException } from '@aws-sdk/client-iam';
+---
 
-try {
-  await iamClient.send(new CreateAccessKeyCommand({ UserName: 'OrganizationAdmin' }));
-} catch (error) {
-  if (error instanceof LimitExceededException) {
-    console.error('IAM user already has maximum (2) access keys');
-    console.log('Options:');
-    console.log('1. Delete an existing access key via AWS Console');
-    console.log('2. Provide existing access key credentials when prompted');
-    // Implement key rotation flow or manual credential input
-  } else {
-    throw error;
+## Client Configuration Formats
+
+### Claude Code: `.mcp.json` (project-scoped)
+
+Place at the repository root and check into source control. This makes the MCP server available to all contributors automatically.
+
+```json
+{
+  "mcpServers": {
+    "create-aws-project": {
+      "command": "npx",
+      "args": ["-y", "create-aws-project-mcp"],
+      "env": {}
+    }
   }
 }
 ```
 
-**Sources:**
-- [IAM Errors](https://docs.aws.amazon.com/IAM/latest/APIReference/CommonErrors.html)
-- [CreateAccessKey Error Codes](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html)
+Scope options in Claude Code:
+- `project` scope writes to `.mcp.json` — shared with team via git
+- `local` scope (default) writes to local config only — not shared
+- `user` scope writes to global user config
 
-**Confidence:** MEDIUM - Error types from official docs, but specific names/classes may differ slightly in SDK v3
+To register via CLI instead of editing the file directly:
 
----
+```bash
+claude mcp add --scope project --transport stdio create-aws-project -- npx -y create-aws-project-mcp
+```
 
-## Alternative Approaches Considered
+**Windows note (confirmed from Claude Code docs):** On native Windows (not WSL), wrap npx with `cmd /c`:
 
-### Alternative 1: Use AWS SSO credentials
+```json
+{
+  "mcpServers": {
+    "create-aws-project": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "create-aws-project-mcp"]
+    }
+  }
+}
+```
 
-**What:** Leverage `fromSSO()` credential provider instead of static access keys
+Claude Code also supports environment variable substitution in the config via `${VAR_NAME}` syntax.
 
-**Pros:**
-- No long-lived credentials
-- Centralized credential management
-- Automatic rotation
+### Claude Desktop: `claude_desktop_config.json`
 
-**Cons:**
-- Requires SSO setup (added complexity)
-- CLI tool assumes simple setup (root → IAM admin)
-- SSO admin can't assume roles programmatically without explicit role session
+```json
+{
+  "mcpServers": {
+    "create-aws-project": {
+      "command": "npx",
+      "args": ["-y", "create-aws-project-mcp"]
+    }
+  }
+}
+```
 
-**Verdict:** REJECTED - Scope creep. Static access keys are standard for programmatic access.
+File locations:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-### Alternative 2: Prompt user for IAM credentials instead of creating
+### Cursor: `.cursor/mcp.json`
 
-**What:** Detect root, then ask user to create IAM admin manually and input credentials
+Cursor uses the same `mcpServers` schema, stored in `.cursor/mcp.json` at workspace root.
 
-**Pros:**
-- No programmatic IAM user creation (fewer permissions needed)
-- User retains control
+```json
+{
+  "mcpServers": {
+    "create-aws-project": {
+      "command": "npx",
+      "args": ["-y", "create-aws-project-mcp"]
+    }
+  }
+}
+```
 
-**Cons:**
-- Poor UX (manual steps in wizard flow)
-- Defeats "scaffold everything" purpose of CLI
-- User may create IAM admin with insufficient permissions
+Confidence on Cursor format: MEDIUM — Cursor is documented as an MCP client using the same `mcpServers` schema as Claude Desktop. Could not directly verify via official Cursor docs (access denied). Confirm during implementation phase.
 
-**Verdict:** REJECTED - Automation is core value proposition.
+### All clients: `env` field
 
-### Alternative 3: Use AWS CloudFormation to create IAM admin
+All clients support an optional `env` object for environment variables passed to the server process:
 
-**What:** Deploy CFN stack with IAM user resource instead of SDK calls
+```json
+{
+  "mcpServers": {
+    "create-aws-project": {
+      "command": "npx",
+      "args": ["-y", "create-aws-project-mcp"],
+      "env": {
+        "AWS_PROFILE": "my-profile",
+        "AWS_REGION": "us-east-1"
+      }
+    }
+  }
+}
+```
 
-**Pros:**
-- Declarative infrastructure
-- Automatic rollback on failure
-- Stack can be deleted cleanly
-
-**Cons:**
-- Added complexity (CFN template, stack management)
-- Async operation (polling for completion)
-- Credential extraction from stack outputs still needed
-
-**Verdict:** REJECTED - SDK calls are simpler for single-user creation. CFN overkill for this use case.
-
----
-
-## Security Best Practices
-
-### 1. Access Key Handling
-
-**DO:**
-- Capture `SecretAccessKey` immediately from CreateAccessKey response
-- Use in-memory credential object for client creation
-- Optionally persist to config file with restrictive permissions (chmod 600)
-- Clear from memory after clients created
-
-**DON'T:**
-- Log secret access key to console
-- Store in plaintext without file permissions
-- Commit to version control
-- Reuse for non-AWS-CLI purposes
-
-### 2. IAM Admin Permissions
-
-**DO:**
-- Use AdministratorAccess managed policy (simplest, auditable)
-- Document that IAM admin = operational account (not root)
-- Enable CloudTrail for audit logging
-
-**DON'T:**
-- Create custom policy (maintenance burden, may miss permissions)
-- Grant root-equivalent permissions via policies (redundant)
-
-### 3. Root Credential Usage
-
-**DO:**
-- Use ONLY for initial IAM admin creation
-- Recommend disabling root access keys after setup
-- Document in README that root only needed once
-
-**DON'T:**
-- Store root credentials in config file
-- Use root for day-to-day operations
-- Encourage repeated root usage
+This is useful for configuring AWS credentials without requiring interactive input.
 
 ---
 
-## Summary: No New Dependencies
+## Integration with Existing `create-aws-project`
 
-| Requirement | Package | Status |
-|-------------|---------|--------|
-| Root detection | @aws-sdk/client-sts | ✓ Already installed |
-| IAM user creation | @aws-sdk/client-iam | ✓ Already installed |
-| Access key creation | @aws-sdk/client-iam | ✓ Already installed |
-| Static credentials | N/A (plain object) | ✓ No package needed |
-| Cross-account roles | @aws-sdk/credential-providers | ✓ Already installed |
+The MCP server calls into existing functions directly (no subprocess). This requires those functions to be importable as a library.
 
-**Implementation readiness:** 100% - No package installation or upgrades required.
+### Confirmed export surface (inspected from source)
+
+| Module | Exported Function | Current Signature |
+|--------|-------------------|-------------------|
+| `src/commands/setup-aws-envs.ts` | `runSetupAwsEnvs` | `(args: string[]) => Promise<void>` |
+| `src/commands/initialize-github.ts` | `runInitializeGitHub` | `(args: string[]) => Promise<void>` |
+| `src/generator/index.ts` | `generateProject` | `(options: GenerateOptions) => Promise<void>` |
+| `src/config/non-interactive.ts` | `loadNonInteractiveConfig` | `(configPath: string) => ProjectConfig` |
+
+**Implication for MCP tools:** `runSetupAwsEnvs` and `runInitializeGitHub` take `string[]` (the CLI args format). The MCP tools will construct the args array from structured Zod-validated inputs before calling into these functions. This is lower risk than refactoring the functions for the first milestone.
+
+Example:
+
+```typescript
+// In the setup_aws_envs tool handler:
+const args = ["--config", configPath, "--env", environment];
+await runSetupAwsEnvs(args);
+```
+
+### The stdout Corruption Problem (Critical)
+
+The existing CLI commands use `ora` (spinner) and `picocolors` — both write to stdout. When those functions execute from inside an MCP tool handler, their stdout writes will corrupt the stdio JSON-RPC stream.
+
+**Required mitigations (in priority order):**
+
+1. **Detect stdio mode:** Set an environment variable (e.g., `MCP_MODE=1`) before invoking CLI functions. Add a check in CLI output utilities to silence stdout when this env var is set.
+
+2. **Wrap stdout:** Before calling a CLI function, temporarily replace `process.stdout.write` with a no-op (or capture buffer), then restore after.
+
+3. **Refactor commands to accept an `outputStream` option:** The cleanest long-term solution, but requires a larger refactor of all command functions.
+
+Option 1 is the recommended approach for the first milestone. This is the single highest-risk integration point — plan explicit implementation time for it.
+
+---
+
+## Installation Commands
+
+```bash
+# In the new MCP package directory
+npm install @modelcontextprotocol/sdk@^1.28.0
+
+# Dev dependencies (TypeScript toolchain)
+npm install -D typescript @types/node
+```
+
+The SDK bundles `zod-to-json-schema` and `ajv` internally. The project already has `zod ^4.3.6` which satisfies the SDK's peer dep range of `^3.25 || ^4.0`. No version conflict.
+
+---
+
+## Alternatives Considered
+
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Transport | stdio | Streamable HTTP | stdio is the universal default for local tools; HTTP requires a persistent process and auth; clients "SHOULD support stdio whenever possible" per the MCP spec |
+| Tool schema | Zod (reuse existing) | Raw JSON Schema objects | Zod is already the project's validation library; the SDK natively converts Zod shapes; raw JSON Schema is more verbose with no benefit |
+| SDK version | v1.28.0 | v2 pre-alpha | v2 is explicitly "pre-alpha, not for production" per the typescript-sdk GitHub README |
+| Package structure | Separate npm package with its own `package.json` | Add to existing package as a second `bin` entry | Question states separate npm package; a separate `package.json` makes the dependency tree explicit and avoids bloating `create-aws-project` with MCP-specific deps |
+| Calling CLI functions | Direct import (in-process) | Subprocess via `execa` | Direct import is faster, avoids process overhead, enables proper error propagation, and avoids the complexity of parsing subprocess output |
 
 ---
 
 ## Sources
 
-**Official AWS Documentation:**
-- [GetCallerIdentity API Reference](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html)
-- [IAM Identifiers - ARN Format](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html)
-- [CreateUser API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateUser.html)
-- [CreateAccessKey API Reference](https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html)
-- [AWS SDK v3 - Set Credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials.html)
-
-**AWS SDK v3 Documentation:**
-- [GetCallerIdentityCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sts/classes/getcalleridentitycommand.html)
-- [CreateAccessKeyCommand](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/classes/createaccesskeycommand.html)
-- [Credential Providers Package](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-credential-providers/)
-
-**Community Resources:**
-- [GitHub Issue #5731: Credential updates on existing client](https://github.com/aws/aws-sdk-js-v3/issues/5731) - Confirms new client instances required
-- [IAM Examples SDK v3](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/iam-examples-managing-access-keys.html)
-
-**Confidence Assessment:** HIGH - All findings verified through official AWS documentation or existing project code patterns.
+| Source | Confidence | What was verified |
+|--------|------------|-------------------|
+| npm registry query: `npm view @modelcontextprotocol/sdk --json` | HIGH | Version 1.28.0, published 2026-03-25; zod peer dep `^3.25 || ^4.0`; `"type": "module"`; engine `>=18` |
+| SDK type inspection: `dist/esm/server/mcp.d.ts` | HIGH | `McpServer` class, `registerTool` signature, `ZodRawShapeCompat`, `ToolCallback` types |
+| SDK type inspection: `dist/esm/server/stdio.d.ts` | HIGH | `StdioServerTransport` class, constructor `(Readable?, Writable?)`, `connect` method |
+| MCP protocol docs: modelcontextprotocol.io/docs/concepts/transports | HIGH | Stdio transport: newline-delimited JSON-RPC, stdin in / stdout out, stderr for logs |
+| MCP protocol docs: modelcontextprotocol.io/docs/concepts/tools | HIGH | Tool definition format, inputSchema JSON Schema, `isError` in tool result |
+| MCP quickstart (TypeScript): modelcontextprotocol.io/quickstart/server | HIGH | `McpServer`, `StdioServerTransport`, `registerTool`, `server.connect(transport)`, `console.error` logging, `main()` pattern |
+| MCP quickstart (user): modelcontextprotocol.io/quickstart/user | HIGH | `claude_desktop_config.json` format: `mcpServers`, `command`, `args`, `npx -y` pattern |
+| Claude Code MCP docs: code.claude.com/docs/en/mcp | HIGH | `.mcp.json` file at project scope, `--scope project` flag, Windows `cmd /c` workaround, `env` field |
+| Existing project code inspection | HIGH | Exported function signatures for `runSetupAwsEnvs`, `runInitializeGitHub`, `generateProject`, `loadNonInteractiveConfig` |
