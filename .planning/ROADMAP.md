@@ -84,10 +84,11 @@ Phases 23-25 delivered non-interactive CLI mode via `--config` flag for AI codin
   3. Root `npm run build` and `npm test` complete successfully for both `create-aws-project` and `create-aws-project-mcp` packages
   4. MCP Inspector connects to the server and shows zero registered tools (bare server, no tools yet)
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 26-01: TBD
+- [ ] 26-01-PLAN.md — npm workspaces monorepo setup and bare MCP server scaffold
+- [ ] 26-02-PLAN.md — withCliContext safety wrapper with stdout capture and exit interception
 
 ---
 
@@ -165,7 +166,7 @@ Plans:
 | 16. Fixes & Git Setup | v1.5.1 | — | Complete | 2026-02-01 |
 | 17-22. End-to-End AWS Setup | v1.6 | — | Complete | 2026-02-13 |
 | 23-25. AI-Friendly CLI | v1.7 | — | Complete | 2026-02-19 |
-| 26. Package Foundation + Safety | v1.8 | 0/TBD | Not started | - |
+| 26. Package Foundation + Safety | v1.8 | 0/2 | Not started | - |
 | 27. CLI Additions | v1.8 | 0/TBD | Not started | - |
 | 28. Four MCP Tools | v1.8 | 0/TBD | Not started | - |
 | 29. Publishing + Template | v1.8 | 0/TBD | Not started | - |
