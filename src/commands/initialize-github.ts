@@ -9,8 +9,9 @@
 import ora from 'ora';
 import prompts from 'prompts';
 import pc from 'picocolors';
+import { z } from 'zod';
 import { execSync } from 'node:child_process';
-import { requireProjectContext } from '../utils/project-context.js';
+import { requireProjectContext, detectProjectContext } from '../utils/project-context.js';
 import {
   createGitHubClient,
   setEnvironmentCredentials,
@@ -523,4 +524,133 @@ export async function runInitializeGitHub(args: string[]): Promise<void> {
     spinner.fail(`Failed to configure ${env} environment`);
     handleError(error);
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Non-interactive API (for MCP tool handlers and programmatic use)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Config object accepted by runInitializeGitHubNonInteractive.
+ * GITHUB_TOKEN is NOT a field here — it is read from process.env.GITHUB_TOKEN.
+ */
+export interface InitializeGitHubConfig {
+  /** Repository in any supported format: owner/repo, https://github.com/owner/repo, or git@github.com:owner/repo */
+  repoUrl: string;
+  /** Environments to configure. Defaults to all environments that have deploymentCredentials in the project config. */
+  environments?: string[];
+}
+
+/** Per-environment result entry */
+export interface InitializeGitHubEnvResult {
+  environment: string;
+  success: boolean;
+  error?: string;
+}
+
+/** Aggregate result returned by runInitializeGitHubNonInteractive */
+export interface InitializeGitHubResult {
+  results: InitializeGitHubEnvResult[];
+  successCount: number;
+  totalCount: number;
+}
+
+const InitializeGitHubConfigSchema = z.object({
+  repoUrl: z.string().min(1, 'repoUrl is required'),
+  environments: z
+    .array(z.enum(['dev', 'stage', 'prod']))
+    .optional(),
+});
+
+/**
+ * Runs GitHub environment credential initialization in non-interactive mode.
+ *
+ * - Reads GITHUB_TOKEN from process.env (never accepts it as a parameter, per CRED-01)
+ * - Calls setEnvironmentCredentials for each environment with individual try/catch
+ *   so one failure does NOT abort the remaining environments
+ * - Returns a structured result with per-environment success/failure status
+ * - Never calls process.exit() or prompts() — throws on fatal errors
+ *
+ * @param config Structured config with repoUrl and optional environments list
+ * @throws Error if GITHUB_TOKEN is missing, config is invalid, or project context not found
+ */
+export async function runInitializeGitHubNonInteractive(
+  config: InitializeGitHubConfig
+): Promise<InitializeGitHubResult> {
+  // 1. Validate config
+  const parsed = InitializeGitHubConfigSchema.safeParse(config);
+  if (!parsed.success) {
+    throw new Error(`Invalid config: ${parsed.error.message}`);
+  }
+  const validConfig = parsed.data;
+
+  // 2. Read GITHUB_TOKEN from environment (CRED-01: credentials from env only)
+  const token = process.env.GITHUB_TOKEN;
+  if (!token || !token.trim()) {
+    throw new Error(
+      'GITHUB_TOKEN environment variable is not set. Set it in your .mcp.json env block: { "env": { "GITHUB_TOKEN": "ghp_..." } }'
+    );
+  }
+
+  // 3. Detect project context
+  const context = await detectProjectContext();
+  if (!context) {
+    throw new Error(
+      'Not inside a project directory. This command must be run from inside a project created with: npx create-aws-project <project-name>'
+    );
+  }
+
+  // 4. Parse repo URL (handles owner/repo, HTTPS, and SSH formats)
+  const repoInfo = parseGitHubUrl(validConfig.repoUrl);
+
+  // 5. Determine which environments to configure
+  const environments: string[] =
+    validConfig.environments ??
+    VALID_ENVIRONMENTS.filter(
+      (env) => context.config.deploymentCredentials?.[env]
+    );
+
+  // 6. Create GitHub client once
+  const client = createGitHubClient(token);
+
+  // 7. Process each environment with individual try/catch for partial failure semantics
+  const results: InitializeGitHubEnvResult[] = [];
+
+  for (const env of environments) {
+    try {
+      const creds = context.config.deploymentCredentials?.[env];
+      if (!creds) {
+        results.push({
+          environment: env,
+          success: false,
+          error: 'No deployment credentials found',
+        });
+        continue;
+      }
+
+      const githubEnvName = GITHUB_ENV_NAMES[env];
+      await setEnvironmentCredentials(
+        client,
+        repoInfo.owner,
+        repoInfo.repo,
+        githubEnvName,
+        creds.accessKeyId,
+        creds.secretAccessKey
+      );
+
+      results.push({ environment: env, success: true });
+    } catch (error) {
+      results.push({
+        environment: env,
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return {
+    results,
+    successCount: results.filter((r) => r.success).length,
+    totalCount: results.length,
+  };
 }
