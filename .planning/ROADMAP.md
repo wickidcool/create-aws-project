@@ -105,10 +105,11 @@ Plans:
   2. `runInitializeGitHubNonInteractive(config)` accepts a structured config object, reads `GITHUB_TOKEN` from environment, and calls the GitHub secrets module directly — no `prompts` call anywhere in its execution path
   3. Long-running tool handlers (`create_project`, `setup_aws_envs`) emit `notifications/progress` events that a connected MCP client can receive during a multi-second operation
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 27-01: TBD
+- [ ] 27-01-PLAN.md — Refactor and export runSetupAwsEnvsNonInteractive (remove process.exit, accept config object)
+- [ ] 27-02-PLAN.md — Add runInitializeGitHubNonInteractive (structured config, env token, per-env status)
 
 ---
 
@@ -167,6 +168,6 @@ Plans:
 | 17-22. End-to-End AWS Setup | v1.6 | — | Complete | 2026-02-13 |
 | 23-25. AI-Friendly CLI | v1.7 | — | Complete | 2026-02-19 |
 | 26. Package Foundation + Safety | v1.8 | 2/2 | Complete | 2026-04-01 |
-| 27. CLI Additions | v1.8 | 0/TBD | Not started | - |
+| 27. CLI Additions | v1.8 | 0/2 | Not started | - |
 | 28. Four MCP Tools | v1.8 | 0/TBD | Not started | - |
 | 29. Publishing + Template | v1.8 | 0/TBD | Not started | - |
