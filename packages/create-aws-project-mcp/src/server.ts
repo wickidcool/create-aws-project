@@ -1,5 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { registerCreateProjectTool } from "./tools/create-project.js";
+import { registerGetProjectStatusTool } from "./tools/get-project-status.js";
 
 export async function startServer(): Promise<void> {
   const server = new McpServer({
@@ -7,7 +9,8 @@ export async function startServer(): Promise<void> {
     version: "1.0.0",
   });
 
-  // Tools will be registered here in Phase 28
+  registerCreateProjectTool(server);
+  registerGetProjectStatusTool(server);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
