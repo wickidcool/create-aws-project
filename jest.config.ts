@@ -26,6 +26,7 @@ export default {
     '/node_modules/',
     '/templates/',
     '/dist/',
+    '/packages/',
   ],
   // Only run .spec.ts files as tests (not utility modules in __tests__)
   testMatch: ['**/__tests__/**/*.spec.ts'],

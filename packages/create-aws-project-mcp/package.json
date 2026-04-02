@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc && chmod 755 dist/index.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
     "prepublishOnly": "npm run build"
   },
   "files": ["dist"],
