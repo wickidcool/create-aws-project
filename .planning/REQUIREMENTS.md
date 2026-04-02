@@ -7,16 +7,16 @@
 
 ### Package Structure
 
-- [ ] **PKG-01**: npm workspaces configured in root `package.json` so both packages share `node_modules`
-- [ ] **PKG-02**: `packages/mcp/` directory with its own `package.json`, `tsconfig.json`, and `bin` entry (`create-aws-project-mcp`)
-- [ ] **PKG-03**: Root-level `build` and `test` scripts run both packages
+- [x] **PKG-01**: npm workspaces configured in root `package.json` so both packages share `node_modules`
+- [x] **PKG-02**: `packages/mcp/` directory with its own `package.json`, `tsconfig.json`, and `bin` entry (`create-aws-project-mcp`)
+- [x] **PKG-03**: Root-level `build` and `test` scripts run both packages
 - [ ] **PKG-04**: `packages/mcp/package.json` includes publish scripts; `create-aws-project-mcp` is publishable to npm
 
 ### Safety Infrastructure
 
-- [ ] **SAFE-01**: `withCliContext()` utility redirects `process.stdout.write` during CLI function calls to prevent MCP stdio corruption
-- [ ] **SAFE-02**: `withCliContext()` intercepts `process.exit()` and converts it to a thrown `Error` so the server process survives validation failures
-- [ ] **SAFE-03**: MCP server entry point creates `McpServer`, registers all tools, and connects via `StdioServerTransport`
+- [x] **SAFE-01**: `withCliContext()` utility redirects `process.stdout.write` during CLI function calls to prevent MCP stdio corruption
+- [x] **SAFE-02**: `withCliContext()` intercepts `process.exit()` and converts it to a thrown `Error` so the server process survives validation failures
+- [x] **SAFE-03**: MCP server entry point creates `McpServer`, registers all tools, and connects via `StdioServerTransport`
 - [ ] **SAFE-04**: Long-running tools (`create_project`, `setup_aws_envs`) emit `notifications/progress` with a `progressToken` so clients can track status
 
 ### CLI Additions (existing package)
@@ -33,7 +33,7 @@
 
 ### Credentials
 
-- [ ] **CRED-01**: All tools read credentials from environment variables only (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `GITHUB_TOKEN`); no credential parameters in tool schemas
+- [x] **CRED-01**: All tools read credentials from environment variables only (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `GITHUB_TOKEN`); no credential parameters in tool schemas
 
 ### Generated Project Template
 
@@ -61,13 +61,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PKG-01 | Phase 26 | Pending |
-| PKG-02 | Phase 26 | Pending |
-| PKG-03 | Phase 26 | Pending |
+| PKG-01 | Phase 26 | Complete |
+| PKG-02 | Phase 26 | Complete |
+| PKG-03 | Phase 26 | Complete |
 | PKG-04 | Phase 29 | Pending |
-| SAFE-01 | Phase 26 | Pending |
-| SAFE-02 | Phase 26 | Pending |
-| SAFE-03 | Phase 26 | Pending |
+| SAFE-01 | Phase 26 | Complete |
+| SAFE-02 | Phase 26 | Complete |
+| SAFE-03 | Phase 26 | Complete |
 | SAFE-04 | Phase 27 | Pending |
 | CLI-01 | Phase 27 | Pending |
 | CLI-02 | Phase 27 | Pending |
@@ -75,7 +75,7 @@
 | TOOL-02 | Phase 28 | Pending |
 | TOOL-03 | Phase 28 | Pending |
 | TOOL-04 | Phase 28 | Pending |
-| CRED-01 | Phase 26 | Pending |
+| CRED-01 | Phase 26 | Complete |
 | TMPL-01 | Phase 29 | Pending |
 
 **Coverage:**
