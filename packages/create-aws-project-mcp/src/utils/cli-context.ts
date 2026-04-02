@@ -9,8 +9,8 @@ export async function withCliContext<T>(
   const chunks: Buffer[] = [];
   let interceptedExitCode: number | undefined;
 
-  const originalWrite = process.stdout.write.bind(process.stdout);
-  const originalExit = process.exit.bind(process);
+  const originalWrite = process.stdout.write;
+  const originalExit = process.exit;
 
   (process.stdout.write as unknown) = (
     chunk: string | Uint8Array,
