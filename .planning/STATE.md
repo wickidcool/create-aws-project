@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 27 of 29
-Plan: 0
-Status: Planning Phase 27
-Last activity: 2026-04-01 — Phase 26 complete (Package Foundation + Safety Infrastructure)
+Plan: 1 of 2 in Phase 27
+Status: In progress
+Last activity: 2026-04-01 — Completed 27-01-PLAN.md (Export runSetupAwsEnvsNonInteractive)
 
-Progress: [███░░░░░░░] ~25% (Phase 26 complete, 1 of 4 phases done)
+Progress: [████░░░░░░] ~30% (Phase 27 plan 1 of 2 complete)
 
 ## Milestones
 
@@ -42,6 +42,9 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | No peerDependencies for zod in MCP package | SDK bundles its own zod; adding peer dep creates version conflicts | 26-01 |
 | withCliContext saves process.stdout.write without .bind() | Saving with .bind() creates a new function reference; the finally block must restore the exact same reference to satisfy identity tests and prevent double-wrapping | 26-02 |
 | ESM test files must import jest from @jest/globals | jest global is not auto-injected in ESM module context; use `import { jest } from "@jest/globals"` | 26-02 |
+| Non-interactive exported functions use detectProjectContext (not requireProjectContext) and throw instead of process.exit | MCP server cannot have process.exit called in tool handlers | 27-01 |
+| Test files in __tests__/ use .spec.ts extension (not .test.ts) | jest.config testMatch only matches `**/__tests__/**/*.spec.ts` | 27-01 |
+| jest resetMocks:true resets mock implementations — expose fs mocks as top-level vars and configure in setupMocks helper | Mock factory implementations are reset between tests; must re-configure in beforeEach or per-test setup | 27-01 |
 
 ### Deferred Issues
 
@@ -58,9 +61,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 26 complete and verified — both plans executed, 179 tests passing
+Stopped at: Completed 27-01-PLAN.md — runSetupAwsEnvsNonInteractive exported, 178 tests passing
 Resume file: None
-Next: `/gsd:discuss-phase 27` or `/gsd:plan-phase 27` — CLI Additions to Existing Package
+Next: Execute 27-02-PLAN.md — runInitializeGitHubNonInteractive export
 
 ---
-*Updated: 2026-04-01 after Phase 26 completion and verification*
+*Updated: 2026-04-01 after Phase 27 Plan 01 completion*
