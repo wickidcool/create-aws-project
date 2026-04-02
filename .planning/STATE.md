@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 28 of 29
-Plan: 2
+Plan: 3
 Status: In Progress
-Last activity: 2026-04-02 — Completed 28-02-PLAN.md (create_project and get_project_status tool handlers)
+Last activity: 2026-04-02 — Completed 28-03-PLAN.md (setup_aws_envs and initialize_github tool handlers)
 
-Progress: [██████░░░░] ~55% (Phase 28 plan 2 of 4 complete)
+Progress: [███████░░░] ~65% (Phase 28 plan 3 of 4 complete)
 
 ## Milestones
 
@@ -52,6 +52,7 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | requireEnvVars treats whitespace-only values as missing (.trim() check) | Empty/blank env vars should not satisfy credential requirements | 28-01 |
 | Use mock-server pattern (capture handler via registerTool spy) for MCP tool tests | Avoids SDK transport initialization; keeps tests fast and isolated | 28-02 |
 | Progress token checked with !== undefined (not truthy) | Allows numeric 0 as a valid progress token | 28-02 |
+| jest.spyOn(process, 'chdir').mockImplementation() in beforeEach prevents real chdir in tests | /tmp/test-project doesn't exist on test machine; spy asserts args without real side effects | 28-03 |
 
 ### Deferred Issues
 
@@ -68,9 +69,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-02
-Stopped at: Completed 28-02-PLAN.md — create_project + get_project_status tools, 226 tests passing
+Stopped at: Completed 28-03-PLAN.md — setup_aws_envs + initialize_github tools, 55 MCP tests passing
 Resume file: None
-Next: Execute 28-03 and 28-04 (remaining two MCP tool handlers)
+Next: Execute 28-04 (final plan in phase 28)
 
 ---
-*Updated: 2026-04-02 after 28-02 execution (create_project + get_project_status tool handlers)*
+*Updated: 2026-04-02 after 28-03 execution (setup_aws_envs + initialize_github tool handlers)*
