@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 27 of 29
-Plan: 1 of 2 in Phase 27
-Status: In progress
-Last activity: 2026-04-01 — Completed 27-01-PLAN.md (Export runSetupAwsEnvsNonInteractive)
+Plan: 2 of 2 in Phase 27
+Status: Phase complete
+Last activity: 2026-04-02 — Completed 27-02-PLAN.md (Export runInitializeGitHubNonInteractive)
 
-Progress: [████░░░░░░] ~30% (Phase 27 plan 1 of 2 complete)
+Progress: [████░░░░░░] ~35% (Phase 27 complete — 2 of 2 plans done)
 
 ## Milestones
 
@@ -45,6 +45,9 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | Non-interactive exported functions use detectProjectContext (not requireProjectContext) and throw instead of process.exit | MCP server cannot have process.exit called in tool handlers | 27-01 |
 | Test files in __tests__/ use .spec.ts extension (not .test.ts) | jest.config testMatch only matches `**/__tests__/**/*.spec.ts` | 27-01 |
 | jest resetMocks:true resets mock implementations — expose fs mocks as top-level vars and configure in setupMocks helper | Mock factory implementations are reset between tests; must re-configure in beforeEach or per-test setup | 27-01 |
+| GITHUB_TOKEN read from process.env only — never accepted as function parameter (CRED-01) | MCP tool handlers must not prompt for credentials; env var is the only safe channel | 27-02 |
+| Per-environment try/catch in runInitializeGitHubNonInteractive allows partial failure reporting | One env's GitHub API failure should not abort remaining env configurations | 27-02 |
+| jest.fn mock typed with full parameter signature to avoid TS2554 on toHaveBeenCalledWith | Zero-arg mock type causes TypeScript errors when asserting call arguments | 27-02 |
 
 ### Deferred Issues
 
@@ -60,10 +63,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: Completed 27-01-PLAN.md — runSetupAwsEnvsNonInteractive exported, 178 tests passing
+Last session: 2026-04-02
+Stopped at: Completed 27-02-PLAN.md — runInitializeGitHubNonInteractive exported, 192 tests passing
 Resume file: None
-Next: Execute 27-02-PLAN.md — runInitializeGitHubNonInteractive export
+Next: Execute Phase 28 — MCP tool handlers (initialize_github tool using runInitializeGitHubNonInteractive)
 
 ---
-*Updated: 2026-04-01 after Phase 27 Plan 01 completion*
+*Updated: 2026-04-02 after Phase 27 Plan 02 completion*
