@@ -10,6 +10,7 @@ import { runSetupAwsEnvs } from './commands/setup-aws-envs.js';
 import { runInitializeGitHub } from './commands/initialize-github.js';
 import { promptGitSetup, setupGitRepository } from './git/setup.js';
 import { loadNonInteractiveConfig } from './config/non-interactive.js';
+import { validateProjectName } from './validation/project-name.js';
 
 /**
  * Config file structure for .aws-starter-config.json
@@ -44,6 +45,69 @@ function writeConfigFile(outputDir: string, config: ProjectConfig): void {
 
   const configPath = join(outputDir, '.aws-starter-config.json');
   writeFileSync(configPath, JSON.stringify(configContent, null, 2), 'utf-8');
+}
+
+/**
+ * Options for programmatic (MCP) project creation.
+ * All fields except `name` are optional and fall back to schema defaults.
+ */
+export interface CreateProjectOptions {
+  name: string;
+  outputDir?: string;
+  platforms?: ('web' | 'mobile' | 'api')[];
+  auth?: 'none' | 'cognito' | 'auth0';
+  authFeatures?: ('social-login' | 'mfa')[];
+  features?: ('github-actions' | 'vscode-config')[];
+  region?: string;
+  brandColor?: 'blue' | 'purple' | 'teal' | 'green' | 'orange';
+}
+
+/**
+ * Create a project programmatically without interactive prompts or process.exit calls.
+ * Throws on validation failures or if the target directory already exists.
+ * Does NOT print success messages or call printNextSteps (MCP handles its own output).
+ */
+export async function runCreateProjectNonInteractive(
+  options: CreateProjectOptions
+): Promise<{ projectDir: string }> {
+  // 1. Validate project name — throw instead of process.exit
+  const nameValidation = validateProjectName(options.name);
+  if (nameValidation !== true) {
+    throw new Error(`Invalid project name: ${nameValidation}`);
+  }
+
+  // 2. Build ProjectConfig from options using schema defaults
+  const config: ProjectConfig = {
+    projectName: options.name,
+    platforms: options.platforms ?? ['web', 'api'],
+    awsRegion: options.region ?? 'us-east-1',
+    features: options.features ?? ['github-actions', 'vscode-config'],
+    brandColor: options.brandColor ?? 'blue',
+    auth: {
+      provider: options.auth ?? 'none',
+      features: (options.auth ?? 'none') === 'none' ? [] : (options.authFeatures ?? []),
+    },
+  };
+
+  // 3. Resolve output directory
+  const outputDir = join(options.outputDir ?? process.cwd(), options.name);
+
+  // 4. Check if directory already exists — throw instead of process.exit
+  if (existsSync(outputDir)) {
+    throw new Error(`Directory already exists: ${outputDir}`);
+  }
+
+  // 5. Create project directory
+  mkdirSync(outputDir, { recursive: true });
+
+  // 6. Generate project files
+  await generateProject(config, outputDir);
+
+  // 7. Write config file for downstream commands
+  writeConfigFile(outputDir, config);
+
+  // 8. Return project directory path
+  return { projectDir: outputDir };
 }
 
 /**

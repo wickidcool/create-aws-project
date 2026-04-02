@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 // Named exports for programmatic use (MCP package)
+export { runCreateProjectNonInteractive } from './cli.js';
+export type { CreateProjectOptions } from './cli.js';
+
 export { runSetupAwsEnvsNonInteractive } from './commands/setup-aws-envs.js';
 export type { SetupAwsEnvsNonInteractiveConfig } from './commands/setup-aws-envs.js';
 
