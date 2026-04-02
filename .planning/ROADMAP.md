@@ -127,10 +127,12 @@ Plans:
   4. All four tools appear in MCP Inspector's tool list with complete input schemas; calling any tool with missing required inputs returns a validation error, not a server crash
   5. Long-running tool handlers (`create_project`, `setup_aws_envs`) emit `notifications/progress` events that a connected MCP client can receive during a multi-second operation
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 28-01: TBD
+- [ ] 28-01-PLAN.md — Extract runCreateProjectNonInteractive export and create MissingCredentialsError class
+- [ ] 28-02-PLAN.md — Implement create_project and get_project_status tool handlers
+- [ ] 28-03-PLAN.md — Implement setup_aws_envs and initialize_github tool handlers
 
 ---
 
@@ -169,5 +171,5 @@ Plans:
 | 23-25. AI-Friendly CLI | v1.7 | — | Complete | 2026-02-19 |
 | 26. Package Foundation + Safety | v1.8 | 2/2 | Complete | 2026-04-01 |
 | 27. CLI Additions | v1.8 | 2/2 | Complete | 2026-04-02 |
-| 28. Four MCP Tools | v1.8 | 0/TBD | Not started | - |
+| 28. Four MCP Tools | v1.8 | 0/3 | Not started | - |
 | 29. Publishing + Template | v1.8 | 0/TBD | Not started | - |
