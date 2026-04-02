@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 28 of 29
-Plan: 1
+Plan: 2
 Status: In Progress
-Last activity: 2026-04-02 — Completed 28-01-PLAN.md (CLI Export and Credential Error Foundation)
+Last activity: 2026-04-02 — Completed 28-02-PLAN.md (create_project and get_project_status tool handlers)
 
-Progress: [█████░░░░░] ~50% (Phase 28 plan 1 of 4 complete)
+Progress: [██████░░░░] ~55% (Phase 28 plan 2 of 4 complete)
 
 ## Milestones
 
@@ -50,6 +50,8 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | jest.fn mock typed with full parameter signature to avoid TS2554 on toHaveBeenCalledWith | Zero-arg mock type causes TypeScript errors when asserting call arguments | 27-02 |
 | runCreateProjectNonInteractive accepts structured options object and throws on error (never process.exit) | MCP server safety — consistent with throw-not-exit pattern from Phase 27 | 28-01 |
 | requireEnvVars treats whitespace-only values as missing (.trim() check) | Empty/blank env vars should not satisfy credential requirements | 28-01 |
+| Use mock-server pattern (capture handler via registerTool spy) for MCP tool tests | Avoids SDK transport initialization; keeps tests fast and isolated | 28-02 |
+| Progress token checked with !== undefined (not truthy) | Allows numeric 0 as a valid progress token | 28-02 |
 
 ### Deferred Issues
 
@@ -66,9 +68,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-02
-Stopped at: Completed 28-01-PLAN.md — CLI export and credential error foundation, 213 tests passing
+Stopped at: Completed 28-02-PLAN.md — create_project + get_project_status tools, 226 tests passing
 Resume file: None
-Next: Execute 28-02 through 28-04 (four MCP tool handlers)
+Next: Execute 28-03 and 28-04 (remaining two MCP tool handlers)
 
 ---
-*Updated: 2026-04-02 after 28-01 execution (CLI export + MissingCredentialsError)*
+*Updated: 2026-04-02 after 28-02 execution (create_project + get_project_status tool handlers)*
