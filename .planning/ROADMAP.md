@@ -98,18 +98,17 @@ Plans:
 
 **Depends on**: Phase 26
 
-**Requirements**: CLI-01, CLI-02, SAFE-04
+**Requirements**: CLI-01, CLI-02
 
 **Success Criteria** (what must be TRUE):
   1. `import { runSetupAwsEnvsNonInteractive } from 'create-aws-project'` compiles without TypeScript errors in the MCP package
   2. `runInitializeGitHubNonInteractive(config)` accepts a structured config object, reads `GITHUB_TOKEN` from environment, and calls the GitHub secrets module directly — no `prompts` call anywhere in its execution path
-  3. Long-running tool handlers (`create_project`, `setup_aws_envs`) emit `notifications/progress` events that a connected MCP client can receive during a multi-second operation
 
 **Plans**: 2 plans
 
 Plans:
-- [ ] 27-01-PLAN.md — Refactor and export runSetupAwsEnvsNonInteractive (remove process.exit, accept config object)
-- [ ] 27-02-PLAN.md — Add runInitializeGitHubNonInteractive (structured config, env token, per-env status)
+- [x] 27-01-PLAN.md — Refactor and export runSetupAwsEnvsNonInteractive (remove process.exit, accept config object)
+- [x] 27-02-PLAN.md — Add runInitializeGitHubNonInteractive (structured config, env token, per-env status)
 
 ---
 
@@ -119,13 +118,14 @@ Plans:
 
 **Depends on**: Phase 27
 
-**Requirements**: TOOL-01, TOOL-02, TOOL-03, TOOL-04
+**Requirements**: TOOL-01, TOOL-02, TOOL-03, TOOL-04, SAFE-04
 
 **Success Criteria** (what must be TRUE):
   1. `get_project_status` called with a valid `projectDir` returns structured JSON including `accounts`, `deploymentUsers`, `configVersion`, and a `nextSteps` array computed from config state
   2. `create_project` called with `name` returns the scaffolded project directory path and the generated project directory exists on disk
   3. `setup_aws_envs` and `initialize_github` each return `isError: true` with an actionable message (pointing to the `.mcp.json` env block) when their required environment variables are absent — neither hangs nor crashes the server
   4. All four tools appear in MCP Inspector's tool list with complete input schemas; calling any tool with missing required inputs returns a validation error, not a server crash
+  5. Long-running tool handlers (`create_project`, `setup_aws_envs`) emit `notifications/progress` events that a connected MCP client can receive during a multi-second operation
 
 **Plans**: TBD
 
@@ -168,6 +168,6 @@ Plans:
 | 17-22. End-to-End AWS Setup | v1.6 | — | Complete | 2026-02-13 |
 | 23-25. AI-Friendly CLI | v1.7 | — | Complete | 2026-02-19 |
 | 26. Package Foundation + Safety | v1.8 | 2/2 | Complete | 2026-04-01 |
-| 27. CLI Additions | v1.8 | 0/2 | Not started | - |
+| 27. CLI Additions | v1.8 | 2/2 | Complete | 2026-04-02 |
 | 28. Four MCP Tools | v1.8 | 0/TBD | Not started | - |
 | 29. Publishing + Template | v1.8 | 0/TBD | Not started | - |

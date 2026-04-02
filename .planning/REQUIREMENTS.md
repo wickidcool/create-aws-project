@@ -21,8 +21,8 @@
 
 ### CLI Additions (existing package)
 
-- [ ] **CLI-01**: `runSetupAwsEnvsNonInteractive` is exported from `src/setup-aws-envs.ts` so the MCP package can import it
-- [ ] **CLI-02**: `runInitializeGitHubNonInteractive(config)` function added to `src/initialize-github.ts` — accepts structured config, no interactive prompts
+- [x] **CLI-01**: `runSetupAwsEnvsNonInteractive` is exported from `src/setup-aws-envs.ts` so the MCP package can import it
+- [x] **CLI-02**: `runInitializeGitHubNonInteractive(config)` function added to `src/initialize-github.ts` — accepts structured config, no interactive prompts
 
 ### MCP Tools
 
