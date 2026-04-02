@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 26 of 29
-Plan: 0
-Status: Planning Phase 26
-Last activity: 2026-03-25 — Roadmap created for v1.8
+Plan: 1 of ~4
+Status: In Progress
+Last activity: 2026-04-01 — Completed 26-01 Package Foundation (npm workspaces + bare MCP server)
 
-Progress: [░░░░░░░░░░] 0% (Phase 26 not started)
+Progress: [█░░░░░░░░░] ~8% (Phase 26 plan 1 complete)
 
 ## Milestones
 
@@ -35,6 +35,12 @@ Progress: [░░░░░░░░░░] 0% (Phase 26 not started)
 
 Cleared — full decision log in PROJECT.md Key Decisions table.
 
+| Decision | Context | Plan |
+|----------|---------|------|
+| MCP package test script uses `../../node_modules/jest/bin/jest.js` | Jest hoisted to root in npm workspaces; `node_modules/.bin/jest` does not exist in workspace package dir | 26-01 |
+| Root jest.config.ts excludes `/packages/` from testPathIgnorePatterns | Each workspace runs its own tests independently to avoid double-running | 26-01 |
+| No peerDependencies for zod in MCP package | SDK bundles its own zod; adding peer dep creates version conflicts | 26-01 |
+
 ### Deferred Issues
 
 None.
@@ -49,10 +55,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-25
-Stopped at: Roadmap created for v1.8, ready to plan Phase 26
+Last session: 2026-04-01
+Stopped at: Completed 26-01-PLAN.md — npm workspaces + bare MCP server scaffold
 Resume file: None
-Next: `/gsd:plan-phase 26` — Package Foundation and Safety Infrastructure
+Next: Execute 26-02 — MCP Safety Infrastructure (input validation, error types)
 
 ---
-*Updated: 2026-03-25 after v1.8 roadmap creation*
+*Updated: 2026-04-01 after Phase 26 Plan 01 completion*
