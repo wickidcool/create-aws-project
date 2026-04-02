@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 28 of 29
-Plan: 0
-Status: Planning Phase 28
-Last activity: 2026-04-02 — Phase 27 complete (CLI Additions to Existing Package)
+Plan: 1
+Status: In Progress
+Last activity: 2026-04-02 — Completed 28-01-PLAN.md (CLI Export and Credential Error Foundation)
 
-Progress: [█████░░░░░] ~50% (Phase 27 complete, 2 of 4 phases done)
+Progress: [█████░░░░░] ~50% (Phase 28 plan 1 of 4 complete)
 
 ## Milestones
 
@@ -48,6 +48,8 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | GITHUB_TOKEN read from process.env only — never accepted as function parameter (CRED-01) | MCP tool handlers must not prompt for credentials; env var is the only safe channel | 27-02 |
 | Per-environment try/catch in runInitializeGitHubNonInteractive allows partial failure reporting | One env's GitHub API failure should not abort remaining env configurations | 27-02 |
 | jest.fn mock typed with full parameter signature to avoid TS2554 on toHaveBeenCalledWith | Zero-arg mock type causes TypeScript errors when asserting call arguments | 27-02 |
+| runCreateProjectNonInteractive accepts structured options object and throws on error (never process.exit) | MCP server safety — consistent with throw-not-exit pattern from Phase 27 | 28-01 |
+| requireEnvVars treats whitespace-only values as missing (.trim() check) | Empty/blank env vars should not satisfy credential requirements | 28-01 |
 
 ### Deferred Issues
 
@@ -64,9 +66,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-02
-Stopped at: Phase 27 complete and verified — both plans executed, 192 tests passing
+Stopped at: Completed 28-01-PLAN.md — CLI export and credential error foundation, 213 tests passing
 Resume file: None
-Next: `/gsd:discuss-phase 28` or `/gsd:plan-phase 28` — Four MCP Tools Implementation
+Next: Execute 28-02 through 28-04 (four MCP tool handlers)
 
 ---
-*Updated: 2026-04-02 after Phase 27 completion and verification*
+*Updated: 2026-04-02 after 28-01 execution (CLI export + MissingCredentialsError)*
