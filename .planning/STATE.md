@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 26 of 29
-Plan: 1 of ~4
+Plan: 2 of ~4
 Status: In Progress
-Last activity: 2026-04-01 — Completed 26-01 Package Foundation (npm workspaces + bare MCP server)
+Last activity: 2026-04-01 — Completed 26-02 withCliContext Safety Wrapper
 
-Progress: [█░░░░░░░░░] ~8% (Phase 26 plan 1 complete)
+Progress: [██░░░░░░░░] ~16% (Phase 26 plans 1-2 complete)
 
 ## Milestones
 
@@ -40,6 +40,8 @@ Cleared — full decision log in PROJECT.md Key Decisions table.
 | MCP package test script uses `../../node_modules/jest/bin/jest.js` | Jest hoisted to root in npm workspaces; `node_modules/.bin/jest` does not exist in workspace package dir | 26-01 |
 | Root jest.config.ts excludes `/packages/` from testPathIgnorePatterns | Each workspace runs its own tests independently to avoid double-running | 26-01 |
 | No peerDependencies for zod in MCP package | SDK bundles its own zod; adding peer dep creates version conflicts | 26-01 |
+| withCliContext saves process.stdout.write without .bind() | Saving with .bind() creates a new function reference; the finally block must restore the exact same reference to satisfy identity tests and prevent double-wrapping | 26-02 |
+| ESM test files must import jest from @jest/globals | jest global is not auto-injected in ESM module context; use `import { jest } from "@jest/globals"` | 26-02 |
 
 ### Deferred Issues
 
@@ -56,9 +58,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 26-01-PLAN.md — npm workspaces + bare MCP server scaffold
+Stopped at: Completed 26-02-PLAN.md — withCliContext safety wrapper
 Resume file: None
-Next: Execute 26-02 — MCP Safety Infrastructure (input validation, error types)
+Next: Execute 26-03 — next Phase 26 plan
 
 ---
-*Updated: 2026-04-01 after Phase 26 Plan 01 completion*
+*Updated: 2026-04-01 after Phase 26 Plan 02 completion*
