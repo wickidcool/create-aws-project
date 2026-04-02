@@ -17,7 +17,7 @@
 - [x] **SAFE-01**: `withCliContext()` utility redirects `process.stdout.write` during CLI function calls to prevent MCP stdio corruption
 - [x] **SAFE-02**: `withCliContext()` intercepts `process.exit()` and converts it to a thrown `Error` so the server process survives validation failures
 - [x] **SAFE-03**: MCP server entry point creates `McpServer`, registers all tools, and connects via `StdioServerTransport`
-- [ ] **SAFE-04**: Long-running tools (`create_project`, `setup_aws_envs`) emit `notifications/progress` with a `progressToken` so clients can track status
+- [x] **SAFE-04**: Long-running tools (`create_project`, `setup_aws_envs`) emit `notifications/progress` with a `progressToken` so clients can track status
 
 ### CLI Additions (existing package)
 
@@ -26,10 +26,10 @@
 
 ### MCP Tools
 
-- [ ] **TOOL-01**: `create_project` tool accepts `name` (required) and optional project options; calls `runCreateProjectNonInteractive()`; returns the scaffolded project directory path
-- [ ] **TOOL-02**: `setup_aws_envs` tool accepts `projectDir` (required) and optional AWS config overrides; calls `runSetupAwsEnvsNonInteractive()`; emits progress notifications; returns account IDs
-- [ ] **TOOL-03**: `initialize_github` tool accepts `projectDir` (required) and optional `env` (defaults to all); calls `runInitializeGitHubNonInteractive()`; returns per-environment status
-- [ ] **TOOL-04**: `get_project_status` tool accepts `projectDir` (required); reads `.aws-starter-config.json`; returns structured project state (accounts, deploymentUsers, configVersion)
+- [x] **TOOL-01**: `create_project` tool accepts `name` (required) and optional project options; calls `runCreateProjectNonInteractive()`; returns the scaffolded project directory path
+- [x] **TOOL-02**: `setup_aws_envs` tool accepts `projectDir` (required) and optional AWS config overrides; calls `runSetupAwsEnvsNonInteractive()`; emits progress notifications; returns account IDs
+- [x] **TOOL-03**: `initialize_github` tool accepts `projectDir` (required) and optional `env` (defaults to all); calls `runInitializeGitHubNonInteractive()`; returns per-environment status
+- [x] **TOOL-04**: `get_project_status` tool accepts `projectDir` (required); reads `.aws-starter-config.json`; returns structured project state (accounts, deploymentUsers, configVersion)
 
 ### Credentials
 
@@ -68,13 +68,13 @@
 | SAFE-01 | Phase 26 | Complete |
 | SAFE-02 | Phase 26 | Complete |
 | SAFE-03 | Phase 26 | Complete |
-| SAFE-04 | Phase 27 | Pending |
-| CLI-01 | Phase 27 | Pending |
-| CLI-02 | Phase 27 | Pending |
-| TOOL-01 | Phase 28 | Pending |
-| TOOL-02 | Phase 28 | Pending |
-| TOOL-03 | Phase 28 | Pending |
-| TOOL-04 | Phase 28 | Pending |
+| SAFE-04 | Phase 28 | Complete |
+| CLI-01 | Phase 27 | Complete |
+| CLI-02 | Phase 27 | Complete |
+| TOOL-01 | Phase 28 | Complete |
+| TOOL-02 | Phase 28 | Complete |
+| TOOL-03 | Phase 28 | Complete |
+| TOOL-04 | Phase 28 | Complete |
 | CRED-01 | Phase 26 | Complete |
 | TMPL-01 | Phase 29 | Pending |
 

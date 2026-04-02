@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 
 ## Current Position
 
-Phase: 28 of 29
-Plan: 3
-Status: In Progress
-Last activity: 2026-04-02 — Completed 28-03-PLAN.md (setup_aws_envs and initialize_github tool handlers)
+Phase: 29 of 29
+Plan: 0
+Status: Planning Phase 29
+Last activity: 2026-04-02 — Phase 28 complete (Four MCP Tools Implementation, all 3 plans, 247 tests passing)
 
-Progress: [███████░░░] ~65% (Phase 28 plan 3 of 4 complete)
+Progress: [███████░░░] ~75% (Phase 28 complete, 3 of 4 phases done)
 
 ## Milestones
 
@@ -61,6 +61,7 @@ None.
 ### Blockers/Concerns
 
 - Note: npm test (not npx jest) required for tests using jest.unstable_mockModule and top-level await — must use node --experimental-vm-modules flag
+- node_modules/create-aws-project/dist/ (hoisted) must be kept in sync with the built CLI package — npm install or npm run build from root refreshes it
 
 ### Outstanding Todos
 
@@ -69,9 +70,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-02
-Stopped at: Completed 28-03-PLAN.md — setup_aws_envs + initialize_github tools, 55 MCP tests passing
+Stopped at: Phase 28 complete and verified — all 3 plans executed, 247 tests passing, human verification approved
 Resume file: None
-Next: Execute 28-04 (final plan in phase 28)
+Next: `/gsd:discuss-phase 29` or `/gsd:plan-phase 29` — Publishing and Generated Project Template
 
 ---
-*Updated: 2026-04-02 after 28-03 execution (setup_aws_envs + initialize_github tool handlers)*
+*Updated: 2026-04-02 after Phase 28 completion and verification*
