@@ -1,0 +1,27 @@
+{
+  "name": "create-aws-project-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for create-aws-project CLI",
+  "type": "module",
+  "bin": {
+    "create-aws-project-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 dist/index.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "prepublishOnly": "npm run build"
+  },
+  "files": ["dist"],
+  "engines": { "node": ">=22.0.0" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "create-aws-project": "*"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3"
+  }
+}
