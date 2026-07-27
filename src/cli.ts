@@ -167,7 +167,7 @@ function printWelcome(): void {
   console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║            create-aws-project                     ║
+║            create-aws-project                         ║
 ║       AWS Starter Kit Project Generator               ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
