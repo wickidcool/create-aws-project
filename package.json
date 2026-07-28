@@ -1,6 +1,6 @@
 {
   "name": "create-aws-project",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "CLI tool to scaffold AWS projects",
   "type": "module",
   "main": "./dist/index.js",
