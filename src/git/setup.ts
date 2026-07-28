@@ -4,6 +4,10 @@ import ora from 'ora';
 import pc from 'picocolors';
 import { parseGitHubUrl, createGitHubClient } from '../github/secrets.js';
 
+function hasStatus(error: unknown): error is { status: number } {
+  return typeof error === 'object' && error !== null && 'status' in error;
+}
+
 /**
  * Git setup module
  *
@@ -125,8 +129,8 @@ export async function setupGitRepository(
     try {
       await octokit.rest.repos.get({ owner, repo });
       spinner.succeed(`Repository ${owner}/${repo} found`);
-    } catch (error: any) {
-      if (error.status === 404) {
+    } catch (error) {
+      if (hasStatus(error) && error.status === 404) {
         // Repo doesn't exist, create it
         const { data: user } = await octokit.rest.users.getAuthenticated();
         if (owner === user.login) {
@@ -161,14 +165,16 @@ export async function setupGitRepository(
     console.log('');
     console.log(pc.dim('Code will be committed and pushed after AWS setup is complete.'));
     console.log(pc.dim('Next: run setup-aws-envs to configure AWS accounts.'));
-  } catch (error: any) {
+  } catch (error) {
     // Git setup failure should not prevent the user from using their project
     if (spinner.isSpinning) {
       spinner.fail();
     }
 
     // Detect GitHub auth/permission errors and give actionable guidance
-    if (error?.status === 401 || error?.status === 403 || error?.message?.includes('Bad credentials')) {
+    const status = hasStatus(error) ? error.status : undefined;
+    const message = error instanceof Error ? error.message : undefined;
+    if (status === 401 || status === 403 || message?.includes('Bad credentials')) {
       console.log('');
       console.log(pc.red('GitHub authentication failed.'));
       console.log('');
@@ -180,7 +186,7 @@ export async function setupGitRepository(
       console.log('');
       console.log('Then re-run project creation and enter the new token.');
     } else {
-      console.log(pc.yellow('Warning:') + ' Git setup failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      console.log(pc.yellow('Warning:') + ' Git setup failed: ' + (message ?? 'Unknown error'));
     }
     console.log(pc.dim('Your project was created successfully. You can set up git manually.'));
   }

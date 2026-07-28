@@ -327,40 +327,36 @@ export async function runSetupAwsEnvsNonInteractive(config: SetupAwsEnvsNonInter
     console.log(pc.yellow('Note:') + ` Admin user ${pc.cyan(projectConfig.adminUser.userName)} already configured.`);
     console.log(pc.dim('Using existing admin user. If you have switched to IAM credentials, root detection is skipped.'));
   } else {
-    try {
-      const identity = await detectRootCredentials(projectConfig.awsRegion);
+    const identity = await detectRootCredentials(projectConfig.awsRegion);
 
-      if (identity.isRoot) {
-        console.log('');
-        console.log(pc.yellow('Root credentials detected.'));
-        console.log('Creating admin IAM user for subsequent operations...');
-        console.log('');
+    if (identity.isRoot) {
+      console.log('');
+      console.log(pc.yellow('Root credentials detected.'));
+      console.log('Creating admin IAM user for subsequent operations...');
+      console.log('');
 
-        const iamClient = createIAMClient(projectConfig.awsRegion);
-        const adminResult = await createOrAdoptAdminUser(iamClient, projectConfig.projectName);
+      const iamClient = createIAMClient(projectConfig.awsRegion);
+      const adminResult = await createOrAdoptAdminUser(iamClient, projectConfig.projectName);
 
-        adminCredentials = {
-          accessKeyId: adminResult.accessKeyId,
-          secretAccessKey: adminResult.secretAccessKey,
-        };
+      adminCredentials = {
+        accessKeyId: adminResult.accessKeyId,
+        secretAccessKey: adminResult.secretAccessKey,
+      };
 
-        const configContent = JSON.parse(readFileSync(projectConfigPath, 'utf-8'));
-        configContent.adminUser = {
-          userName: adminResult.userName,
-          accessKeyId: adminResult.accessKeyId,
-        };
-        writeFileSync(projectConfigPath, JSON.stringify(configContent, null, 2) + '\n', 'utf-8');
+      const configContent = JSON.parse(readFileSync(projectConfigPath, 'utf-8'));
+      configContent.adminUser = {
+        userName: adminResult.userName,
+        accessKeyId: adminResult.accessKeyId,
+      };
+      writeFileSync(projectConfigPath, JSON.stringify(configContent, null, 2) + '\n', 'utf-8');
 
-        if (adminResult.adopted) {
-          console.log(pc.green(`Adopted existing admin user: ${adminResult.userName}`));
-        } else {
-          console.log(pc.green(`Created admin user: ${adminResult.userName}`));
-        }
-        console.log(pc.dim('Admin credentials will be used for all subsequent AWS operations in this session.'));
-        console.log('');
+      if (adminResult.adopted) {
+        console.log(pc.green(`Adopted existing admin user: ${adminResult.userName}`));
+      } else {
+        console.log(pc.green(`Created admin user: ${adminResult.userName}`));
       }
-    } catch (error) {
-      throw error;
+      console.log(pc.dim('Admin credentials will be used for all subsequent AWS operations in this session.'));
+      console.log('');
     }
   }
 
